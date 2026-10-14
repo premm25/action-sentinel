@@ -1,0 +1,440 @@
+{
+  "created_at": "2026-10-14T18:06:37.650348+00:00",
+  "purpose": "Phase 1 feasibility: genuine VegaML inference, native output preserved",
+  "environment": {
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "cpu_count": 8,
+    "torch": "2.14.1+cpu",
+    "torch_threads": 4,
+    "transformers": "5.19.0",
+    "vegaml": "0.9.0",
+    "cuda_available": false
+  },
+  "model_request": {
+    "model": "0.8b",
+    "device": "cpu",
+    "mode": "engine"
+  },
+  "memory_mb": {
+    "before_load": 0.0,
+    "after_load": 0.0,
+    "after_runs": 0.0
+  },
+  "runs": [
+    {
+      "example": "choice_routing",
+      "attempt": "cold",
+      "wall_ms": 1197.7,
+      "input": {
+        "state": {
+          "from": "billing@acme.com",
+          "subject": "Invoice overdue",
+          "body": "Third notice. Pay now."
+        },
+        "questions": {
+          "team": {
+            "type": "choice",
+            "instructions": "Which team should handle this?",
+            "criteria": {
+              "billing": "payments and invoices",
+              "technical": "product faults",
+              "sales": "new business"
+            }
+          }
+        }
+      },
+      "native_output": {
+        "answers": {
+          "team": {
+            "probs": {
+              "billing": 0.9993684252340651,
+              "technical": 0.0004950969062659757,
+              "sales": 0.0001364778596689578
+            },
+            "confidence": 0.9993684252340651,
+            "prediction_set": [
+              "billing"
+            ],
+            "abstain": false,
+            "unbound": false,
+            "settle_steps": 12,
+            "energy": -3.9481124877929688,
+            "adapter": null,
+            "gate": 7.929246748972218e-06,
+            "choice": "billing"
+          }
+        },
+        "latency_ms": 1197.7,
+        "n_tokens": 86,
+        "views": 1,
+        "mode": "engine"
+      }
+    },
+    {
+      "example": "choice_routing",
+      "attempt": "repeat",
+      "wall_ms": 815.5,
+      "input": {
+        "state": {
+          "from": "billing@acme.com",
+          "subject": "Invoice overdue",
+          "body": "Third notice. Pay now."
+        },
+        "questions": {
+          "team": {
+            "type": "choice",
+            "instructions": "Which team should handle this?",
+            "criteria": {
+              "billing": "payments and invoices",
+              "technical": "product faults",
+              "sales": "new business"
+            }
+          }
+        }
+      },
+      "native_output": {
+        "answers": {
+          "team": {
+            "probs": {
+              "billing": 0.9993684252340651,
+              "technical": 0.0004950969062659757,
+              "sales": 0.0001364778596689578
+            },
+            "confidence": 0.9993684252340651,
+            "prediction_set": [
+              "billing"
+            ],
+            "abstain": false,
+            "unbound": false,
+            "settle_steps": 12,
+            "energy": -3.9481124877929688,
+            "adapter": null,
+            "gate": 7.929246748972218e-06,
+            "choice": "billing"
+          }
+        },
+        "latency_ms": 815.5,
+        "n_tokens": 86,
+        "views": 1,
+        "mode": "engine"
+      }
+    },
+    {
+      "example": "boolean_churn",
+      "attempt": "warm",
+      "wall_ms": 716.3,
+      "input": {
+        "state": "I was billed twice this month. Refund me today or I am cancelling my subscription.",
+        "questions": {
+          "churn": {
+            "type": "boolean",
+            "instructions": "Is this customer at risk of leaving?",
+            "criteria": {
+              "true": "shows intent to cancel",
+              "false": "no such signal"
+            }
+          }
+        }
+      },
+      "native_output": {
+        "answers": {
+          "churn": {
+            "probs": {
+              "False": 0.9618868863944419,
+              "True": 0.03811311360555814
+            },
+            "confidence": 0.9618868863944419,
+            "prediction_set": [
+              false
+            ],
+            "abstain": false,
+            "unbound": false,
+            "settle_steps": 12,
+            "energy": -1.2635526657104492,
+            "adapter": null,
+            "gate": 0.0002913936914410442,
+            "boolean": 0.03811311360555814
+          }
+        },
+        "latency_ms": 716.3,
+        "n_tokens": 76,
+        "views": 1,
+        "mode": "engine"
+      }
+    },
+    {
+      "example": "boolean_churn",
+      "attempt": "repeat",
+      "wall_ms": 774.0,
+      "input": {
+        "state": "I was billed twice this month. Refund me today or I am cancelling my subscription.",
+        "questions": {
+          "churn": {
+            "type": "boolean",
+            "instructions": "Is this customer at risk of leaving?",
+            "criteria": {
+              "true": "shows intent to cancel",
+              "false": "no such signal"
+            }
+          }
+        }
+      },
+      "native_output": {
+        "answers": {
+          "churn": {
+            "probs": {
+              "False": 0.9618868863944419,
+              "True": 0.03811311360555814
+            },
+            "confidence": 0.9618868863944419,
+            "prediction_set": [
+              false
+            ],
+            "abstain": false,
+            "unbound": false,
+            "settle_steps": 12,
+            "energy": -1.2635526657104492,
+            "adapter": null,
+            "gate": 0.0002913936914410442,
+            "boolean": 0.03811311360555814
+          }
+        },
+        "latency_ms": 773.9,
+        "n_tokens": 76,
+        "views": 1,
+        "mode": "engine"
+      }
+    },
+    {
+      "example": "score_urgency",
+      "attempt": "warm",
+      "wall_ms": 870.1,
+      "input": {
+        "state": "Production checkout is returning HTTP 500 for every customer since 10 minutes ago.",
+        "questions": {
+          "urgency": {
+            "type": "score",
+            "instructions": "How urgent is this incident?",
+            "criteria": [
+              "not urgent",
+              "can wait a day",
+              "same day",
+              "immediately"
+            ]
+          }
+        }
+      },
+      "native_output": {
+        "answers": {
+          "urgency": {
+            "probs": {
+              "0": 0.039458837732773505,
+              "1": 0.2714462189391922,
+              "2": 0.5082615379460922,
+              "3": 0.18083340538194198
+            },
+            "confidence": 0.5082615379460922,
+            "prediction_set": [
+              1,
+              2,
+              3
+            ],
+            "abstain": true,
+            "unbound": false,
+            "settle_steps": 12,
+            "energy": -2.1870267391204834,
+            "adapter": null,
+            "gate": 0.0007786423084326088,
+            "score": 2,
+            "expected_score": 1.8304695109772025
+          }
+        },
+        "latency_ms": 870.0,
+        "n_tokens": 91,
+        "views": 1,
+        "mode": "engine"
+      }
+    },
+    {
+      "example": "score_urgency",
+      "attempt": "repeat",
+      "wall_ms": 815.1,
+      "input": {
+        "state": "Production checkout is returning HTTP 500 for every customer since 10 minutes ago.",
+        "questions": {
+          "urgency": {
+            "type": "score",
+            "instructions": "How urgent is this incident?",
+            "criteria": [
+              "not urgent",
+              "can wait a day",
+              "same day",
+              "immediately"
+            ]
+          }
+        }
+      },
+      "native_output": {
+        "answers": {
+          "urgency": {
+            "probs": {
+              "0": 0.039458837732773505,
+              "1": 0.2714462189391922,
+              "2": 0.5082615379460922,
+              "3": 0.18083340538194198
+            },
+            "confidence": 0.5082615379460922,
+            "prediction_set": [
+              1,
+              2,
+              3
+            ],
+            "abstain": true,
+            "unbound": false,
+            "settle_steps": 12,
+            "energy": -2.1870267391204834,
+            "adapter": null,
+            "gate": 0.0007786423084326088,
+            "score": 2,
+            "expected_score": 1.8304695109772025
+          }
+        },
+        "latency_ms": 815.1,
+        "n_tokens": 91,
+        "views": 1,
+        "mode": "engine"
+      }
+    },
+    {
+      "example": "agent_action_disposition",
+      "attempt": "warm",
+      "wall_ms": 995.5,
+      "input": {
+        "state": {
+          "agent": "infra-agent",
+          "action_type": "delete_database",
+          "target": "prod/orders",
+          "payload": {
+            "database": "orders",
+            "reason": "free disk space"
+          }
+        },
+        "questions": {
+          "disposition": {
+            "type": "choice",
+            "instructions": "How should this proposed agent action be handled?",
+            "criteria": {
+              "safe": "routine, low impact, reversible",
+              "needs_review": "impactful or ambiguous; a human should decide",
+              "unsafe": "destructive or irreversible; must not run"
+            }
+          }
+        }
+      },
+      "native_output": {
+        "answers": {
+          "disposition": {
+            "probs": {
+              "safe": 0.19527545987104689,
+              "needs_review": 0.6037726930141557,
+              "unsafe": 0.2009518471147973
+            },
+            "confidence": 0.6037726930141557,
+            "prediction_set": [
+              "needs_review"
+            ],
+            "abstain": true,
+            "unbound": false,
+            "settle_steps": 12,
+            "energy": 1.676203727722168,
+            "adapter": "typed_decisions",
+            "gate": 0.9977565407752991,
+            "choice": "needs_review"
+          }
+        },
+        "latency_ms": 995.4,
+        "n_tokens": 118,
+        "views": 1,
+        "mode": "engine"
+      }
+    },
+    {
+      "example": "agent_action_disposition",
+      "attempt": "repeat",
+      "wall_ms": 995.7,
+      "input": {
+        "state": {
+          "agent": "infra-agent",
+          "action_type": "delete_database",
+          "target": "prod/orders",
+          "payload": {
+            "database": "orders",
+            "reason": "free disk space"
+          }
+        },
+        "questions": {
+          "disposition": {
+            "type": "choice",
+            "instructions": "How should this proposed agent action be handled?",
+            "criteria": {
+              "safe": "routine, low impact, reversible",
+              "needs_review": "impactful or ambiguous; a human should decide",
+              "unsafe": "destructive or irreversible; must not run"
+            }
+          }
+        }
+      },
+      "native_output": {
+        "answers": {
+          "disposition": {
+            "probs": {
+              "safe": 0.19527545987104689,
+              "needs_review": 0.6037726930141557,
+              "unsafe": 0.2009518471147973
+            },
+            "confidence": 0.6037726930141557,
+            "prediction_set": [
+              "needs_review"
+            ],
+            "abstain": true,
+            "unbound": false,
+            "settle_steps": 12,
+            "energy": 1.676203727722168,
+            "adapter": "typed_decisions",
+            "gate": 0.9977565407752991,
+            "choice": "needs_review"
+          }
+        },
+        "latency_ms": 995.6,
+        "n_tokens": 118,
+        "views": 1,
+        "mode": "engine"
+      }
+    }
+  ],
+  "load_seconds": 1118.63,
+  "checkpoint": {
+    "model_dir": "C:\\Users\\sasi\\.cache\\huggingface\\hub\\models--nandakishorm--vega-08b-public-intents\\snapshots\\42ac8d4fa9efb61f96e53d80962cf28f6dfe667e",
+    "backbone": "Qwen/Qwen3.5-0.8B",
+    "backbone_dtype": "torch.float32",
+    "feature_layers": [
+      13,
+      19
+    ],
+    "option_layers": [
+      19
+    ],
+    "n_steps": 12,
+    "latent_dim": 64,
+    "max_len": 73728,
+    "default_risk": "0.1",
+    "adapters": [
+      "public_intents",
+      "typed_decisions"
+    ],
+    "engine_sha256": "09c4c5fe203cf166d419dfaa72d75b26da00f47f66bafbfd750b2263ee1ca66b",
+    "repr": "Vega(mode='engine', heads=0, max_len=73728)"
+  }
+}
