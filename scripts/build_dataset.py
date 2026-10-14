@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from sentinel.contracts import DISPOSITION_QUESTION, DatasetExample  # noqa: E402
+from action_sentinel.contracts import DISPOSITION_QUESTION, DatasetExample  # noqa: E402
 
 VERSION = "sentinel-synthetic-v1"
 OUT = ROOT / "examples" / "evaluation_datasets" / "sentinel_synthetic_v1.jsonl"

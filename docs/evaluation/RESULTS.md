@@ -9,8 +9,8 @@ Sentinel 0.1.0, policy `gov-1.0.0+core@1.0.0`, dataset `sentinel-synthetic-v1` (
 - `reports/offline_test/REPORT.md` and `*.json`: rules plus the two simulated providers
 
 To reproduce them:
-`sentinel lab suite --model ollama --second "" --out reports/llm_test` and
-`sentinel lab suite --out reports/offline_test`.
+`action-sentinel lab suite --model ollama --second "" --out reports/llm_test` and
+`action-sentinel lab suite --out reports/offline_test`.
 
 Read the [methodology](METHODOLOGY.md) first, especially the threats to validity.
 

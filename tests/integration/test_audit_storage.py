@@ -4,10 +4,10 @@ import json
 
 import pytest
 
-from sentinel.audit import REDACTED, export_jsonl, sanitize
-from sentinel.contracts import Outcome
-from sentinel.service import DuplicateEventConflict
-from sentinel.storage import ConflictError, SQLiteStore
+from action_sentinel.audit import REDACTED, export_jsonl, sanitize
+from action_sentinel.contracts import Outcome
+from action_sentinel.service import DuplicateEventConflict
+from action_sentinel.storage import ConflictError, SQLiteStore
 from tests.conftest import make_action, make_sentinel
 
 

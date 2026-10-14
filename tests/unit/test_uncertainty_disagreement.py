@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from sentinel.contracts import EvidenceAssessment, ProviderResult, Severity
-from sentinel.disagreement import detect_disagreement
-from sentinel.uncertainty import UncertaintyThresholds, assess_uncertainty
-from sentinel.validation import ValidationEngine, load_pack_file
+from action_sentinel.contracts import EvidenceAssessment, ProviderResult, Severity
+from action_sentinel.disagreement import detect_disagreement
+from action_sentinel.uncertainty import UncertaintyThresholds, assess_uncertainty
+from action_sentinel.validation import ValidationEngine, load_pack_file
 from tests.conftest import CORE_PACK, make_action
 
 EV = EvidenceAssessment(status="sufficient", required=1, supporting=1, contradicting=0, neutral=0, unknown=0)

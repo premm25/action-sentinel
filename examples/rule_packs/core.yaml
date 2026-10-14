@@ -1,5 +1,5 @@
 # Sentinel core rule pack. Declarative data only: conditions use the restricted grammar documented
-# in sentinel/validation/grammar.py. Nothing here is executed.
+# in action_sentinel/validation/grammar.py. Nothing here is executed.
 pack_id: core
 version: 1.0.0
 description: Baseline operational policy for infrastructure and support agents (example policy).

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from sentinel.contracts import (
+from action_sentinel.contracts import (
     DISPOSITION_QUESTION,
     ActionProposal,
     DatasetExample,

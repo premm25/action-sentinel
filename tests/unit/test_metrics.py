@@ -4,7 +4,7 @@ import math
 
 import pytest
 
-from sentinel.evaluation import metrics as M
+from action_sentinel.evaluation import metrics as M
 
 
 def test_classification_hand_computed():

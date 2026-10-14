@@ -33,7 +33,7 @@ hash is recorded in every report.
   on some ambiguous cases. They are drawn with seeded noise around the true label and only exercise
   the pipeline.
 
-## Configurations (`sentinel lab suite`)
+## Configurations (`action-sentinel lab suite`)
 
 | name | providers | validation | disagreement | uncertainty | review | mode |
 |---|---|---|---|---|---|---|
@@ -75,7 +75,7 @@ Cost is reported as "not available" because no cost model is configured. No valu
   were set before any evaluation and **were not tuned on any split**. In particular, nothing was
   changed after looking at test results.
 - The LLM prompt was not changed after the test-split run.
-- `sentinel lab calibrate` measures ECE on the calibration split only. Calibration profiles are not
+- `action-sentinel lab calibrate` measures ECE on the calibration split only. Calibration profiles are not
   applied automatically.
 
 ## Known threats to validity

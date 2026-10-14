@@ -5,8 +5,8 @@ import copy
 import pytest
 import yaml
 
-from sentinel.contracts import RiskLevel
-from sentinel.validation import (
+from action_sentinel.contracts import RiskLevel
+from action_sentinel.validation import (
     GrammarError,
     RulePackError,
     ValidationEngine,

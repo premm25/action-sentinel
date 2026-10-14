@@ -1,4 +1,4 @@
-# Sentinel
+# Action Sentinel
 
 **A safety checkpoint between AI agents and the real world.** Before an agent restarts a server,
 refunds a payment or deletes a database, Sentinel decides whether it may, and the action can only
@@ -33,13 +33,13 @@ calibrated. Sentinel is built on a few non-negotiable rules:
 
 ```bash
 pip install -e ".[dev,dashboard]"   # from a clone of this repository
-sentinel demo                       # offline end-to-end walkthrough, no model or API key needed
+action-sentinel demo                       # offline end-to-end walkthrough, no model or API key needed
 ```
 
 ```python
-from sentinel.config import load_settings
-from sentinel.contracts import ActionProposal
-from sentinel.service import Sentinel
+from action_sentinel.config import load_settings
+from action_sentinel.contracts import ActionProposal
+from action_sentinel.service import Sentinel
 
 sentinel = Sentinel(load_settings())          # config/sentinel.yaml: rule pack + rule-based provider
 
@@ -133,20 +133,20 @@ To also consult the local LLM, set `active_providers: [rules, ollama]`, or pass
 ## Quick start
 
 ```bash
-sentinel validate-rules                                 # check the rule packs
-sentinel providers                                      # provider health
-sentinel evaluate examples/sample_actions/actions.jsonl -v
-sentinel reviews list
-sentinel reviews approve <review_id> --reviewer olivia --reason "verified"
-sentinel demo                                           # full offline end-to-end demonstration
+action-sentinel validate-rules                                 # check the rule packs
+action-sentinel providers                                      # provider health
+action-sentinel evaluate examples/sample_actions/actions.jsonl -v
+action-sentinel reviews list
+action-sentinel reviews approve <review_id> --reviewer olivia --reason "verified"
+action-sentinel demo                                           # full offline end-to-end demonstration
 ```
 
-`python -m sentinel ...` works the same as `sentinel ...`.
+`python -m action_sentinel ...` works the same as `action-sentinel ...`.
 
 ## API
 
 ```bash
-sentinel serve --port 8000          # interactive docs at http://127.0.0.1:8000/docs
+action-sentinel serve --port 8000          # interactive docs at http://127.0.0.1:8000/docs
 curl -s -X POST http://127.0.0.1:8000/decisions/evaluate -H "X-API-Key: dev-agent-key" \
      -H "Content-Type: application/json" -d @examples/sample_actions/one.json
 ```
@@ -161,8 +161,8 @@ Endpoints:
 ## Dashboard
 
 ```bash
-sentinel dashboard                  # http://127.0.0.1:8501
-sentinel demo --db var/sentinel.db  # optional: populate the default database first
+action-sentinel dashboard                  # http://127.0.0.1:8501
+action-sentinel demo --db var/sentinel.db  # optional: populate the default database first
 ```
 
 The dashboard has six tabs: Overview, Decision Explorer, Confidence Lab, Human Review, Audit
@@ -173,7 +173,7 @@ require the reviewer's API key.
 
 ```bash
 pytest                                  # 203 tests, offline (optional live tests are deselected)
-pytest --cov=sentinel                   # with coverage
+pytest --cov=action_sentinel                   # with coverage
 pytest -m ollama                        # optional: live test against a running Ollama
 ```
 
@@ -181,11 +181,11 @@ pytest -m ollama                        # optional: live test against a running 
 
 ```bash
 python scripts/build_dataset.py         # regenerate the synthetic dataset (deterministic)
-sentinel lab suite                      # offline: rules + simulated providers, test split
-sentinel lab suite --model ollama --second ""     # live local LLM (slow on CPU)
-sentinel lab run --providers rules,ollama --splits test
-sentinel lab calibrate --provider ollama          # ECE on the calibration split
-sentinel lab show [run_id]   /   sentinel lab export <run_id...> --out report.md
+action-sentinel lab suite                      # offline: rules + simulated providers, test split
+action-sentinel lab suite --model ollama --second ""     # live local LLM (slow on CPU)
+action-sentinel lab run --providers rules,ollama --splits test
+action-sentinel lab calibrate --provider ollama          # ECE on the calibration split
+action-sentinel lab show [run_id]   /   action-sentinel lab export <run_id...> --out report.md
 ```
 
 Measured results and their limits are in [`docs/evaluation/RESULTS.md`](docs/evaluation/RESULTS.md).
@@ -194,7 +194,7 @@ The method is in [`docs/evaluation/METHODOLOGY.md`](docs/evaluation/METHODOLOGY.
 ## Demo
 
 ```bash
-sentinel demo
+action-sentinel demo
 ```
 
 The demo runs 12 steps offline and checks the expected result of each one. It exits non-zero if

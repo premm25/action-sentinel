@@ -6,9 +6,9 @@ import json
 
 import pytest
 
-from sentinel.contracts import Outcome
-from sentinel.execution import AuthorizationError
-from sentinel.governance import GovernanceEngine, GovernancePolicy, PipelineFlags
+from action_sentinel.contracts import Outcome
+from action_sentinel.execution import AuthorizationError
+from action_sentinel.governance import GovernanceEngine, GovernancePolicy, PipelineFlags
 from tests.conftest import make_action, make_sentinel
 
 
@@ -64,7 +64,7 @@ def test_naive_abstention():
 
 
 def test_cli_in_process(tmp_path, capsys, monkeypatch):
-    from sentinel.cli import main
+    from action_sentinel.cli import main
     from tests.conftest import action_dict
     monkeypatch.setenv("SENTINEL_ENV", "dev")
     db = str(tmp_path / "c.db")

@@ -1,12 +1,12 @@
 # Demo guide
 
 ```bash
-sentinel demo                      # temporary database, removed afterwards
-sentinel demo --db var/demo.db     # keep the records, then: SENTINEL_DB_PATH=var/demo.db sentinel dashboard
+action-sentinel demo                      # temporary database, removed afterwards
+action-sentinel demo --db var/demo.db     # keep the records, then: SENTINEL_DB_PATH=var/demo.db action-sentinel dashboard
 ```
 
 The demo runs offline in a few seconds. It uses the deterministic `rules` provider and two
-**scripted test doubles** (`mock-a`, `mock-b`), whose outputs are fixed in `sentinel/demo.py`. Each
+**scripted test doubles** (`mock-a`, `mock-b`), whose outputs are fixed in `action_sentinel/demo.py`. Each
 step checks its expected result, and the process exits with code 1 if any check fails. The last
 line reads `Result: ALL CHECKS PASSED` when everything held.
 
@@ -23,5 +23,5 @@ line reads `Result: ALL CHECKS PASSED` when everything held.
 | 9–10 | Confidence Lab on the 44-example test split | Naive mock-a vs full Sentinel: false approvals and hard violations blocked |
 | 11 | The audit trail for the refund workflow | Ordered events from `proposal.received` through `review.override_rejected`, `review.overridden` and `execution.executed` |
 
-To see the same flows over HTTP, start `sentinel serve` and use the requests in `tests/api/test_api.py`
+To see the same flows over HTTP, start `action-sentinel serve` and use the requests in `tests/api/test_api.py`
 as examples. The interactive docs are at `/docs`.

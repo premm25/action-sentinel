@@ -10,15 +10,15 @@ python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -e ".[dev,dashboard]"
 pytest                                # all tests run offline
-sentinel demo                         # end-to-end check
+action-sentinel demo                         # end-to-end check
 ```
 
 ## Before opening a pull request
 
-- `ruff check sentinel tests scripts` is clean.
+- `ruff check action_sentinel tests scripts` is clean.
 - `pytest` passes. New behaviour comes with tests. Bug fixes come with a regression test that fails
   before the fix.
-- If you touch `sentinel/governance/`, `sentinel/execution/` or `sentinel/storage/`, add tests for
+- If you touch `action_sentinel/governance/`, `action_sentinel/execution/` or `action_sentinel/storage/`, add tests for
   the failure paths, not only the happy path. Those modules are the safety boundary.
 - Never weaken or delete a test to make the suite pass. If a test was wrong, explain why in the PR.
 - If you change `scripts/build_dataset.py`, regenerate the dataset and bump `VERSION`. Results
@@ -36,11 +36,11 @@ sentinel demo                         # end-to-end check
 
 ## Adding things
 
-- **A decision provider:** subclass `sentinel.providers.DecisionProvider`, implement `_decide`
+- **A decision provider:** subclass `action_sentinel.providers.DecisionProvider`, implement `_decide`
   returning a `RawAnswer`, and register a factory with `ProviderRegistry.register_type`. See
   `providers/mock.py` for the smallest example.
-- **A rule pack:** YAML in the grammar documented in `sentinel/validation/grammar.py`. Validate it
-  with `sentinel validate-rules path/to/pack.yaml`.
+- **A rule pack:** YAML in the grammar documented in `action_sentinel/validation/grammar.py`. Validate it
+  with `action-sentinel validate-rules path/to/pack.yaml`.
 
 ## Reporting security issues
 

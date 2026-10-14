@@ -9,7 +9,7 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from sentinel.api import create_app
+from action_sentinel.api import create_app
 from tests.conftest import ROOT, action_dict, make_sentinel
 
 AGENT = {"X-API-Key": "dev-agent-key"}
@@ -149,7 +149,7 @@ def test_real_server_process(tmp_path):
     port = _free_port()
     env = {"SENTINEL_DB_PATH": str(tmp_path / "api.db"), "SENTINEL_ENV": "dev", "PYTHONWARNINGS": "ignore"}
     import os
-    proc = subprocess.Popen([sys.executable, "-m", "sentinel", "serve", "--port", str(port)], cwd=ROOT,
+    proc = subprocess.Popen([sys.executable, "-m", "action_sentinel", "serve", "--port", str(port)], cwd=ROOT,
                             env={**os.environ, **env}, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         base = "http://127.0.0.1:%d" % port

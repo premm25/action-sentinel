@@ -1,27 +1,27 @@
 # Sentinel architecture
 
-This document describes the code as implemented in `sentinel/` (version 0.1.0).
+This document describes the code as implemented in `action_sentinel/` (version 0.1.0).
 
 ## Components and responsibilities
 
 | component | module | responsibility | may it authorize execution? |
 |---|---|---|---|
-| Contracts | `sentinel/contracts/` | Typed, strict (`extra="forbid"`) pydantic models, one per stage: proposal, request, provider result, finding, uncertainty, disagreement, decision, review, grant, execution result, audit event, dataset/report | n/a |
-| Validation engine | `sentinel/validation/` | Deterministic checks against YAML rule packs: action type, forbidden actions, source and target restrictions, required fields, evidence, rule conditions, risk level, policy conflicts. Fails closed on internal error | no; it can only block or require review |
+| Contracts | `action_sentinel/contracts/` | Typed, strict (`extra="forbid"`) pydantic models, one per stage: proposal, request, provider result, finding, uncertainty, disagreement, decision, review, grant, execution result, audit event, dataset/report | n/a |
+| Validation engine | `action_sentinel/validation/` | Deterministic checks against YAML rule packs: action type, forbidden actions, source and target restrictions, required fields, evidence, rule conditions, risk level, policy conflicts. Fails closed on internal error | no; it can only block or require review |
 | Rule grammar | `validation/grammar.py` | Restricted condition language (`all`/`any`/`not`/field-op-value, 16 operators). Plain data, never executed | n/a |
-| Providers | `sentinel/providers/` | `DecisionProvider` interface: `decide(DecisionRequest) -> ProviderResult`, which never raises. Implementations: `rule_based`, `mock`, `ollama`, `vegaml` | no |
+| Providers | `action_sentinel/providers/` | `DecisionProvider` interface: `decide(DecisionRequest) -> ProviderResult`, which never raises. Implementations: `rule_based`, `mock`, `ollama`, `vegaml` | no |
 | Provider runner | `providers/runner.py` | `single` / `sequential` / `parallel` strategies, with a hard per-provider timeout enforced by Sentinel | no |
 | Registry | `providers/registry.py` | Builds providers from config, validates their config, reports health, accepts new provider types | no |
-| Uncertainty | `sentinel/uncertainty.py` | Per-provider confidence, calibration status, ambiguity and health, plus an overall status (`confident`/`uncertain`/`unknown`/`abstained`/`failed`) | no |
-| Disagreement | `sentinel/disagreement.py` | Records category, confidence, model-vs-policy, evidence-vs-model, missing-result and contradictory-finding disagreements. Records them only and never resolves them by voting | no |
+| Uncertainty | `action_sentinel/uncertainty.py` | Per-provider confidence, calibration status, ambiguity and health, plus an overall status (`confident`/`uncertain`/`unknown`/`abstained`/`failed`) | no |
+| Disagreement | `action_sentinel/disagreement.py` | Records category, confidence, model-vs-policy, evidence-vs-model, missing-result and contradictory-finding disagreements. Records them only and never resolves them by voting | no |
 | Governance | `governance/policy.py` | A fixed precedence that turns all of the above into one `Outcome` with reason codes | it decides `APPROVE`, but only governance and review issue grants |
 | Human review | `governance/review.py` + `service.py` | State machine (PENDING to APPROVED/REJECTED/OVERRIDDEN/EXPIRED/CANCELLED), reviewer levels, self-review ban, required reasons, re-validation | yes, via a grant, only after re-validation |
 | Authorization | `execution/authorization.py` | Issues HMAC-signed grants bound to the action hash, idempotency key, policy version and expiry. Handles revocation | issues grants |
 | Execution gateway | `execution/executor.py` | The only path to an adapter. Re-checks token, hash, decision/review state, policy version, current hard rules and idempotency | enforces |
-| Audit | `sentinel/audit.py` | Sanitized, ordered events (`seq`) with correlation id, component version, policy version and reason codes. JSONL export | n/a |
-| Storage | `sentinel/storage/` | `Store` protocol and SQLite implementation (WAL, compare-and-set on reviews, atomic idempotency claim) | n/a |
-| Service | `sentinel/service.py` | `Sentinel` wires the components together. Used by the API, CLI, dashboard, demo and lab | n/a |
-| Confidence Lab | `sentinel/evaluation/` | Datasets, metrics, paired runs over the real pipeline, ablations, markdown reports | n/a |
+| Audit | `action_sentinel/audit.py` | Sanitized, ordered events (`seq`) with correlation id, component version, policy version and reason codes. JSONL export | n/a |
+| Storage | `action_sentinel/storage/` | `Store` protocol and SQLite implementation (WAL, compare-and-set on reviews, atomic idempotency claim) | n/a |
+| Service | `action_sentinel/service.py` | `Sentinel` wires the components together. Used by the API, CLI, dashboard, demo and lab | n/a |
+| Confidence Lab | `action_sentinel/evaluation/` | Datasets, metrics, paired runs over the real pipeline, ablations, markdown reports | n/a |
 | Interfaces | `api/app.py`, `cli.py`, `dashboard/app.py` | Thin layers over `Sentinel` | n/a |
 
 ## Data flow for one proposal

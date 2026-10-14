@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from sentinel.contracts import Outcome
-from sentinel.governance import GovernanceEngine, GovernancePolicy, PipelineFlags
+from action_sentinel.contracts import Outcome
+from action_sentinel.governance import GovernanceEngine, GovernancePolicy, PipelineFlags
 from tests.conftest import make_action, make_sentinel
 
 DESTRUCTIVE = dict(source_system="infra-agent", action_type="delete_database", target_resource="prod/orders",

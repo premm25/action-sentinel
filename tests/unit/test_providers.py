@@ -8,8 +8,8 @@ import types
 import httpx
 import pytest
 
-from sentinel.contracts import DISPOSITION_QUESTION, DecisionQuestion, DecisionRequest
-from sentinel.providers import (
+from action_sentinel.contracts import DISPOSITION_QUESTION, DecisionQuestion, DecisionRequest
+from action_sentinel.providers import (
     DecisionProvider,
     MockDecisionProvider,
     OllamaDecisionProvider,

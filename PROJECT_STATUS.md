@@ -25,8 +25,8 @@ working local prototype, **not production-ready** (see Known limitations).
 
 | phase | delivered | verified by |
 |---|---|---|
-| 1 Contracts | `sentinel/contracts/`: strict pydantic models per stage, `DecisionProvider` result contract with explicit unknowns | `tests/unit/test_contracts.py` (17) |
-| 2 Validation | `sentinel/validation/`: restricted grammar, versioned YAML packs, static pack validator (duplicates, conflicts, unsafe input), engine (types, forbidden, source/target, required fields, evidence, rules, risk, runtime conflicts, fail-closed) | `tests/unit/test_validation.py` (53) |
+| 1 Contracts | `action_sentinel/contracts/`: strict pydantic models per stage, `DecisionProvider` result contract with explicit unknowns | `tests/unit/test_contracts.py` (17) |
+| 2 Validation | `action_sentinel/validation/`: restricted grammar, versioned YAML packs, static pack validator (duplicates, conflicts, unsafe input), engine (types, forbidden, source/target, required fields, evidence, rules, risk, runtime conflicts, fail-closed) | `tests/unit/test_validation.py` (53) |
 | 3 Providers | rule-based, mock (scripted), Ollama (logprob-based probabilities), VegaML adapter, registry, runner (single/sequential/parallel with enforced timeout) | `tests/unit/test_providers.py` (29 + 1 optional live) |
 | 4 Uncertainty and disagreement | `uncertainty.py`, `disagreement.py` | `tests/unit/test_uncertainty_disagreement.py` |
 | 5 Governance and review | `governance/policy.py` (fixed precedence plus ablation flags), `governance/review.py` + service (state machine, levels, self-review ban, reasons, expiry, cancel, override with full re-validation) | `tests/unit/test_governance.py`, `tests/integration/test_review_lifecycle.py` |
@@ -35,7 +35,7 @@ working local prototype, **not production-ready** (see Known limitations).
 | 8 Confidence Lab | dataset generator, loader, metrics, paired lab runner with caching, suite and ablations, markdown reports, calibration profile | `tests/unit/test_metrics.py`, `tests/integration/test_confidence_lab.py`; live runs below |
 | 9 API and CLI | `api/app.py` (FastAPI, key auth, roles, pagination), `cli.py` | `tests/api/test_api.py` (in-process and a **real uvicorn subprocess**), `tests/end_to_end` (CLI subprocesses), in-process CLI test |
 | 10 Dashboard | `dashboard/app.py` (6 tabs, real store, empty states, keyed review actions) | `tests/api/test_dashboard.py` (Streamlit AppTest, empty and populated DB, approval through the UI) |
-| 11 Adversarial and E2E | adversarial cases throughout, `demo.py` | `tests/end_to_end/test_end_to_end.py`; `sentinel demo` → ALL CHECKS PASSED |
+| 11 Adversarial and E2E | adversarial cases throughout, `demo.py` | `tests/end_to_end/test_end_to_end.py`; `action-sentinel demo` → ALL CHECKS PASSED |
 | 12 Documentation | README and the 9 documents listed in it | Manual review against the code |
 
 ## Verified results
@@ -43,12 +43,12 @@ working local prototype, **not production-ready** (see Known limitations).
 - **Tests:** unit 140, integration 47, API and dashboard 12, end-to-end 4, for **203 passed**. The
   full suite passed on three consecutive runs after the last fix. The optional `-m ollama` live test
   passed (about 30 s).
-- **Coverage:** 94% of statements in `sentinel/` (pytest-cov). Critical modules:
+- **Coverage:** 94% of statements in `action_sentinel/` (pytest-cov). Critical modules:
   `governance/policy.py` 100%, `execution/executor.py` 100%, `execution/authorization.py` 98%,
   `governance/review.py` 95%, `service.py` 95%, `uncertainty.py` 100%, `disagreement.py` 100%.
   `cli.py` is 78% because most CLI paths are exercised via subprocesses that coverage does not trace.
 - **Installation:** a fresh, non-editable `pip install ".[dev,dashboard]"` into a new venv ran
-  `sentinel demo` successfully and passed the unit tests.
+  `action-sentinel demo` successfully and passed the unit tests.
 - **Lint:** `ruff check` (E, F, W, B) is clean.
 - **Confidence Lab:** see `docs/evaluation/RESULTS.md`. Headline on the test split (n = 44,
   synthetic): llama3.1:8b alone was 0.409 accurate with ECE 0.394 and blocked 0/10 hard violations
@@ -91,7 +91,7 @@ working local prototype, **not production-ready** (see Known limitations).
   reference policy the rules enforce, so the rules-only score is circular.
 - The LLM was measured with one prompt and one model, on CPU (about 12 s per decision). No prompt
   study was done, deliberately, to avoid tuning on the test split.
-- Calibration profiles can be measured (`sentinel lab calibrate`) but are not applied
+- Calibration profiles can be measured (`action-sentinel lab calibrate`) but are not applied
   automatically, and none were applied in the reported runs.
 - Hung provider threads are abandoned, not killed. Rule regexes have no timeout.
 - The executor is a mock only.
@@ -112,6 +112,6 @@ working local prototype, **not production-ready** (see Known limitations).
 ```bash
 .venv/Scripts/activate
 pytest                                   # 203 tests
-sentinel demo                            # offline end-to-end check
-sentinel lab suite --model ollama --second ""   # live LLM evaluation (about 30–40 min on CPU)
+action-sentinel demo                            # offline end-to-end check
+action-sentinel lab suite --model ollama --second ""   # live LLM evaluation (about 30–40 min on CPU)
 ```

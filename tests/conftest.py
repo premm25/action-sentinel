@@ -9,7 +9,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from sentinel.contracts import ActionProposal  # noqa: E402
+from action_sentinel.contracts import ActionProposal  # noqa: E402
 
 CORE_PACK = ROOT / "examples" / "rule_packs" / "core.yaml"
 CLASSIFIER = ROOT / "examples" / "rule_packs" / "classifier.yaml"
@@ -61,10 +61,10 @@ class Clock:
 
 def make_sentinel(scripts: dict | None = None, active: list[str] | None = None, clock=None, **settings_kw):
     """An in-memory Sentinel with the rule-based provider and two scripted mocks (mock-a, mock-b)."""
-    from sentinel.config import load_settings
-    from sentinel.providers import MockDecisionProvider, ProviderRegistry, RuleBasedDecisionProvider
-    from sentinel.service import Sentinel
-    from sentinel.storage import SQLiteStore
+    from action_sentinel.config import load_settings
+    from action_sentinel.providers import MockDecisionProvider, ProviderRegistry, RuleBasedDecisionProvider
+    from action_sentinel.service import Sentinel
+    from action_sentinel.storage import SQLiteStore
 
     settings = load_settings(ROOT / "config" / "sentinel.yaml", db_path=":memory:", environment="test",
                              active_providers=active if active is not None else ["rules"], **settings_kw)

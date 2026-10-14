@@ -8,9 +8,9 @@ import threading
 import pytest
 import yaml
 
-from sentinel.contracts import Outcome
-from sentinel.execution import Authorizer
-from sentinel.validation import check_pack_data
+from action_sentinel.contracts import Outcome
+from action_sentinel.execution import Authorizer
+from action_sentinel.validation import check_pack_data
 from tests.conftest import CORE_PACK, Clock, make_action, make_sentinel
 
 

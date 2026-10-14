@@ -5,6 +5,10 @@ and the project uses [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Project renamed to **Action Sentinel**: distribution `action-sentinel`, import package `action_sentinel`,
+  command `action-sentinel` (`agent-sentinel` and the import name `sentinel` are already taken on PyPI).
+
 ## [0.1.0] - 2026-10-14
 
 ### Added

@@ -7,13 +7,13 @@ import os
 import subprocess
 import sys
 
-from sentinel.demo import run_demo
+from action_sentinel.demo import run_demo
 from tests.conftest import ROOT, action_dict
 
 
 def cli(*args, db, check=True):
     env = {**os.environ, "SENTINEL_ENV": "dev", "PYTHONWARNINGS": "ignore"}
-    p = subprocess.run([sys.executable, "-m", "sentinel", "--db", str(db), *args], cwd=ROOT, env=env,
+    p = subprocess.run([sys.executable, "-m", "action_sentinel", "--db", str(db), *args], cwd=ROOT, env=env,
                        capture_output=True, text=True, timeout=300)
     if check:
         assert p.returncode == 0, p.stdout + p.stderr

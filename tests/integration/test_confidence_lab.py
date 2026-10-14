@@ -4,9 +4,9 @@ import json
 
 import pytest
 
-from sentinel.config import load_settings
-from sentinel.contracts import EvaluationRunConfig
-from sentinel.evaluation import (
+from action_sentinel.config import load_settings
+from action_sentinel.contracts import EvaluationRunConfig
+from action_sentinel.evaluation import (
     ConfidenceLab,
     DatasetError,
     LabError,

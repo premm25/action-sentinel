@@ -5,9 +5,15 @@ import copy
 import pytest
 import yaml
 
-from sentinel.contracts import Outcome, ReviewState
-from sentinel.governance import InvalidTransition, RevalidationFailed, ReviewError, ReviewerNotAuthorized, ReviewNotFound
-from sentinel.validation import check_pack_data
+from action_sentinel.contracts import Outcome, ReviewState
+from action_sentinel.governance import (
+    InvalidTransition,
+    RevalidationFailed,
+    ReviewError,
+    ReviewerNotAuthorized,
+    ReviewNotFound,
+)
+from action_sentinel.validation import check_pack_data
 from tests.conftest import CORE_PACK, Clock, make_action, make_sentinel
 
 PROD_RESTART = dict(target_resource="prod/checkout-api")  # medium risk -> operator review
