@@ -51,7 +51,7 @@ def decision_view(d: GovernanceDecision) -> dict[str, Any]:
     return d.model_dump(mode="json")
 
 
-def create_app(settings: Settings, service: Sentinel | None = None) -> FastAPI:
+def create_app(settings: Settings, service: Sentinel | None = None, vega_service=None) -> FastAPI:
     if service is None:
         with warnings.catch_warnings():
             if settings.environment != "prod":
@@ -217,6 +217,22 @@ def create_app(settings: Settings, service: Sentinel | None = None) -> FastAPI:
         if r is None:
             raise HTTPException(404, "no such evaluation run")
         return render_comparison([r], "Confidence Lab run %s" % run_id)
+
+    # ------------------------------------------------------------------ Vega decision service (optional)
+    vsvc = vega_service
+    if vsvc is None and settings.vegalab.enabled:
+        from action_sentinel.vegalab.service import VegaDecisionService
+        from action_sentinel.vegalab.vega_core import LiveVegaRunner
+        vl = settings.vegalab
+        vsvc = VegaDecisionService(LiveVegaRunner(vl.model, device=vl.device), model_id="vegaml-%s" % vl.model,
+                                   default_adapter_mode=vl.default_adapter_mode, lazy_load=vl.load == "lazy",
+                                   timeout_s=vl.timeout_s)
+        if vl.load == "eager":
+            vsvc.load()
+    if vsvc is not None:
+        from action_sentinel.vegalab.api import create_vega_router
+        app.include_router(create_vega_router(vsvc, principal, require("agent", "evaluator")))
+        app.state.vega = vsvc
 
     return app
 

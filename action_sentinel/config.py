@@ -36,6 +36,17 @@ class Principal(StrictModel):
     reviewer_id: str | None = None
 
 
+class VegaLabSettings(StrictModel):
+    """The VegaML decision service. Off by default: enabling it loads a ~3.5 GB model (0.8B on CPU)."""
+
+    enabled: bool = False
+    model: str = "0.8b"
+    device: str | None = "cpu"
+    load: Literal["lazy", "eager"] = "lazy"
+    default_adapter_mode: Literal["off", "auto", "on"] = "auto"
+    timeout_s: float = Field(default=300.0, gt=0)
+
+
 class Settings(StrictModel):
     environment: Literal["dev", "test", "prod"] = "dev"
     db_path: str = "var/sentinel.db"
@@ -50,6 +61,7 @@ class Settings(StrictModel):
     reviewers: list[Reviewer] = Field(default_factory=list)
     principals: list[Principal] = Field(default_factory=list)
     report_dir: str = "reports"
+    vegalab: VegaLabSettings = Field(default_factory=VegaLabSettings)
     base_dir: str = "."
 
     @model_validator(mode="after")
