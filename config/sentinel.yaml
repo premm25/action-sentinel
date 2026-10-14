@@ -1,0 +1,48 @@
+# Sentinel local development configuration.
+# DEV ONLY: the principals below use publicly documented development keys (see README).
+# Do not deploy this file. Production must supply its own principals and SENTINEL_SIGNING_KEY.
+environment: dev
+db_path: var/sentinel.db
+report_dir: reports
+rule_packs:
+  - examples/rule_packs/core.yaml
+
+providers:
+  - name: rules
+    type: rule_based
+    config: {classifier_path: examples/rule_packs/classifier.yaml}
+  - name: ollama
+    type: ollama
+    enabled: true          # built always; only used when listed in active_providers or requested
+    config: {model: "llama3.1:8b", base_url: "http://localhost:11434", timeout_s: 180, max_retries: 1}
+  - name: vegaml
+    type: vegaml
+    enabled: true          # reports unavailable unless the vegaml package is installed
+    config: {}
+
+# Providers consulted for every decision. Deterministic rules only, so the default works offline.
+active_providers: [rules]
+strategy: parallel
+provider_timeout_s: 200
+
+governance:
+  version: 1.0.0
+  max_auto_approve_risk: low
+  thresholds:
+    approve_min_confidence: 0.85
+    abstain_below: 0.5
+    require_measured_calibration: false
+  review_ttl_seconds: 86400
+  authorization_ttl_seconds: 900
+
+reviewers:
+  - {reviewer_id: olivia, display_name: Olivia (operator), level: operator}
+  - {reviewer_id: sam, display_name: Sam (senior), level: senior}
+  - {reviewer_id: ada, display_name: Ada (admin), level: admin}
+
+principals:
+  - {principal_id: ops-agent, roles: [agent], key_sha256: 768d431c7599a91b58ae5747e08e9aa96dcb4eef45e029c87e3e060e521dcead}
+  - {principal_id: olivia, roles: [reviewer, auditor], reviewer_id: olivia, key_sha256: 7eee78659ab50d4dd820f4242709d188809ca0249506edf83d70022973d5e2ca}
+  - {principal_id: sam, roles: [reviewer, auditor, evaluator], reviewer_id: sam, key_sha256: 0c58b25b0b46f53cab77084f40823f07e9b523b04e1d79caa8f13d0fcaadb9fe}
+  - {principal_id: ada, roles: [admin, reviewer, auditor, evaluator], reviewer_id: ada, key_sha256: df76ff796f70d2c9cb055ea6280553caa27eda26b70e01082c160de75a05a4a9}
+  - {principal_id: auditor, roles: [auditor], key_sha256: 46151c35c1c09bca0b049ce55099e4f67fd04efe91716eec70fd1fa8ce898163}

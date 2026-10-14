@@ -1,0 +1,192 @@
+# Sentinel core rule pack. Declarative data only: conditions use the restricted grammar documented
+# in sentinel/validation/grammar.py. Nothing here is executed.
+pack_id: core
+version: 1.0.0
+description: Baseline operational policy for infrastructure and support agents (example policy).
+provenance: examples/rule_packs/core.yaml (Sentinel reference policy, synthetic)
+
+forbidden_actions:
+  - disable_audit_logging
+  - export_customer_data
+
+action_types:
+  read_logs:
+    description: Read service logs.
+    risk: low
+    min_evidence: 0
+    required_payload_fields: [action_payload.service]
+  restart_service:
+    description: Restart a service instance.
+    risk: low
+    min_evidence: 1
+    required_payload_fields: [action_payload.service]
+  clear_cache:
+    description: Flush an application cache.
+    risk: low
+    min_evidence: 1
+    required_payload_fields: [action_payload.cache_name]
+  scale_deployment:
+    description: Change the replica count of a deployment.
+    risk: medium
+    min_evidence: 1
+    required_payload_fields: [action_payload.deployment, action_payload.replicas]
+  send_customer_email:
+    description: Send a templated email to customers.
+    risk: medium
+    min_evidence: 1
+    required_payload_fields: [action_payload.template_id, action_payload.recipient_count]
+  refund_payment:
+    description: Refund a customer payment.
+    risk: medium
+    min_evidence: 1
+    required_payload_fields: [action_payload.payment_id, action_payload.amount]
+  rotate_credentials:
+    description: Rotate a service credential.
+    risk: high
+    min_evidence: 1
+    required_payload_fields: [action_payload.credential_id]
+  modify_firewall:
+    description: Change a firewall rule.
+    risk: high
+    min_evidence: 2
+    required_payload_fields: [action_payload.rule]
+  delete_database:
+    description: Drop a database.
+    risk: critical
+    min_evidence: 2
+    on_insufficient_evidence: block
+    required_payload_fields: [action_payload.database]
+    approval_level: admin
+
+sources:
+  monitoring-agent:
+    description: Automated remediation agent fed by monitoring alerts.
+    allowed_actions: [read_logs, restart_service, clear_cache, scale_deployment]
+    allowed_targets: ["dev/*", "staging/*", "prod/*"]
+  support-agent:
+    description: Customer support assistant.
+    allowed_actions: [read_logs, send_customer_email, refund_payment]
+    allowed_targets: ["customers/*", "payments/*", "support/*"]
+  infra-agent:
+    description: Infrastructure maintenance agent.
+    allowed_actions: [read_logs, restart_service, scale_deployment, rotate_credentials, modify_firewall, delete_database]
+    allowed_targets: ["dev/*", "staging/*", "prod/*"]
+
+rules:
+  - id: PROD_DATABASE_DELETE
+    description: Databases in production may not be deleted by an agent.
+    severity: critical
+    effect: block
+    applies_to: [delete_database]
+    when: {field: derived.target_env, op: eq, value: prod}
+    remediation: Production data deletion requires a manual change request outside Sentinel.
+    version: "1"
+    provenance: Data retention policy DR-1 (example)
+  - id: FORCE_IN_PROD
+    description: Forced operations are not permitted against production.
+    severity: high
+    effect: block
+    when:
+      all:
+        - {field: derived.target_env, op: eq, value: prod}
+        - {field: action_payload.force, op: eq, value: true}
+    remediation: Remove the force flag or target a non-production environment.
+    version: "1"
+    provenance: Change management policy CM-3 (example)
+  - id: SECRET_IN_PAYLOAD
+    description: Payloads must not carry credentials in clear text.
+    severity: critical
+    effect: block
+    when:
+      any:
+        - {field: action_payload.password, op: exists}
+        - {field: action_payload.secret, op: exists}
+        - {field: action_payload.api_key, op: exists}
+    remediation: Reference secrets by identifier from the secret store instead.
+    version: "1"
+    provenance: Security policy SEC-7 (example)
+  - id: FIREWALL_OPEN_ADMIN_PORT
+    description: Opening SSH or RDP to the whole internet is prohibited.
+    severity: critical
+    effect: block
+    applies_to: [modify_firewall]
+    when:
+      all:
+        - {field: action_payload.rule.source, op: eq, value: 0.0.0.0/0}
+        - {field: action_payload.rule.port, op: in, value: [22, 3389]}
+    remediation: Restrict the source range to the bastion network.
+    version: "1"
+    provenance: Network policy NET-2 (example)
+  - id: REFUND_HARD_LIMIT
+    description: Refunds above 10,000 cannot be issued by an agent.
+    severity: high
+    effect: block
+    applies_to: [refund_payment]
+    when: {field: action_payload.amount, op: gt, value: 10000}
+    remediation: Escalate to the finance team.
+    version: "1"
+    provenance: Finance policy FIN-4 (example)
+  - id: BULK_EMAIL_HARD_LIMIT
+    description: Emails to more than 100,000 recipients cannot be sent by an agent.
+    severity: high
+    effect: block
+    applies_to: [send_customer_email]
+    when: {field: action_payload.recipient_count, op: gt, value: 100000}
+    remediation: Use the marketing platform's approval workflow.
+    version: "1"
+    provenance: Communications policy COM-1 (example)
+  - id: SCALE_TO_ZERO_PROD
+    description: Scaling a production deployment to zero replicas needs a human decision.
+    severity: high
+    effect: require_review
+    applies_to: [scale_deployment]
+    when:
+      all:
+        - {field: derived.target_env, op: eq, value: prod}
+        - {field: action_payload.replicas, op: eq, value: 0}
+    remediation: Confirm the outage is intended.
+    version: "1"
+    provenance: Availability policy AV-1 (example)
+  - id: CHANGE_FREEZE
+    description: A change freeze is in effect for this context.
+    severity: medium
+    effect: require_review
+    when: {field: context.change_freeze, op: eq, value: true}
+    remediation: Obtain a freeze exception.
+    version: "1"
+    provenance: Change management policy CM-1 (example)
+  - id: PROD_TARGET_RISK
+    description: Any change to production is at least medium risk.
+    severity: info
+    effect: set_risk
+    risk: medium
+    when: {field: derived.target_env, op: eq, value: prod}
+    version: "1"
+    provenance: Change management policy CM-2 (example)
+  - id: LARGE_REFUND_RISK
+    description: Refunds above 500 are high risk.
+    severity: info
+    effect: set_risk
+    risk: high
+    applies_to: [refund_payment]
+    when: {field: action_payload.amount, op: gt, value: 500}
+    version: "1"
+    provenance: Finance policy FIN-2 (example)
+  - id: LARGE_SCALE_RISK
+    description: Scaling beyond 50 replicas is high risk.
+    severity: info
+    effect: set_risk
+    risk: high
+    applies_to: [scale_deployment]
+    when: {field: action_payload.replicas, op: gt, value: 50}
+    version: "1"
+    provenance: Capacity policy CAP-1 (example)
+  - id: BULK_EMAIL_RISK
+    description: Emails to more than 1,000 recipients are high risk.
+    severity: info
+    effect: set_risk
+    risk: high
+    applies_to: [send_customer_email]
+    when: {field: action_payload.recipient_count, op: gt, value: 1000}
+    version: "1"
+    provenance: Communications policy COM-2 (example)

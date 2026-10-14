@@ -1,0 +1,17 @@
+{
+  "event_id": "my-action-3",
+  "task_id": "task-1",
+  "agent_id": "ops-agent",
+  "agent_version": "1.0.0",
+  "action_type": "restart_service",
+  "action_payload": {"service": "search", "reason": "latency above SLO"},
+  "target_resource": "prod/search",
+  "source_system": "monitoring-agent",
+  "evidence_refs": [
+    {"ref_id": "alert-1", "kind": "alert", "stance": "supports",
+     "description": "p99 latency above SLO for 10 minutes"}
+  ],
+  "proposed_at": "2026-10-14T12:00:00+00:00",
+  "context": {},
+  "idempotency_key": "my-action-3"
+}

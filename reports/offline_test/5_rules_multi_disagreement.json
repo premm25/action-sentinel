@@ -1,0 +1,3419 @@
+{
+  "run_id": "run_50d8d472fe184e40aece8a5a79cc3668",
+  "created_at": "2026-10-14T15:50:44.679012Z",
+  "config": {
+    "name": "5_rules_multi_disagreement",
+    "dataset_path": "examples/evaluation_datasets/sentinel_synthetic_v1.jsonl",
+    "splits": [
+      "test"
+    ],
+    "providers": [
+      "rules",
+      "mock-a",
+      "mock-b"
+    ],
+    "use_validation": true,
+    "use_disagreement": true,
+    "use_uncertainty": false,
+    "use_review": false,
+    "governance_mode": "sentinel",
+    "strategy": "parallel",
+    "seed": 0,
+    "limit": null
+  },
+  "dataset_version": "sentinel-synthetic-v1",
+  "dataset_sha256": "3eafcbd3f6bd981ca33cddced561f59ebe1283463b6d25e4bbfa60a78480ff74",
+  "n_examples": 44,
+  "environment": {
+    "sentinel": "0.1.0",
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "policy_version": "gov-1.0.0+core@1.0.0",
+    "provider_versions": {
+      "rules": "rules-1.0.0",
+      "mock-a": "mock-1",
+      "mock-b": "mock-1"
+    },
+    "provider_kinds": {
+      "rules": "deterministic",
+      "mock-a": "test_double",
+      "mock-b": "test_double"
+    }
+  },
+  "provider_metrics": {
+    "rules": {
+      "classification": {
+        "n": 44,
+        "answered": 44,
+        "coverage": 1.0,
+        "accuracy": {
+          "value": 0.7272727272727273,
+          "k": 32,
+          "n": 44,
+          "ci95": [
+            0.581508453144907,
+            0.8365377660450867
+          ]
+        },
+        "selective_accuracy": {
+          "value": 0.7272727272727273,
+          "k": 32,
+          "n": 44,
+          "ci95": [
+            0.581508453144907,
+            0.8365377660450867
+          ]
+        },
+        "macro_f1": 0.7061609887696845,
+        "macro_f1_classes": 3,
+        "per_class": {
+          "safe": {
+            "precision": 0.7692307692307693,
+            "recall": 1.0,
+            "f1": 0.8695652173913044,
+            "support": 10
+          },
+          "needs_review": {
+            "precision": 0.7083333333333334,
+            "recall": 0.85,
+            "f1": 0.7727272727272727,
+            "support": 20
+          },
+          "unsafe": {
+            "precision": 0.7142857142857143,
+            "recall": 0.35714285714285715,
+            "f1": 0.4761904761904762,
+            "support": 14
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "safe",
+            "needs_review",
+            "unsafe"
+          ],
+          "rows_true_cols_pred": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              1,
+              17,
+              2
+            ],
+            [
+              2,
+              7,
+              5
+            ]
+          ]
+        }
+      },
+      "status_counts": {
+        "ok": 44
+      },
+      "abstention_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "error_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "timeout_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "latency_ms": {
+        "p50": 0.1,
+        "p95": 0.15385,
+        "p99": 0.18012999999999998
+      },
+      "cost": "not available (no cost configured)",
+      "calibration": null,
+      "calibration_note": "not computed: confidence missing for some or all answered examples",
+      "proper_scores": null,
+      "proper_scores_note": "not computed: full probability distributions not available",
+      "high_confidence_errors": 0
+    },
+    "mock-a": {
+      "classification": {
+        "n": 44,
+        "answered": 44,
+        "coverage": 1.0,
+        "accuracy": {
+          "value": 0.75,
+          "k": 33,
+          "n": 44,
+          "ci95": [
+            0.6055915019158504,
+            0.8542593391931426
+          ]
+        },
+        "selective_accuracy": {
+          "value": 0.75,
+          "k": 33,
+          "n": 44,
+          "ci95": [
+            0.6055915019158504,
+            0.8542593391931426
+          ]
+        },
+        "macro_f1": 0.7285507246376811,
+        "macro_f1_classes": 3,
+        "per_class": {
+          "safe": {
+            "precision": 0.6153846153846154,
+            "recall": 0.8,
+            "f1": 0.6956521739130435,
+            "support": 10
+          },
+          "needs_review": {
+            "precision": 0.85,
+            "recall": 0.85,
+            "f1": 0.85,
+            "support": 20
+          },
+          "unsafe": {
+            "precision": 0.7272727272727273,
+            "recall": 0.5714285714285714,
+            "f1": 0.64,
+            "support": 14
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "safe",
+            "needs_review",
+            "unsafe"
+          ],
+          "rows_true_cols_pred": [
+            [
+              8,
+              1,
+              1
+            ],
+            [
+              1,
+              17,
+              2
+            ],
+            [
+              4,
+              2,
+              8
+            ]
+          ]
+        }
+      },
+      "status_counts": {
+        "ok": 44
+      },
+      "abstention_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "error_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "timeout_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "latency_ms": {
+        "p50": 0.027,
+        "p95": 0.039850000000000003,
+        "p99": 0.06893000000000002
+      },
+      "cost": "not available (no cost configured)",
+      "calibration": {
+        "ece": 0.2560681818181818,
+        "bins": 10,
+        "n": 44,
+        "reliability": [
+          {
+            "bin": [
+              0.0,
+              0.1
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.1,
+              0.2
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.2,
+              0.3
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.3,
+              0.4
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.4,
+              0.5
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.5,
+              0.6
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.6,
+              0.7
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.7,
+              0.8
+            ],
+            "count": 13,
+            "mean_confidence": 0.7356538461538461,
+            "accuracy": 1.0
+          },
+          {
+            "bin": [
+              0.8,
+              0.9
+            ],
+            "count": 15,
+            "mean_confidence": 0.84314,
+            "accuracy": 0.7333333333333333
+          },
+          {
+            "bin": [
+              0.9,
+              1.0
+            ],
+            "count": 16,
+            "mean_confidence": 0.9489624999999999,
+            "accuracy": 0.5625
+          }
+        ],
+        "mean_confidence": 0.8498636363636364,
+        "accuracy": 0.75
+      },
+      "risk_coverage": {
+        "aurc": 0.3617205398208676,
+        "curve": [
+          {
+            "coverage": 0.022727272727272728,
+            "risk": 0.0,
+            "threshold": 0.9873
+          },
+          {
+            "coverage": 0.045454545454545456,
+            "risk": 0.0,
+            "threshold": 0.9793
+          },
+          {
+            "coverage": 0.06818181818181818,
+            "risk": 0.3333333333333333,
+            "threshold": 0.9724
+          },
+          {
+            "coverage": 0.09090909090909091,
+            "risk": 0.25,
+            "threshold": 0.9709
+          },
+          {
+            "coverage": 0.11363636363636363,
+            "risk": 0.4,
+            "threshold": 0.9641
+          },
+          {
+            "coverage": 0.13636363636363635,
+            "risk": 0.5,
+            "threshold": 0.96
+          },
+          {
+            "coverage": 0.1590909090909091,
+            "risk": 0.5714285714285714,
+            "threshold": 0.96
+          },
+          {
+            "coverage": 0.18181818181818182,
+            "risk": 0.625,
+            "threshold": 0.96
+          },
+          {
+            "coverage": 0.20454545454545456,
+            "risk": 0.5555555555555556,
+            "threshold": 0.9599
+          },
+          {
+            "coverage": 0.22727272727272727,
+            "risk": 0.5,
+            "threshold": 0.933
+          },
+          {
+            "coverage": 0.25,
+            "risk": 0.45454545454545453,
+            "threshold": 0.9302
+          },
+          {
+            "coverage": 0.2727272727272727,
+            "risk": 0.5,
+            "threshold": 0.9276
+          },
+          {
+            "coverage": 0.29545454545454547,
+            "risk": 0.46153846153846156,
+            "threshold": 0.9273
+          },
+          {
+            "coverage": 0.3181818181818182,
+            "risk": 0.5,
+            "threshold": 0.9248
+          },
+          {
+            "coverage": 0.3409090909090909,
+            "risk": 0.4666666666666667,
+            "threshold": 0.9219
+          },
+          {
+            "coverage": 0.36363636363636365,
+            "risk": 0.4375,
+            "threshold": 0.9047
+          },
+          {
+            "coverage": 0.38636363636363635,
+            "risk": 0.4117647058823529,
+            "threshold": 0.8973
+          },
+          {
+            "coverage": 0.4090909090909091,
+            "risk": 0.3888888888888889,
+            "threshold": 0.8846
+          },
+          {
+            "coverage": 0.4318181818181818,
+            "risk": 0.42105263157894735,
+            "threshold": 0.8831
+          },
+          {
+            "coverage": 0.45454545454545453,
+            "risk": 0.4,
+            "threshold": 0.8588
+          },
+          {
+            "coverage": 0.4772727272727273,
+            "risk": 0.38095238095238093,
+            "threshold": 0.857
+          },
+          {
+            "coverage": 0.5,
+            "risk": 0.36363636363636365,
+            "threshold": 0.8466
+          },
+          {
+            "coverage": 0.5227272727272727,
+            "risk": 0.391304347826087,
+            "threshold": 0.8424
+          },
+          {
+            "coverage": 0.5454545454545454,
+            "risk": 0.375,
+            "threshold": 0.8338
+          },
+          {
+            "coverage": 0.5681818181818182,
+            "risk": 0.36,
+            "threshold": 0.8328
+          },
+          {
+            "coverage": 0.5909090909090909,
+            "risk": 0.34615384615384615,
+            "threshold": 0.8259
+          },
+          {
+            "coverage": 0.6136363636363636,
+            "risk": 0.3333333333333333,
+            "threshold": 0.8244
+          },
+          {
+            "coverage": 0.6363636363636364,
+            "risk": 0.32142857142857145,
+            "threshold": 0.8232
+          },
+          {
+            "coverage": 0.6590909090909091,
+            "risk": 0.3448275862068966,
+            "threshold": 0.8215
+          },
+          {
+            "coverage": 0.6818181818181818,
+            "risk": 0.36666666666666664,
+            "threshold": 0.8133
+          },
+          {
+            "coverage": 0.7045454545454546,
+            "risk": 0.3548387096774194,
+            "threshold": 0.8024
+          },
+          {
+            "coverage": 0.7272727272727273,
+            "risk": 0.34375,
+            "threshold": 0.7935
+          },
+          {
+            "coverage": 0.75,
+            "risk": 0.3333333333333333,
+            "threshold": 0.7789
+          },
+          {
+            "coverage": 0.7727272727272727,
+            "risk": 0.3235294117647059,
+            "threshold": 0.7604
+          },
+          {
+            "coverage": 0.7954545454545454,
+            "risk": 0.3142857142857143,
+            "threshold": 0.7578
+          },
+          {
+            "coverage": 0.8181818181818182,
+            "risk": 0.3055555555555556,
+            "threshold": 0.7493
+          },
+          {
+            "coverage": 0.8409090909090909,
+            "risk": 0.2972972972972973,
+            "threshold": 0.7283
+          },
+          {
+            "coverage": 0.8636363636363636,
+            "risk": 0.2894736842105263,
+            "threshold": 0.7277
+          },
+          {
+            "coverage": 0.8863636363636364,
+            "risk": 0.28205128205128205,
+            "threshold": 0.7168
+          },
+          {
+            "coverage": 0.9090909090909091,
+            "risk": 0.275,
+            "threshold": 0.713
+          },
+          {
+            "coverage": 0.9318181818181818,
+            "risk": 0.2682926829268293,
+            "threshold": 0.7127
+          },
+          {
+            "coverage": 0.9545454545454546,
+            "risk": 0.2619047619047619,
+            "threshold": 0.7125
+          },
+          {
+            "coverage": 0.9772727272727273,
+            "risk": 0.2558139534883721,
+            "threshold": 0.7067
+          },
+          {
+            "coverage": 1.0,
+            "risk": 0.25,
+            "threshold": 0.7059
+          }
+        ]
+      },
+      "proper_scores": {
+        "brier": 0.48512122772727273,
+        "log_loss": 1.046704912450392,
+        "n": 44,
+        "log_loss_clipped_examples": 0
+      },
+      "high_confidence_errors": 7
+    },
+    "mock-b": {
+      "classification": {
+        "n": 44,
+        "answered": 43,
+        "coverage": 0.9772727272727273,
+        "accuracy": {
+          "value": 0.75,
+          "k": 33,
+          "n": 44,
+          "ci95": [
+            0.6055915019158504,
+            0.8542593391931426
+          ]
+        },
+        "selective_accuracy": {
+          "value": 0.7674418604651163,
+          "k": 33,
+          "n": 43,
+          "ci95": [
+            0.622551917005606,
+            0.8684646153075517
+          ]
+        },
+        "macro_f1": 0.7603785103785103,
+        "macro_f1_classes": 3,
+        "per_class": {
+          "safe": {
+            "precision": 0.7272727272727273,
+            "recall": 0.8,
+            "f1": 0.761904761904762,
+            "support": 10
+          },
+          "needs_review": {
+            "precision": 0.75,
+            "recall": 0.75,
+            "f1": 0.75,
+            "support": 20
+          },
+          "unsafe": {
+            "precision": 0.8333333333333334,
+            "recall": 0.7142857142857143,
+            "f1": 0.7692307692307692,
+            "support": 14
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "safe",
+            "needs_review",
+            "unsafe"
+          ],
+          "rows_true_cols_pred": [
+            [
+              8,
+              1,
+              1
+            ],
+            [
+              3,
+              15,
+              1
+            ],
+            [
+              0,
+              4,
+              10
+            ]
+          ]
+        }
+      },
+      "status_counts": {
+        "ok": 43,
+        "abstained": 1
+      },
+      "abstention_rate": {
+        "value": 0.022727272727272728,
+        "k": 1,
+        "n": 44,
+        "ci95": [
+          0.004023148385637013,
+          0.11807979131537633
+        ]
+      },
+      "error_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "timeout_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "latency_ms": {
+        "p50": 0.016,
+        "p95": 0.026850000000000002,
+        "p99": 0.03742
+      },
+      "cost": "not available (no cost configured)",
+      "calibration": {
+        "ece": 0.1380488372093023,
+        "bins": 10,
+        "n": 43,
+        "reliability": [
+          {
+            "bin": [
+              0.0,
+              0.1
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.1,
+              0.2
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.2,
+              0.3
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.3,
+              0.4
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.4,
+              0.5
+            ],
+            "count": 0,
+            "mean_confidence": null,
+            "accuracy": null
+          },
+          {
+            "bin": [
+              0.5,
+              0.6
+            ],
+            "count": 4,
+            "mean_confidence": 0.55575,
+            "accuracy": 0.0
+          },
+          {
+            "bin": [
+              0.6,
+              0.7
+            ],
+            "count": 2,
+            "mean_confidence": 0.6071,
+            "accuracy": 0.0
+          },
+          {
+            "bin": [
+              0.7,
+              0.8
+            ],
+            "count": 17,
+            "mean_confidence": 0.7372588235294117,
+            "accuracy": 0.7647058823529411
+          },
+          {
+            "bin": [
+              0.8,
+              0.9
+            ],
+            "count": 9,
+            "mean_confidence": 0.8437111111111111,
+            "accuracy": 1.0
+          },
+          {
+            "bin": [
+              0.9,
+              1.0
+            ],
+            "count": 11,
+            "mean_confidence": 0.9431181818181819,
+            "accuracy": 1.0
+          }
+        ],
+        "mean_confidence": 0.7892627906976744,
+        "accuracy": 0.7674418604651163
+      },
+      "risk_coverage": {
+        "aurc": 0.058017024353805964,
+        "curve": [
+          {
+            "coverage": 0.023255813953488372,
+            "risk": 0.0,
+            "threshold": 0.9848
+          },
+          {
+            "coverage": 0.046511627906976744,
+            "risk": 0.0,
+            "threshold": 0.9775
+          },
+          {
+            "coverage": 0.06976744186046512,
+            "risk": 0.0,
+            "threshold": 0.9677
+          },
+          {
+            "coverage": 0.09302325581395349,
+            "risk": 0.0,
+            "threshold": 0.9602
+          },
+          {
+            "coverage": 0.11627906976744186,
+            "risk": 0.0,
+            "threshold": 0.955
+          },
+          {
+            "coverage": 0.13953488372093023,
+            "risk": 0.0,
+            "threshold": 0.9289
+          },
+          {
+            "coverage": 0.16279069767441862,
+            "risk": 0.0,
+            "threshold": 0.9234
+          },
+          {
+            "coverage": 0.18604651162790697,
+            "risk": 0.0,
+            "threshold": 0.9204
+          },
+          {
+            "coverage": 0.20930232558139536,
+            "risk": 0.0,
+            "threshold": 0.9199
+          },
+          {
+            "coverage": 0.23255813953488372,
+            "risk": 0.0,
+            "threshold": 0.9187
+          },
+          {
+            "coverage": 0.2558139534883721,
+            "risk": 0.0,
+            "threshold": 0.9178
+          },
+          {
+            "coverage": 0.27906976744186046,
+            "risk": 0.0,
+            "threshold": 0.8934
+          },
+          {
+            "coverage": 0.3023255813953488,
+            "risk": 0.0,
+            "threshold": 0.8602
+          },
+          {
+            "coverage": 0.32558139534883723,
+            "risk": 0.0,
+            "threshold": 0.8565
+          },
+          {
+            "coverage": 0.3488372093023256,
+            "risk": 0.0,
+            "threshold": 0.8468
+          },
+          {
+            "coverage": 0.37209302325581395,
+            "risk": 0.0,
+            "threshold": 0.8468
+          },
+          {
+            "coverage": 0.3953488372093023,
+            "risk": 0.0,
+            "threshold": 0.8369
+          },
+          {
+            "coverage": 0.4186046511627907,
+            "risk": 0.0,
+            "threshold": 0.8209
+          },
+          {
+            "coverage": 0.4418604651162791,
+            "risk": 0.0,
+            "threshold": 0.8186
+          },
+          {
+            "coverage": 0.46511627906976744,
+            "risk": 0.0,
+            "threshold": 0.8133
+          },
+          {
+            "coverage": 0.4883720930232558,
+            "risk": 0.0,
+            "threshold": 0.7979
+          },
+          {
+            "coverage": 0.5116279069767442,
+            "risk": 0.0,
+            "threshold": 0.7959
+          },
+          {
+            "coverage": 0.5348837209302325,
+            "risk": 0.043478260869565216,
+            "threshold": 0.7803
+          },
+          {
+            "coverage": 0.5581395348837209,
+            "risk": 0.08333333333333333,
+            "threshold": 0.7747
+          },
+          {
+            "coverage": 0.5813953488372093,
+            "risk": 0.08,
+            "threshold": 0.7705
+          },
+          {
+            "coverage": 0.6046511627906976,
+            "risk": 0.07692307692307693,
+            "threshold": 0.7446
+          },
+          {
+            "coverage": 0.627906976744186,
+            "risk": 0.07407407407407407,
+            "threshold": 0.7399
+          },
+          {
+            "coverage": 0.6511627906976745,
+            "risk": 0.07142857142857142,
+            "threshold": 0.7359
+          },
+          {
+            "coverage": 0.6744186046511628,
+            "risk": 0.06896551724137931,
+            "threshold": 0.7275
+          },
+          {
+            "coverage": 0.6976744186046512,
+            "risk": 0.1,
+            "threshold": 0.7225
+          },
+          {
+            "coverage": 0.7209302325581395,
+            "risk": 0.0967741935483871,
+            "threshold": 0.7199
+          },
+          {
+            "coverage": 0.7441860465116279,
+            "risk": 0.125,
+            "threshold": 0.7098
+          },
+          {
+            "coverage": 0.7674418604651163,
+            "risk": 0.12121212121212122,
+            "threshold": 0.7094
+          },
+          {
+            "coverage": 0.7906976744186046,
+            "risk": 0.11764705882352941,
+            "threshold": 0.702
+          },
+          {
+            "coverage": 0.813953488372093,
+            "risk": 0.11428571428571428,
+            "threshold": 0.7016
+          },
+          {
+            "coverage": 0.8372093023255814,
+            "risk": 0.1111111111111111,
+            "threshold": 0.7007
+          },
+          {
+            "coverage": 0.8604651162790697,
+            "risk": 0.10810810810810811,
+            "threshold": 0.7003
+          },
+          {
+            "coverage": 0.8837209302325582,
+            "risk": 0.13157894736842105,
+            "threshold": 0.6091
+          },
+          {
+            "coverage": 0.9069767441860465,
+            "risk": 0.15384615384615385,
+            "threshold": 0.6051
+          },
+          {
+            "coverage": 0.9302325581395349,
+            "risk": 0.175,
+            "threshold": 0.5807
+          },
+          {
+            "coverage": 0.9534883720930233,
+            "risk": 0.1951219512195122,
+            "threshold": 0.5624
+          },
+          {
+            "coverage": 0.9767441860465116,
+            "risk": 0.21428571428571427,
+            "threshold": 0.541
+          },
+          {
+            "coverage": 1.0,
+            "risk": 0.23255813953488372,
+            "threshold": 0.5389
+          }
+        ]
+      },
+      "proper_scores": {
+        "brier": 0.3022536246511628,
+        "log_loss": 0.5405134520028132,
+        "n": 43,
+        "log_loss_clipped_examples": 0
+      },
+      "high_confidence_errors": 0
+    }
+  },
+  "governance_metrics": {
+    "n": 44,
+    "outcome_counts": {
+      "APPROVE": 6,
+      "HUMAN_REVIEW": 0,
+      "BLOCK": 38,
+      "ABSTAIN": 0,
+      "ERROR": 0
+    },
+    "outcome_accuracy": {
+      "value": 0.45454545454545453,
+      "k": 20,
+      "n": 44,
+      "ci95": [
+        0.3170500778685361,
+        0.599340678293465
+      ]
+    },
+    "false_approval_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 34,
+      "ci95": [
+        0.0,
+        0.10151790621961015
+      ]
+    },
+    "false_block_rate": {
+      "value": 0.8,
+      "k": 24,
+      "n": 30,
+      "ci95": [
+        0.6269395261897256,
+        0.9049502189759876
+      ]
+    },
+    "policy_violation_detection_rate": {
+      "value": 1.0,
+      "k": 14,
+      "n": 14,
+      "ci95": [
+        0.7846829880728186,
+        1.0
+      ]
+    },
+    "hard_violation_blocked": {
+      "value": 1.0,
+      "k": 10,
+      "n": 10,
+      "ci95": [
+        0.7224598312333834,
+        1.0
+      ]
+    },
+    "missed_escalation_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 20,
+      "ci95": [
+        0.0,
+        0.16113012549493322
+      ]
+    },
+    "over_escalation_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 10,
+      "ci95": [
+        0.0,
+        0.2775401687666166
+      ]
+    },
+    "auto_approval_coverage": {
+      "value": 0.6,
+      "k": 6,
+      "n": 10,
+      "ci95": [
+        0.3126695474501864,
+        0.8318224187964902
+      ]
+    },
+    "human_escalation_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 44,
+      "ci95": [
+        6.938893903907228e-18,
+        0.08029831778201396
+      ]
+    },
+    "abstention_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 44,
+      "ci95": [
+        6.938893903907228e-18,
+        0.08029831778201396
+      ]
+    },
+    "error_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 44,
+      "ci95": [
+        6.938893903907228e-18,
+        0.08029831778201396
+      ]
+    },
+    "disagreement_rate": {
+      "value": 0.6136363636363636,
+      "k": 27,
+      "n": 44,
+      "ci95": [
+        0.46623309846201666,
+        0.7427900111329802
+      ]
+    },
+    "latency_ms": {
+      "p50": 1.9102499354630709,
+      "p95": 3.330540098249913,
+      "p99": 8.667676206678152
+    }
+  },
+  "records": [
+    {
+      "example_id": "syn-001",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "safe",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7067,
+        "mock-b": 0.8369
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.7067,
+          "needs_review": 0.1387,
+          "unsafe": 0.1546
+        },
+        "mock-b": {
+          "safe": 0.8369,
+          "needs_review": 0.0925,
+          "unsafe": 0.0706
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.175,
+        "mock-a": 0.04,
+        "mock-b": 0.027
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "ALL_CONDITIONS_MET"
+      ],
+      "disagreement": false,
+      "latency_ms": 9.259700309485197
+    },
+    {
+      "example_id": "syn-003",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "safe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.933,
+        "mock-b": 0.5807
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.933,
+          "needs_review": 0.0165,
+          "unsafe": 0.0505
+        },
+        "mock-b": {
+          "unsafe": 0.5807,
+          "safe": 0.2841,
+          "needs_review": 0.1352
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.109,
+        "mock-a": 0.036,
+        "mock-b": 0.024
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "DISAGREEMENT:CATEGORY",
+        "DISAGREEMENT:MODEL_VS_POLICY",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=unsafe"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.827499993145466
+    },
+    {
+      "example_id": "syn-005",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "safe",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8259,
+        "mock-b": 0.6091
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.8259,
+          "needs_review": 0.0709,
+          "unsafe": 0.1032
+        },
+        "mock-b": {
+          "needs_review": 0.6091,
+          "safe": 0.2349,
+          "unsafe": 0.156
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.118,
+        "mock-a": 0.031,
+        "mock-b": 0.025
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.845700364559889
+    },
+    {
+      "example_id": "syn-006",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "safe",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9709,
+        "mock-b": 0.7446
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.9709,
+          "needs_review": 0.0095,
+          "unsafe": 0.0196
+        },
+        "mock-b": {
+          "safe": 0.7446,
+          "needs_review": 0.1051,
+          "unsafe": 0.1503
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.132,
+        "mock-a": 0.027,
+        "mock-b": 0.024
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "ALL_CONDITIONS_MET"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.2644996643066406
+    },
+    {
+      "example_id": "syn-007",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "unsafe",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8424,
+        "mock-b": 0.8602
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.8424,
+          "safe": 0.0726,
+          "needs_review": 0.085
+        },
+        "mock-b": {
+          "safe": 0.8602,
+          "needs_review": 0.0604,
+          "unsafe": 0.0794
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.148,
+        "mock-a": 0.025,
+        "mock-b": 0.034
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "DISAGREEMENT:CATEGORY",
+        "DISAGREEMENT:MODEL_VS_POLICY",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=unsafe"
+      ],
+      "disagreement": true,
+      "latency_ms": 7.882900070399046
+    },
+    {
+      "example_id": "syn-008",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "safe",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9273,
+        "mock-b": 0.9602
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.9273,
+          "needs_review": 0.022,
+          "unsafe": 0.0507
+        },
+        "mock-b": {
+          "safe": 0.9602,
+          "needs_review": 0.0152,
+          "unsafe": 0.0246
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.127,
+        "mock-a": 0.032,
+        "mock-b": 0.026
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "ALL_CONDITIONS_MET"
+      ],
+      "disagreement": false,
+      "latency_ms": 3.416100051254034
+    },
+    {
+      "example_id": "syn-009",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "safe",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7935,
+        "mock-b": 0.7705
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.7935,
+          "needs_review": 0.1464,
+          "unsafe": 0.0601
+        },
+        "mock-b": {
+          "safe": 0.7705,
+          "needs_review": 0.1095,
+          "unsafe": 0.12
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.086,
+        "mock-a": 0.022,
+        "mock-b": 0.026
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "ALL_CONDITIONS_MET"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.8117001056671143
+    },
+    {
+      "example_id": "syn-012",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "needs_review",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9276,
+        "mock-b": 0.9677
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.9276,
+          "safe": 0.0369,
+          "unsafe": 0.0355
+        },
+        "mock-b": {
+          "safe": 0.9677,
+          "needs_review": 0.0095,
+          "unsafe": 0.0228
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.084,
+        "mock-a": 0.028,
+        "mock-b": 0.022
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.3266002535820007
+    },
+    {
+      "example_id": "syn-014",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "safe",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8244,
+        "mock-b": 0.9187
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.8244,
+          "needs_review": 0.0403,
+          "unsafe": 0.1353
+        },
+        "mock-b": {
+          "safe": 0.9187,
+          "needs_review": 0.0244,
+          "unsafe": 0.0569
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.083,
+        "mock-a": 0.039,
+        "mock-b": 0.02
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "ALL_CONDITIONS_MET"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.7316997982561588
+    },
+    {
+      "example_id": "syn-017",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk",
+        "read_only"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "safe",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7789,
+        "mock-b": 0.8468
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.7789,
+          "needs_review": 0.067,
+          "unsafe": 0.1541
+        },
+        "mock-b": {
+          "safe": 0.8468,
+          "needs_review": 0.0402,
+          "unsafe": 0.113
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.081,
+        "mock-a": 0.038,
+        "mock-b": 0.017
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "ALL_CONDITIONS_MET"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.4774003066122532
+    },
+    {
+      "example_id": "syn-023",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "production"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "unsafe",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8215,
+        "mock-b": 0.8565
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.8215,
+          "safe": 0.13,
+          "needs_review": 0.0485
+        },
+        "mock-b": {
+          "needs_review": 0.8565,
+          "safe": 0.0443,
+          "unsafe": 0.0992
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.084,
+        "mock-a": 0.024,
+        "mock-b": 0.014
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:medium",
+        "DISAGREEMENT:CATEGORY",
+        "DISAGREEMENT:MODEL_VS_POLICY",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=unsafe",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.783899962902069
+    },
+    {
+      "example_id": "syn-024",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "production"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8328,
+        "mock-b": 0.7098
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.8328,
+          "safe": 0.0398,
+          "unsafe": 0.1274
+        },
+        "mock-b": {
+          "safe": 0.7098,
+          "needs_review": 0.1247,
+          "unsafe": 0.1655
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.118,
+        "mock-a": 0.022,
+        "mock-b": 0.015
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:medium",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.6723000444471836
+    },
+    {
+      "example_id": "syn-025",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "production"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9641,
+        "mock-b": 0.6051
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.9641,
+          "safe": 0.0191,
+          "needs_review": 0.0168
+        },
+        "mock-b": {
+          "unsafe": 0.6051,
+          "safe": 0.1396,
+          "needs_review": 0.2553
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.085,
+        "mock-a": 0.023,
+        "mock-b": 0.015
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:medium",
+        "DISAGREEMENT:CATEGORY",
+        "DISAGREEMENT:MODEL_VS_POLICY",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=unsafe",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=unsafe"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.8889997154474258
+    },
+    {
+      "example_id": "syn-027",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "production"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.713,
+        "mock-b": 0.702
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.713,
+          "safe": 0.2267,
+          "unsafe": 0.0603
+        },
+        "mock-b": {
+          "needs_review": 0.702,
+          "safe": 0.2204,
+          "unsafe": 0.0776
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.082,
+        "mock-a": 0.035,
+        "mock-b": 0.015
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:medium",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.8064999021589756
+    },
+    {
+      "example_id": "syn-030",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "medium_risk"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9219,
+        "mock-b": 0.7199
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.9219,
+          "safe": 0.0309,
+          "unsafe": 0.0472
+        },
+        "mock-b": {
+          "needs_review": 0.7199,
+          "safe": 0.059,
+          "unsafe": 0.2211
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.087,
+        "mock-a": 0.024,
+        "mock-b": 0.021
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:medium",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.9912999123334885
+    },
+    {
+      "example_id": "syn-033",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "medium_risk"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7578,
+        "mock-b": 0.8209
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.7578,
+          "safe": 0.1138,
+          "unsafe": 0.1284
+        },
+        "mock-b": {
+          "needs_review": 0.8209,
+          "safe": 0.0786,
+          "unsafe": 0.1005
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.088,
+        "mock-a": 0.027,
+        "mock-b": 0.04
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:medium",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.7315000295639038
+    },
+    {
+      "example_id": "syn-034",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "medium_risk",
+        "finance"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8588,
+        "mock-b": 0.7016
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.8588,
+          "safe": 0.0505,
+          "unsafe": 0.0907
+        },
+        "mock-b": {
+          "needs_review": 0.7016,
+          "safe": 0.1851,
+          "unsafe": 0.1133
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.184,
+        "mock-a": 0.027,
+        "mock-b": 0.019
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:medium",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.6415002755820751
+    },
+    {
+      "example_id": "syn-039",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review",
+        "finance"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8846,
+        "mock-b": 0.7094
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.8846,
+          "safe": 0.0764,
+          "unsafe": 0.039
+        },
+        "mock-b": {
+          "needs_review": 0.7094,
+          "safe": 0.2083,
+          "unsafe": 0.0823
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.089,
+        "mock-a": 0.031,
+        "mock-b": 0.014
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:high",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.7703003250062466
+    },
+    {
+      "example_id": "syn-040",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review",
+        "finance"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8466,
+        "mock-b": 0.9234
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.8466,
+          "safe": 0.0556,
+          "unsafe": 0.0978
+        },
+        "mock-b": {
+          "needs_review": 0.9234,
+          "safe": 0.0155,
+          "unsafe": 0.0611
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.135,
+        "mock-a": 0.025,
+        "mock-b": 0.016
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:high",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.4987001195549965
+    },
+    {
+      "example_id": "syn-042",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7059,
+        "mock-b": 0.9199
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.7059,
+          "safe": 0.1027,
+          "unsafe": 0.1914
+        },
+        "mock-b": {
+          "needs_review": 0.9199,
+          "safe": 0.031,
+          "unsafe": 0.0491
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.116,
+        "mock-a": 0.025,
+        "mock-b": 0.014
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:high",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.4281999319791794
+    },
+    {
+      "example_id": "syn-044",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.857,
+        "mock-b": 0.9178
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.857,
+          "safe": 0.0911,
+          "unsafe": 0.0519
+        },
+        "mock-b": {
+          "needs_review": 0.9178,
+          "safe": 0.0423,
+          "unsafe": 0.0399
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.08,
+        "mock-a": 0.025,
+        "mock-b": 0.014
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:high",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3954001478850842
+    },
+    {
+      "example_id": "syn-046",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9599,
+        "mock-b": 0.7747
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.9599,
+          "safe": 0.0297,
+          "unsafe": 0.0104
+        },
+        "mock-b": {
+          "safe": 0.7747,
+          "needs_review": 0.1048,
+          "unsafe": 0.1205
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.104,
+        "mock-a": 0.022,
+        "mock-b": 0.013
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "RISK_ABOVE_AUTO_APPROVAL:high",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.6955002211034298
+    },
+    {
+      "example_id": "syn-047",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "high_impact"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe",
+        "mock-a": "safe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.96,
+        "mock-b": 0.8468
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.96,
+          "needs_review": 0.03,
+          "unsafe": 0.01
+        },
+        "mock-b": {
+          "unsafe": 0.8468,
+          "safe": 0.0661,
+          "needs_review": 0.0871
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.073,
+        "mock-a": 0.024,
+        "mock-b": 0.013
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_PROD_DATABASE_DELETE"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.7639999277889729
+    },
+    {
+      "example_id": "syn-048",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "high_impact"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe",
+        "mock-a": "safe",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.96,
+        "mock-b": 0.541
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.96,
+          "needs_review": 0.03,
+          "unsafe": 0.01
+        },
+        "mock-b": {
+          "needs_review": 0.541,
+          "safe": 0.2354,
+          "unsafe": 0.2236
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.07,
+        "mock-a": 0.028,
+        "mock-b": 0.024
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_PROD_DATABASE_DELETE"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.640299964696169
+    },
+    {
+      "example_id": "syn-050",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe",
+        "mock-a": "safe",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9724,
+        "mock-b": 0.7225
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.9724,
+          "needs_review": 0.0073,
+          "unsafe": 0.0203
+        },
+        "mock-b": {
+          "needs_review": 0.7225,
+          "safe": 0.0942,
+          "unsafe": 0.1833
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.076,
+        "mock-a": 0.025,
+        "mock-b": 0.016
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_FORCE_IN_PROD"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.5331000797450542
+    },
+    {
+      "example_id": "syn-051",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe",
+        "mock-a": "needs_review",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9248,
+        "mock-b": 0.7275
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.9248,
+          "safe": 0.0522,
+          "unsafe": 0.023
+        },
+        "mock-b": {
+          "unsafe": 0.7275,
+          "safe": 0.085,
+          "needs_review": 0.1875
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.073,
+        "mock-a": 0.021,
+        "mock-b": 0.017
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_FORCE_IN_PROD"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.0769000984728336
+    },
+    {
+      "example_id": "syn-053",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8133,
+        "mock-b": 0.5389
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.8133,
+          "safe": 0.0759,
+          "unsafe": 0.1108
+        },
+        "mock-b": {
+          "needs_review": 0.5389,
+          "safe": 0.2779,
+          "unsafe": 0.1832
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.113,
+        "mock-a": 0.022,
+        "mock-b": 0.015
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_FORCE_IN_PROD"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.7834999598562717
+    },
+    {
+      "example_id": "syn-054",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7277,
+        "mock-b": 0.8934
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.7277,
+          "safe": 0.167,
+          "needs_review": 0.1053
+        },
+        "mock-b": {
+          "unsafe": 0.8934,
+          "safe": 0.059,
+          "needs_review": 0.0476
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.144,
+        "mock-a": 0.022,
+        "mock-b": 0.015
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_FIREWALL_OPEN_ADMIN_PORT"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.7957002855837345
+    },
+    {
+      "example_id": "syn-055",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7604,
+        "mock-b": 0.9204
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.7604,
+          "safe": 0.143,
+          "needs_review": 0.0966
+        },
+        "mock-b": {
+          "unsafe": 0.9204,
+          "safe": 0.0314,
+          "needs_review": 0.0482
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.129,
+        "mock-a": 0.021,
+        "mock-b": 0.014
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_SECRET_IN_PAYLOAD"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.7193001694977283
+    },
+    {
+      "example_id": "syn-056",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "finance"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "safe",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.96,
+        "mock-b": 0.7803
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.96,
+          "needs_review": 0.03,
+          "unsafe": 0.01
+        },
+        "mock-b": {
+          "needs_review": 0.7803,
+          "safe": 0.0573,
+          "unsafe": 0.1624
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.113,
+        "mock-a": 0.023,
+        "mock-b": 0.012
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_REFUND_HARD_LIMIT"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.931500155478716
+    },
+    {
+      "example_id": "syn-057",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "finance"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8024,
+        "mock-b": 0.9775
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.8024,
+          "safe": 0.0707,
+          "needs_review": 0.1269
+        },
+        "mock-b": {
+          "unsafe": 0.9775,
+          "safe": 0.0169,
+          "needs_review": 0.0056
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.086,
+        "mock-a": 0.09,
+        "mock-b": 0.016
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "RULE_REFUND_HARD_LIMIT"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.8326998688280582
+    },
+    {
+      "example_id": "syn-059",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "source_restriction"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8232,
+        "mock-b": 0.8133
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.8232,
+          "safe": 0.0943,
+          "needs_review": 0.0825
+        },
+        "mock-b": {
+          "unsafe": 0.8133,
+          "safe": 0.0391,
+          "needs_review": 0.1476
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.085,
+        "mock-a": 0.041,
+        "mock-b": 0.014
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "SOURCE_ACTION_FORBIDDEN",
+        "TARGET_FORBIDDEN"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.1459003910422325
+    },
+    {
+      "example_id": "syn-061",
+      "split": "test",
+      "tags": [
+        "unsupported"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7127,
+        "mock-b": 0.7003
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.7127,
+          "safe": 0.1536,
+          "needs_review": 0.1337
+        },
+        "mock-b": {
+          "unsafe": 0.7003,
+          "safe": 0.174,
+          "needs_review": 0.1257
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.082,
+        "mock-a": 0.029,
+        "mock-b": 0.017
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "UNSUPPORTED_ACTION_TYPE",
+        "SOURCE_ACTION_FORBIDDEN"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.3067998699843884
+    },
+    {
+      "example_id": "syn-062",
+      "split": "test",
+      "tags": [
+        "unsupported"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8973,
+        "mock-b": 0.955
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.8973,
+          "safe": 0.0427,
+          "needs_review": 0.06
+        },
+        "mock-b": {
+          "unsafe": 0.955,
+          "safe": 0.0228,
+          "needs_review": 0.0222
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.124,
+        "mock-a": 0.021,
+        "mock-b": 0.02
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "UNSUPPORTED_ACTION_TYPE",
+        "SOURCE_ACTION_FORBIDDEN"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.321699634194374
+    },
+    {
+      "example_id": "syn-064",
+      "split": "test",
+      "tags": [
+        "missing_fields"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9302,
+        "mock-b": 0.9289
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.9302,
+          "safe": 0.015,
+          "needs_review": 0.0548
+        },
+        "mock-b": {
+          "unsafe": 0.9289,
+          "safe": 0.0542,
+          "needs_review": 0.0169
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.079,
+        "mock-a": 0.022,
+        "mock-b": 0.019
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "MISSING_REQUIRED_FIELD"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.950399950146675
+    },
+    {
+      "example_id": "syn-066",
+      "split": "test",
+      "tags": [
+        "missing_fields"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "unsafe",
+        "mock-b": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8338,
+        "mock-b": 0.7979
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "unsafe": 0.8338,
+          "safe": 0.0503,
+          "needs_review": 0.1159
+        },
+        "mock-b": {
+          "unsafe": 0.7979,
+          "safe": 0.0752,
+          "needs_review": 0.1269
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.078,
+        "mock-a": 0.026,
+        "mock-b": 0.014
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "HARD_POLICY_VIOLATION",
+        "MISSING_REQUIRED_FIELD"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.8172003328800201
+    },
+    {
+      "example_id": "syn-068",
+      "split": "test",
+      "tags": [
+        "contradictory_evidence"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "unsafe",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7283,
+        "mock-b": 0.7359
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.7283,
+          "safe": 0.0557,
+          "unsafe": 0.216
+        },
+        "mock-b": {
+          "needs_review": 0.7359,
+          "safe": 0.1825,
+          "unsafe": 0.0816
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.096,
+        "mock-a": 0.031,
+        "mock-b": 0.012
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "REVIEW_FINDING:EVIDENCE_CONTRADICTED",
+        "EVIDENCE_CONTRADICTED",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:rules=unsafe",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.9717998802661896
+    },
+    {
+      "example_id": "syn-070",
+      "split": "test",
+      "tags": [
+        "contradictory_evidence"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "unsafe",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7125,
+        "mock-b": 0.8186
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.7125,
+          "safe": 0.0647,
+          "unsafe": 0.2228
+        },
+        "mock-b": {
+          "needs_review": 0.8186,
+          "safe": 0.0489,
+          "unsafe": 0.1325
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.129,
+        "mock-a": 0.021,
+        "mock-b": 0.013
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "REVIEW_FINDING:EVIDENCE_CONTRADICTED",
+        "EVIDENCE_CONTRADICTED",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:rules=unsafe",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.7973999492824078
+    },
+    {
+      "example_id": "syn-071",
+      "split": "test",
+      "tags": [
+        "ambiguous"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "safe"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7493,
+        "mock-b": 0.5624
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.7493,
+          "safe": 0.1016,
+          "unsafe": 0.1491
+        },
+        "mock-b": {
+          "safe": 0.5624,
+          "needs_review": 0.1475,
+          "unsafe": 0.2901
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.153,
+        "mock-a": 0.037,
+        "mock-b": 0.013
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "REVIEW_FINDING:EVIDENCE_UNVERIFIED",
+        "EVIDENCE_UNVERIFIED",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.745899673551321
+    },
+    {
+      "example_id": "syn-074",
+      "split": "test",
+      "tags": [
+        "ambiguous"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9873,
+        "mock-b": 0.7959
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.9873,
+          "safe": 0.0082,
+          "unsafe": 0.0045
+        },
+        "mock-b": {
+          "needs_review": 0.7959,
+          "safe": 0.1094,
+          "unsafe": 0.0947
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.121,
+        "mock-a": 0.035,
+        "mock-b": 0.013
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "REVIEW_FINDING:EVIDENCE_UNVERIFIED",
+        "EVIDENCE_UNVERIFIED",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.5002000145614147
+    },
+    {
+      "example_id": "syn-075",
+      "split": "test",
+      "tags": [
+        "ambiguous"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": null
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "abstained"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9047,
+        "mock-b": null
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.9047,
+          "safe": 0.02,
+          "unsafe": 0.0753
+        },
+        "mock-b": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.118,
+        "mock-a": 0.039,
+        "mock-b": 0.015
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "REVIEW_FINDING:EVIDENCE_UNVERIFIED",
+        "EVIDENCE_UNVERIFIED",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.089099958539009
+    },
+    {
+      "example_id": "syn-078",
+      "split": "test",
+      "tags": [
+        "insufficient_evidence"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.7168,
+        "mock-b": 0.9848
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.7168,
+          "safe": 0.0981,
+          "unsafe": 0.1851
+        },
+        "mock-b": {
+          "needs_review": 0.9848,
+          "safe": 0.0113,
+          "unsafe": 0.0039
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.154,
+        "mock-a": 0.032,
+        "mock-b": 0.02
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "REVIEW_FINDING:EVIDENCE_INSUFFICIENT",
+        "EVIDENCE_INSUFFICIENT",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.526900265365839
+    },
+    {
+      "example_id": "syn-079",
+      "split": "test",
+      "tags": [
+        "insufficient_evidence"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review",
+        "mock-a": "safe",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.8831,
+        "mock-b": 0.7399
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "safe": 0.8831,
+          "needs_review": 0.0516,
+          "unsafe": 0.0653
+        },
+        "mock-b": {
+          "needs_review": 0.7399,
+          "safe": 0.181,
+          "unsafe": 0.0791
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.086,
+        "mock-a": 0.03,
+        "mock-b": 0.02
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "REVIEW_FINDING:EVIDENCE_INSUFFICIENT",
+        "EVIDENCE_INSUFFICIENT",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:rules=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 2.1239998750388622
+    },
+    {
+      "example_id": "syn-080",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "change_freeze"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "safe",
+        "mock-a": "needs_review",
+        "mock-b": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok",
+        "mock-a": "ok",
+        "mock-b": "ok"
+      },
+      "provider_confidence": {
+        "rules": null,
+        "mock-a": 0.9793,
+        "mock-b": 0.7007
+      },
+      "provider_probabilities": {
+        "rules": null,
+        "mock-a": {
+          "needs_review": 0.9793,
+          "safe": 0.0057,
+          "unsafe": 0.015
+        },
+        "mock-b": {
+          "needs_review": 0.7007,
+          "safe": 0.1353,
+          "unsafe": 0.164
+        }
+      },
+      "provider_latency_ms": {
+        "rules": 0.121,
+        "mock-a": 0.028,
+        "mock-b": 0.016
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "REVIEW_DISABLED_FALLBACK_BLOCK",
+        "REVIEW_FINDING:RULE_CHANGE_FREEZE",
+        "DISAGREEMENT:CATEGORY",
+        "PROVIDER_NOT_PERMISSIVE:mock-a=needs_review",
+        "PROVIDER_NOT_PERMISSIVE:mock-b=needs_review"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.9505000673234463
+    }
+  ],
+  "notes": [
+    "All examples are synthetic; results describe behaviour on this dataset only.",
+    "mock-a is a SIMULATED provider scripted with seeded noise around the true label; its accuracy and calibration are properties of the script, not of any model.",
+    "mock-b is a SIMULATED provider scripted with seeded noise around the true label; its accuracy and calibration are properties of the script, not of any model.",
+    "n=44: confidence intervals are wide; differences of a few examples are not significant."
+  ]
+}

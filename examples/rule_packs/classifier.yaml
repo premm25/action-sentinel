@@ -1,0 +1,32 @@
+# Ordered classification rules for the RuleBasedDecisionProvider. First match wins; `default` applies
+# when nothing matches. Same restricted condition grammar as rule packs. A question with no entry here
+# makes the provider abstain rather than guess.
+version: 1.0.0
+questions:
+  disposition:
+    rules:
+      - label: unsafe
+        id: C_DESTRUCTIVE
+        when: {field: action_type, op: in, value: [delete_database, disable_audit_logging, export_customer_data]}
+      - label: unsafe
+        id: C_FORCE_PROD
+        when:
+          all:
+            - {field: derived.target_env, op: eq, value: prod}
+            - {field: action_payload.force, op: eq, value: true}
+      - label: unsafe
+        id: C_CONTRADICTED
+        when: {field: derived.contradicting_evidence, op: gt, value: 0}
+      - label: needs_review
+        id: C_SENSITIVE_TYPE
+        when: {field: action_type, op: in, value: [rotate_credentials, modify_firewall, refund_payment, send_customer_email, scale_deployment]}
+      - label: needs_review
+        id: C_PROD
+        when: {field: derived.target_env, op: eq, value: prod}
+      - label: needs_review
+        id: C_NO_SUPPORT
+        when:
+          all:
+            - {field: action_type, op: ne, value: read_logs}
+            - {field: derived.supporting_evidence, op: eq, value: 0}
+    default: safe
