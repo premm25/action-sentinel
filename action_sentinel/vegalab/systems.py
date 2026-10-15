@@ -109,7 +109,9 @@ class BackboneOptionScorer:
             self.cfg = json.load(f)
         self.backbone = self.cfg["backbone_name"]
         self.tok = AutoTokenizer.from_pretrained(self.backbone)
-        self.model = AutoModelForCausalLM.from_pretrained(self.backbone, dtype=torch.float32,
+        from vegaml._common import backbone_dtype   # same precision policy VegaML's perception uses
+        self.dtype = backbone_dtype(torch.device(self.device))
+        self.model = AutoModelForCausalLM.from_pretrained(self.backbone, dtype=self.dtype,
                                                           attn_implementation="sdpa").to(self.device).eval()
         self.load_seconds = round(time.perf_counter() - t0, 2)
 
@@ -117,7 +119,7 @@ class BackboneOptionScorer:
         import torch
         import transformers
         return {"system": self.name, "kind": "frozen_backbone_lm", "checkpoint": self.checkpoint,
-                "backbone": self.backbone, "device": self.device, "dtype": "float32",
+                "backbone": self.backbone, "device": self.device, "dtype": str(getattr(self, "dtype", None)),
                 "prompt": "vegaml._common.build_prompt (template 0, checkpoint settings)",
                 "scoring": "mean token log-prob of ' <option text>' after the prompt; softmax, temperature 1",
                 "torch": torch.__version__, "transformers": transformers.__version__, "cache_mode": self.cache_mode,
