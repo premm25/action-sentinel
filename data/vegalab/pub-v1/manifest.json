@@ -1,0 +1,828 @@
+{
+  "version": "pub-v1",
+  "created_at": "2026-10-15T01:56:28.121809+00:00",
+  "seed": 20261015,
+  "params": {
+    "n_test": 100,
+    "n_cal": 60,
+    "n_dev": 20
+  },
+  "synthetic": false,
+  "source": "public Hugging Face datasets via datasets-server rows API",
+  "excluded_tasks": {
+    "banking77": "VegaML typed_decisions adapter training workflow",
+    "clinc150": "VegaML typed_decisions adapter training workflow",
+    "apibank": "VegaML typed_decisions adapter training workflow",
+    "appliances": "VegaML typed_decisions adapter training workflow",
+    "esci": "VegaML typed_decisions adapter training workflow",
+    "when2call": "VegaML typed_decisions adapter training workflow",
+    "emotion": "used in VegaML's fine-tuning example",
+    "ag_news": "used as gate negatives in VegaML's fine-tuning example",
+    "trec": "not available as parquet (loading script only)"
+  },
+  "caveats": [
+    "VegaML's base-engine training corpus is not publicly documented; overlap with these public datasets cannot be ruled out.",
+    "Calibration and dev examples are drawn from training splits; test from evaluation splits."
+  ],
+  "tasks": {
+    "sst2": {
+      "file": "sst2.jsonl",
+      "sha256": "67bf2f906634468678d2e31a8f1b161a20bb43eb82c55114428acb5098b4e8e8",
+      "hf_dataset": "stanfordnlp/sst2",
+      "hf_config": "default",
+      "eval_split": "validation",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 67349,
+        "validation": 872,
+        "test": 1821
+      },
+      "license": "unknown-see-card",
+      "qtype": "choice",
+      "group": "sentiment",
+      "difficulty": "standard",
+      "n_labels": 2,
+      "counts": {
+        "test": 100,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "positive": 51,
+          "negative": 49
+        },
+        "calibration": {
+          "positive": 35,
+          "negative": 25
+        },
+        "dev": {
+          "negative": 13,
+          "positive": 7
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": ""
+    },
+    "dbpedia14": {
+      "file": "dbpedia14.jsonl",
+      "sha256": "c2259be8588616fddd69e3975ab2831e8cb8197635140c56fdfe56b6a17f7f4f",
+      "hf_dataset": "fancyzhx/dbpedia_14",
+      "hf_config": "dbpedia_14",
+      "eval_split": "test",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 560000,
+        "test": 70000
+      },
+      "license": "cc-by-sa-3.0",
+      "qtype": "choice",
+      "group": "topic",
+      "difficulty": "standard",
+      "n_labels": 14,
+      "counts": {
+        "test": 100,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "MeanOfTransportation": 14,
+          "Company": 10,
+          "WrittenWork": 10,
+          "Artist": 8,
+          "Building": 8,
+          "Athlete": 7,
+          "Animal": 7,
+          "OfficeHolder": 6,
+          "NaturalPlace": 6,
+          "Village": 6,
+          "EducationalInstitution": 5,
+          "Plant": 5,
+          "Album": 4,
+          "Film": 4
+        },
+        "calibration": {
+          "Village": 12,
+          "NaturalPlace": 6,
+          "Animal": 6,
+          "Film": 6,
+          "Building": 5,
+          "Company": 4,
+          "MeanOfTransportation": 4,
+          "EducationalInstitution": 3,
+          "Athlete": 3,
+          "Plant": 3,
+          "WrittenWork": 3,
+          "Artist": 2,
+          "OfficeHolder": 2,
+          "Album": 1
+        },
+        "dev": {
+          "MeanOfTransportation": 3,
+          "Building": 3,
+          "Animal": 3,
+          "Athlete": 2,
+          "Village": 2,
+          "Plant": 2,
+          "Album": 2,
+          "Company": 1,
+          "Artist": 1,
+          "NaturalPlace": 1
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": ""
+    },
+    "dbpedia14_k2": {
+      "file": "dbpedia14_k2.jsonl",
+      "sha256": "977b28d6e1d0bf3deeb907a6fa636d5360ab38cc639ec8a134a2cc57a1d408b1",
+      "hf_dataset": "fancyzhx/dbpedia_14",
+      "hf_config": "dbpedia_14",
+      "eval_split": "test",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 560000,
+        "test": 70000
+      },
+      "license": "cc-by-sa-3.0",
+      "qtype": "choice",
+      "group": "topic",
+      "difficulty": "standard",
+      "n_labels": 14,
+      "counts": {
+        "test": 100,
+        "calibration": 0,
+        "dev": 0
+      },
+      "class_distribution": {
+        "test": {
+          "MeanOfTransportation": 14,
+          "Company": 10,
+          "WrittenWork": 10,
+          "Artist": 8,
+          "Building": 8,
+          "Athlete": 7,
+          "Animal": 7,
+          "OfficeHolder": 6,
+          "NaturalPlace": 6,
+          "Village": 6,
+          "EducationalInstitution": 5,
+          "Plant": 5,
+          "Album": 4,
+          "Film": 4
+        },
+        "calibration": {},
+        "dev": {}
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": "RQ5 option-count variant of dbpedia14 test examples: gold + 1 random distractors (seeded), options in canonical order"
+    },
+    "dbpedia14_k4": {
+      "file": "dbpedia14_k4.jsonl",
+      "sha256": "fee72b1a5a250a3c9b5a50f164f1d5d93cb95f1a3a1479e8f101649fab558802",
+      "hf_dataset": "fancyzhx/dbpedia_14",
+      "hf_config": "dbpedia_14",
+      "eval_split": "test",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 560000,
+        "test": 70000
+      },
+      "license": "cc-by-sa-3.0",
+      "qtype": "choice",
+      "group": "topic",
+      "difficulty": "standard",
+      "n_labels": 14,
+      "counts": {
+        "test": 100,
+        "calibration": 0,
+        "dev": 0
+      },
+      "class_distribution": {
+        "test": {
+          "MeanOfTransportation": 14,
+          "Company": 10,
+          "WrittenWork": 10,
+          "Artist": 8,
+          "Building": 8,
+          "Athlete": 7,
+          "Animal": 7,
+          "OfficeHolder": 6,
+          "NaturalPlace": 6,
+          "Village": 6,
+          "EducationalInstitution": 5,
+          "Plant": 5,
+          "Album": 4,
+          "Film": 4
+        },
+        "calibration": {},
+        "dev": {}
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": "RQ5 option-count variant of dbpedia14 test examples: gold + 3 random distractors (seeded), options in canonical order"
+    },
+    "dbpedia14_k8": {
+      "file": "dbpedia14_k8.jsonl",
+      "sha256": "0ccf54850855276e04e51ea8f5e68f67c70513f72d2ae1431a7015ecd0e188e4",
+      "hf_dataset": "fancyzhx/dbpedia_14",
+      "hf_config": "dbpedia_14",
+      "eval_split": "test",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 560000,
+        "test": 70000
+      },
+      "license": "cc-by-sa-3.0",
+      "qtype": "choice",
+      "group": "topic",
+      "difficulty": "standard",
+      "n_labels": 14,
+      "counts": {
+        "test": 100,
+        "calibration": 0,
+        "dev": 0
+      },
+      "class_distribution": {
+        "test": {
+          "MeanOfTransportation": 14,
+          "Company": 10,
+          "WrittenWork": 10,
+          "Artist": 8,
+          "Building": 8,
+          "Athlete": 7,
+          "Animal": 7,
+          "OfficeHolder": 6,
+          "NaturalPlace": 6,
+          "Village": 6,
+          "EducationalInstitution": 5,
+          "Plant": 5,
+          "Album": 4,
+          "Film": 4
+        },
+        "calibration": {},
+        "dev": {}
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": "RQ5 option-count variant of dbpedia14 test examples: gold + 7 random distractors (seeded), options in canonical order"
+    },
+    "massive_intent_en": {
+      "file": "massive_intent_en.jsonl",
+      "sha256": "b257b81a5eab0a219f7e670488ab6c26519eabdbf3e17437d250779e5672c49d",
+      "hf_dataset": "mteb/amazon_massive_intent",
+      "hf_config": "en",
+      "eval_split": "test",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 11514,
+        "test": 2974,
+        "validation": 2033
+      },
+      "license": "cc-by-4.0",
+      "qtype": "choice",
+      "group": "intent",
+      "difficulty": "wide_label_space",
+      "n_labels": 60,
+      "counts": {
+        "test": 100,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "qa_factoid": 8,
+          "news_query": 7,
+          "play_music": 6,
+          "weather_query": 4,
+          "alarm_set": 4,
+          "transport_query": 4,
+          "calendar_set": 4,
+          "calendar_remove": 4,
+          "social_post": 4,
+          "email_query": 4,
+          "email_sendemail": 4,
+          "datetime_query": 3,
+          "play_radio": 3,
+          "cooking_recipe": 3,
+          "play_podcasts": 3,
+          "qa_stock": 3,
+          "iot_hue_lightdim": 2,
+          "music_likeness": 2,
+          "iot_hue_lightup": 2,
+          "general_quirky": 2,
+          "calendar_query": 2,
+          "lists_createoradd": 2,
+          "lists_remove": 2,
+          "recommendation_locations": 2,
+          "recommendation_movies": 2,
+          "qa_definition": 2,
+          "audio_volume_mute": 1,
+          "alarm_query": 1,
+          "alarm_remove": 1,
+          "music_query": 1,
+          "iot_hue_lightoff": 1,
+          "general_joke": 1,
+          "play_audiobook": 1,
+          "iot_cleaning": 1,
+          "audio_volume_up": 1,
+          "iot_coffee": 1,
+          "transport_taxi": 1,
+          "social_query": 1
+        },
+        "calibration": {
+          "calendar_query": 6,
+          "email_query": 4,
+          "calendar_set": 3,
+          "cooking_recipe": 3,
+          "recommendation_events": 3,
+          "play_music": 2,
+          "music_likeness": 2,
+          "iot_hue_lightoff": 2,
+          "weather_query": 2,
+          "audio_volume_up": 2,
+          "play_radio": 2,
+          "lists_createoradd": 2,
+          "qa_factoid": 2,
+          "social_post": 2,
+          "email_querycontact": 2,
+          "email_sendemail": 2,
+          "datetime_query": 1,
+          "audio_volume_other": 1,
+          "iot_cleaning": 1,
+          "alarm_set": 1,
+          "iot_wemo_off": 1,
+          "iot_hue_lightup": 1,
+          "datetime_convert": 1,
+          "news_query": 1,
+          "general_quirky": 1,
+          "calendar_remove": 1,
+          "play_game": 1,
+          "lists_remove": 1,
+          "play_podcasts": 1,
+          "recommendation_movies": 1,
+          "recommendation_locations": 1,
+          "transport_query": 1,
+          "transport_ticket": 1,
+          "social_query": 1,
+          "email_addcontact": 1
+        },
+        "dev": {
+          "calendar_set": 3,
+          "lists_query": 2,
+          "email_sendemail": 2,
+          "email_query": 2,
+          "weather_query": 1,
+          "iot_cleaning": 1,
+          "transport_query": 1,
+          "takeaway_order": 1,
+          "alarm_query": 1,
+          "calendar_remove": 1,
+          "lists_createoradd": 1,
+          "transport_taxi": 1,
+          "qa_stock": 1,
+          "qa_currency": 1,
+          "qa_definition": 1
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": "60 intents; label space taken from the fit split"
+    },
+    "glue_rte": {
+      "file": "glue_rte.jsonl",
+      "sha256": "19bd16a5819983d79009b778bc18aa72986ed880dc133cd33319e92cee137628",
+      "hf_dataset": "nyu-mll/glue",
+      "hf_config": "rte",
+      "eval_split": "validation",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 2490,
+        "validation": 277,
+        "test": 3000
+      },
+      "license": "other-see-card",
+      "qtype": "boolean",
+      "group": "entailment",
+      "difficulty": "standard",
+      "n_labels": 2,
+      "counts": {
+        "test": 100,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "true": 51,
+          "false": 49
+        },
+        "calibration": {
+          "true": 31,
+          "false": 29
+        },
+        "dev": {
+          "true": 12,
+          "false": 8
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": ""
+    },
+    "boolq": {
+      "file": "boolq.jsonl",
+      "sha256": "27f2ebdcd24c3d83b019f6888353f1d04a95cc9203d953a5166b650f71a406e6",
+      "hf_dataset": "google/boolq",
+      "hf_config": "default",
+      "eval_split": "validation",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 9427,
+        "validation": 3270
+      },
+      "license": "cc-by-sa-3.0",
+      "qtype": "boolean",
+      "group": "reading",
+      "difficulty": "standard",
+      "n_labels": 2,
+      "counts": {
+        "test": 100,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "true": 62,
+          "false": 38
+        },
+        "calibration": {
+          "true": 37,
+          "false": 23
+        },
+        "dev": {
+          "true": 11,
+          "false": 9
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": ""
+    },
+    "superglue_cb": {
+      "file": "superglue_cb.jsonl",
+      "sha256": "7efca0d737a89c544d1bef1fa590f1957658881a330a0e1a4ffe4b350f31f690",
+      "hf_dataset": "aps/super_glue",
+      "hf_config": "cb",
+      "eval_split": "validation",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 250,
+        "validation": 56,
+        "test": 250
+      },
+      "license": "other-see-card",
+      "qtype": "choice",
+      "group": "entailment",
+      "difficulty": "standard",
+      "n_labels": 3,
+      "counts": {
+        "test": 56,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "contradiction": 28,
+          "entailment": 23,
+          "neutral": 5
+        },
+        "calibration": {
+          "contradiction": 34,
+          "entailment": 23,
+          "neutral": 3
+        },
+        "dev": {
+          "contradiction": 10,
+          "entailment": 9,
+          "neutral": 1
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": "validation has only 56 examples"
+    },
+    "prompt_injections": {
+      "file": "prompt_injections.jsonl",
+      "sha256": "ec77d145210fcfb37641c49ea3ec1783bf87b8df6f02b482b38f180d28a77826",
+      "hf_dataset": "deepset/prompt-injections",
+      "hf_config": "default",
+      "eval_split": "test",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 546,
+        "test": 116
+      },
+      "license": "apache-2.0",
+      "qtype": "boolean",
+      "group": "safety",
+      "difficulty": "standard",
+      "n_labels": 2,
+      "counts": {
+        "test": 100,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "true": 54,
+          "false": 46
+        },
+        "calibration": {
+          "false": 39,
+          "true": 21
+        },
+        "dev": {
+          "false": 12,
+          "true": 8
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": "mixed languages (English and German)"
+    },
+    "yelp_review_stars": {
+      "file": "yelp_review_stars.jsonl",
+      "sha256": "2d2470851e1fbe74f058f4162cda633a719911c8dc71bbc4a6068e0696c9af51",
+      "hf_dataset": "Yelp/yelp_review_full",
+      "hf_config": "yelp_review_full",
+      "eval_split": "test",
+      "fit_split": "train",
+      "source_split_sizes": {
+        "train": 650000,
+        "test": 50000
+      },
+      "license": "yelp-dataset-terms",
+      "qtype": "score",
+      "group": "sentiment",
+      "difficulty": "ordinal",
+      "n_labels": 5,
+      "counts": {
+        "test": 100,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "3": 32,
+          "2": 20,
+          "4": 17,
+          "0": 16,
+          "1": 15
+        },
+        "calibration": {
+          "2": 15,
+          "4": 14,
+          "3": 12,
+          "1": 12,
+          "0": 7
+        },
+        "dev": {
+          "3": 6,
+          "0": 5,
+          "4": 5,
+          "1": 2,
+          "2": 2
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": ""
+    },
+    "anli_r3": {
+      "file": "anli_r3.jsonl",
+      "sha256": "813a3480509a5a2f996d89ac8bb9f68663814c8ce652ba526e6a72a7c6f86f5e",
+      "hf_dataset": "facebook/anli",
+      "hf_config": "plain_text",
+      "eval_split": "test_r3",
+      "fit_split": "train_r3",
+      "source_split_sizes": {
+        "train_r1": 16946,
+        "dev_r1": 1000,
+        "test_r1": 1000,
+        "train_r2": 45460,
+        "dev_r2": 1000,
+        "test_r2": 1000,
+        "train_r3": 100459,
+        "dev_r3": 1200,
+        "test_r3": 1200
+      },
+      "license": "cc-by-nc-4.0",
+      "qtype": "choice",
+      "group": "entailment",
+      "difficulty": "adversarial",
+      "n_labels": 3,
+      "counts": {
+        "test": 100,
+        "calibration": 60,
+        "dev": 20
+      },
+      "class_distribution": {
+        "test": {
+          "entailment": 36,
+          "contradiction": 36,
+          "neutral": 28
+        },
+        "calibration": {
+          "neutral": 25,
+          "entailment": 21,
+          "contradiction": 14
+        },
+        "dev": {
+          "neutral": 9,
+          "entailment": 6,
+          "contradiction": 5
+        }
+      },
+      "dropped": {
+        "dropped_invalid": {},
+        "dropped_duplicate": {},
+        "dropped_overlap_with_test": {}
+      },
+      "notes": "adversarially collected NLI, round 3"
+    }
+  },
+  "checks": {
+    "anli_r3": {
+      "n": 180,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "boolq": {
+      "n": 180,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "dbpedia14": {
+      "n": 180,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "dbpedia14_k2": {
+      "n": 100,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {},
+      "distinct_questions": 57,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "dbpedia14_k4": {
+      "n": 100,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {},
+      "distinct_questions": 90,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "dbpedia14_k8": {
+      "n": 100,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {},
+      "distinct_questions": 95,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "glue_rte": {
+      "n": 180,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "massive_intent_en": {
+      "n": 180,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "prompt_injections": {
+      "n": 180,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "sst2": {
+      "n": 180,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "superglue_cb": {
+      "n": 136,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    },
+    "yelp_review_stars": {
+      "n": 180,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0,
+        "dev": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    }
+  }
+}

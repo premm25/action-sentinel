@@ -73,3 +73,26 @@ def test_runtime_adapter_switch_matches_separate_load(core):
     assert auto.uncertainty.adapter == "typed_decisions" and off.uncertainty.adapter is None
     assert core.decide(req, adapter_mode="off").decisions["disposition"].uncertainty.probabilities == \
         off.uncertainty.probabilities  # deterministic, and switching back restores the base engine
+
+
+def test_backbone_batched_scoring_matches_one_at_a_time():
+    """The repeated-cache batch path must give the same log-probabilities as scoring options one by one."""
+    import torch
+
+    from action_sentinel.vegalab.systems import BackboneOptionScorer
+    from action_sentinel.vegalab.tasks import TASKS
+    bb = BackboneOptionScorer("0.8b")
+    bb.load()
+    ex = {"state": "The service was slow but the food was excellent.",
+          "question": TASKS["yelp_review_stars"].question().model_dump(mode="json")}
+    pids, texts, _ = bb.prompt_ids_and_options(ex)
+    ids = torch.tensor([pids])
+    conts = [bb.tok(" " + t, add_special_tokens=False)["input_ids"] for t in texts]
+    with torch.inference_mode():
+        out = bb.model(input_ids=ids, use_cache=True)
+        last, cache = out.logits[0, -1].float(), out.past_key_values
+        batched = bb._batched_logprobs(ids, last, cache, conts, batch=3)
+        assert bb.cache_mode == "kv_batched"
+        bb.cache_mode = "unknown"
+        single = [bb._continuation_logprob(ids, last, cache, torch.tensor([c])) for c in conts]
+    assert max(abs(a - b) for a, b in zip(batched, single, strict=True)) < 1e-4

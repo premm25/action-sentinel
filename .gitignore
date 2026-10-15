@@ -9,3 +9,4 @@ htmlcov/
 var/
 .env
 build/
+data/vegalab/_cache/
