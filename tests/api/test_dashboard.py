@@ -66,3 +66,32 @@ def test_dashboard_populated(db):
     rid_button.click().run()
     assert not at.exception
     assert any("Approved" in s.value for s in at.success)
+
+
+
+def test_vega_lab_tab_reads_saved_runs_only(db, tmp_path, monkeypatch):
+    """Empty state without runs; renders an analysed run from saved files; never loads a model."""
+    from action_sentinel.vegalab import vega_core
+    from action_sentinel.vegalab.analysis import analyze
+    from action_sentinel.vegalab.report import write_reports
+    from action_sentinel.vegalab.runner import run_system
+    from action_sentinel.vegalab.systems import VegaSystem
+    from action_sentinel.vegalab.tasks import TASKS
+    from action_sentinel.vegalab.testing import FakeVegaRunner
+
+    def no_load(self):
+        raise AssertionError("the dashboard must not load a model")
+    monkeypatch.setattr(vega_core.LiveVegaRunner, "load", no_load)
+    monkeypatch.setenv("SENTINEL_VEGALAB_DIR", str(tmp_path / "lab"))
+    at = _run()
+    assert any("No analysed Vega lab runs" in i.value for i in at.info)
+
+    q = TASKS["sst2"].question().model_dump(mode="json")
+    exs = [{"example_id": "sst2:test:%d" % i, "task": "sst2", "split": "test", "state": "s%d" % i, "question": q,
+            "gold_label": ["negative", "positive"][i % 2], "slices": {}} for i in range(6)]
+    run_dir = tmp_path / "lab" / "run1"
+    run_system(VegaSystem(vega_core.VegaCore(FakeVegaRunner()), "off"), exs, run_dir, "run1", progress_every=0)
+    write_reports(run_dir, analyze(run_dir), "test")
+    at = _run()
+    assert not any("No analysed Vega lab runs" in i.value for i in at.info)
+    assert any("Accuracy and calibration by task" in h.value for h in at.subheader)

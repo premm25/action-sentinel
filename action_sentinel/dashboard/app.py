@@ -59,7 +59,7 @@ st.caption("Decision governance for AI agent actions. Policy `%s`. Database `%s`
            % (svc.policy_version, settings.db_path))
 
 tabs = st.tabs(["Overview", "Decision Explorer", "Confidence Lab", "Human Review", "Audit Explorer",
-                "Configuration"])
+                "Configuration", "Vega Lab"])
 
 
 # ---------------------------------------------------------------- overview
@@ -303,3 +303,87 @@ with tabs[5]:
     st.write("Calibration profiles:", settings.calibration_profiles or "none (calibration unknown for all providers)")
     st.write("Datasets:", datasets or "none")
     st.write("Reviewers:", [r.model_dump() for r in settings.reviewers])
+
+# ---------------------------------------------------------------- Vega lab (saved runs only; never runs inference)
+with tabs[6]:
+    import json as _json
+
+    st.caption("VegaML experiment results read from saved files under reports/vegalab. This page never runs a "
+               "model; use `action-sentinel vega run` and `vega analyze` to produce results.")
+    lab_root = Path(os.environ.get("SENTINEL_VEGALAB_DIR") or settings.path("reports/vegalab"))
+    feas = sorted(settings.path("reports/vega_feasibility").glob("feasibility_*.json"))
+    if feas:
+        f = _json.loads(feas[-1].read_text(encoding="utf-8"))
+        env = f.get("environment", {})
+        st.subheader("Model and runtime (latest feasibility record)")
+        st.write("vegaml %s · torch %s · transformers %s · %s · load %.1f s · memory after load %s MB"
+                 % (env.get("vegaml"), env.get("torch"), env.get("transformers"),
+                    (f.get("checkpoint") or {}).get("backbone"), f.get("load_seconds") or float("nan"),
+                    (f.get("memory_mb") or {}).get("after_load")))
+        st.dataframe(pd.DataFrame([{
+            "example": r["example"], "attempt": r["attempt"], "wall ms": r["wall_ms"],
+            "answer": next(iter(r["native_output"]["answers"].values())).get(
+                "choice", next(iter(r["native_output"]["answers"].values())).get("score")),
+            "confidence": next(iter(r["native_output"]["answers"].values()))["confidence"],
+            "abstain": next(iter(r["native_output"]["answers"].values()))["abstain"]} for r in f["runs"]]),
+            hide_index=True)
+    runs = sorted([d for d in lab_root.glob("*") if (d / "metrics.json").exists()], reverse=True) \
+        if lab_root.exists() else []
+    if not runs:
+        st.info("No analysed Vega lab runs yet. Run `action-sentinel vega run` then `action-sentinel vega analyze <dir>`.")
+    else:
+        run = st.selectbox("Run", runs, format_func=lambda d: d.name, key="vl_run")
+        res = _json.loads((run / "metrics.json").read_text(encoding="utf-8"))
+        exp_f = run / "experiment.json"
+        if exp_f.exists():
+            st.write(_json.loads(exp_f.read_text(encoding="utf-8")))
+        systems_ = res["systems"]
+        st.subheader("Accuracy and calibration by task (test split)")
+        metric = st.selectbox("Metric", ["accuracy", "balanced_accuracy", "ece", "brier", "aurc", "macro_f1"],
+                              key="vl_metric")
+        table = {}
+        for sname in systems_:
+            for t, m in res["per_task"].get(sname, {}).items():
+                v = m.get(metric)
+                table.setdefault(t, {})[sname] = v["value"] if isinstance(v, dict) else v
+        st.dataframe(pd.DataFrame(table).T)
+        st.subheader("VegaML abstention and coverage")
+        rows_ = []
+        for sname in [x for x in systems_ if x.startswith("vega-")]:
+            for t, m in res["per_task"].get(sname, {}).items():
+                rows_.append({"system": sname, "task": t, "abstain rate": (m.get("abstain_rate") or {}).get("value"),
+                              "selective accuracy": (m.get("selective_accuracy") or {}).get("value"),
+                              "conformal coverage": (m.get("conformal_coverage") or {}).get("value"),
+                              "mean set size": m.get("mean_set_size"),
+                              "p50 ms": m["latency_ms"]["p50"]})
+        if rows_:
+            st.dataframe(pd.DataFrame(rows_), hide_index=True)
+        st.subheader("Baseline comparisons (paired, bootstrap 95% CI)")
+        prow = [{"comparison": c, "task": t, "n": d["n"], "difference": d["diff"], "ci low": d["ci95"][0],
+                 "ci high": d["ci95"][1]} for c, tm in res.get("paired", {}).items() for t, d in tm.items() if d]
+        if prow:
+            st.dataframe(pd.DataFrame(prow), hide_index=True)
+        st.subheader("Confusion matrix and reliability")
+        c1, c2 = st.columns(2)
+        sys_pick = c1.selectbox("System", systems_, key="vl_sys")
+        task_pick = c2.selectbox("Task", sorted(res["per_task"].get(sys_pick, {})), key="vl_task")
+        m = res["per_task"][sys_pick][task_pick]
+        cm = m["confusion_matrix"]
+        st.dataframe(pd.DataFrame(cm["rows_true_cols_pred"], index=cm["labels"], columns=cm["labels"]))
+        if m.get("reliability"):
+            rel = pd.DataFrame([b for b in m["reliability"] if b["count"]])
+            st.scatter_chart(rel, x="mean_confidence", y="accuracy", size="count")
+        st.subheader("Errors (from raw predictions)")
+        pred_f = run / ("%s.jsonl" % sys_pick)
+        if pred_f.exists():
+            recs = [_json.loads(x) for x in pred_f.read_text(encoding="utf-8").splitlines() if x.strip()]
+            bad = [r for r in recs if r["task"] == task_pick and r["split"] == res["split"]
+                   and (r["status"] == "error" or r["predicted_label"] != r["gold_label"])]
+            st.dataframe(pd.DataFrame([{"example": r["example_id"], "gold": r["gold_label"],
+                                        "predicted": r.get("predicted_label"), "confidence": r.get("confidence"),
+                                        "abstain": r.get("abstain"), "status": r["status"]} for r in bad[:200]]),
+                         hide_index=True)
+        rep = run / "REPORT.md"
+        if rep.exists():
+            with st.expander("Full report"):
+                st.markdown(rep.read_text(encoding="utf-8"))
