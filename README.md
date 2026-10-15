@@ -191,6 +191,40 @@ action-sentinel lab show [run_id]   /   action-sentinel lab export <run_id...> -
 Measured results and their limits are in [`docs/evaluation/RESULTS.md`](docs/evaluation/RESULTS.md).
 The method is in [`docs/evaluation/METHODOLOGY.md`](docs/evaluation/METHODOLOGY.md).
 
+## Vega Decision Intelligence Lab (VegaML)
+
+`action_sentinel/vegalab/` makes [VegaML](https://github.com/NandhaKishorM/vegaml) the primary decision
+engine and measures it. VegaML is a typed-decision model: a frozen Qwen3.5 language model reads the
+situation, and a small trained physics engine settles on one of the candidate answers, returning calibrated
+probabilities, a conformal prediction set, an abstain flag and an "unbound" (out-of-distribution) flag.
+It generates no text.
+
+- **Real inference, verified** with `vegaml` 0.9.0, the 0.8B checkpoint on CPU. The lab wraps VegaML's own
+  API and never reimplements its engine. See [`docs/VEGA_MIGRATION.md`](docs/VEGA_MIGRATION.md).
+- **Typed decision service:** a Python `VegaCore` and `/vega/*` API routes, enabled with `vegalab.enabled`.
+- **Confidence Lab v2:** public-task datasets with provenance and leakage checks; VegaML (adapters off and
+  auto) vs the same frozen backbone used as a plain LM vs a majority baseline; accuracy, calibration,
+  abstention, conformal coverage, paired confidence intervals.
+- **Sentinel integration:** VegaML as a governance provider (`vegaml-off`, `vegaml-auto`). Hard rules still win.
+
+VegaML needs torch (about 3.5 GB RAM for 0.8B on CPU), so it is best installed in its own environment:
+
+```bash
+python -m venv ~/.venvs/vega-lab
+~/.venvs/vega-lab/Scripts/pip install "vegaml==0.9.0" "transformers==5.19.0" torch pyarrow -e ".[dev]"
+action-sentinel vega check --load                     # downloads ~1.8 GB on first use
+action-sentinel vega decide --adapters off --instructions "Which team?" \
+    --state "Invoice overdue, third notice" --option "billing=payments" --option "technical=faults"
+action-sentinel vega data check                       # dataset quality and leakage checks
+action-sentinel vega run --limit 20                   # inference (resumable) -> reports/vegalab/<run>
+action-sentinel vega analyze reports/vegalab/<run>    # metrics.json, summary.csv, REPORT.md
+action-sentinel vega failures reports/vegalab/<run> --kind confident-wrong
+```
+
+GPU runs (0.8B and 4B, 500 test examples per task): [`notebooks/vegalab_kaggle_gpu.ipynb`](notebooks/vegalab_kaggle_gpu.ipynb).
+Documents: [architecture](docs/vegalab/ARCHITECTURE.md) · [datasets](docs/vegalab/DATASETS.md) ·
+[methodology](docs/vegalab/METHODOLOGY.md) · [results](docs/vegalab/RESULTS.md).
+
 ## Demo
 
 ```bash

@@ -62,6 +62,7 @@ class LiveVegaRunner:
         self._vega: Any = None
         self._mode: AdapterMode | None = None
         self.load_seconds: float | None = None
+        self.offline_fallback = False
 
     @staticmethod
     def available() -> tuple[bool, str]:
@@ -84,7 +85,16 @@ class LiveVegaRunner:
         if self.revision:
             kw["revision"] = self.revision
         try:
-            self._vega = vegaml.load(self.model, **kw)
+            try:
+                self._vega = vegaml.load(self.model, **kw)
+            except Exception as exc:
+                if not _network_error(exc):
+                    raise
+                # The Hub could not be reached. vegaml checks the Hub even when the weights are cached, so
+                # retry from the local cache only; this fails cleanly if the files are not cached.
+                _go_offline()
+                self.offline_fallback = True
+                self._vega = vegaml.load(self.model, **kw)
         except Exception as exc:
             raise VegaInferenceError(InferenceError(
                 code="MODEL_LOAD_FAILED", message="%s: %s" % (type(exc).__name__, str(exc)[:1000]),
@@ -107,6 +117,7 @@ class LiveVegaRunner:
             "max_len": eng.cfg.get("max_len"), "default_risk": eng.risk,
             "adapters": [a["name"] for a in eng.adapters], "adapter_mode": self._mode,
             "engine_sha256": eng.base_sha256(), "load_seconds": self.load_seconds,
+            "offline_fallback": self.offline_fallback,
         }
 
     def set_adapter_mode(self, mode: AdapterMode) -> None:
@@ -264,6 +275,23 @@ class VegaCore:
 
     def close(self) -> None:
         self._pool.shutdown(wait=False, cancel_futures=True)
+
+
+def _network_error(exc: BaseException) -> bool:
+    names = {c.__name__ for e in (exc, exc.__cause__, exc.__context__) if e is not None for c in type(e).__mro__}
+    text = str(exc).lower()
+    return bool(names & {"ConnectTimeout", "ConnectError", "ConnectionError", "ReadTimeout", "LocalEntryNotFoundError",
+                         "OfflineModeIsEnabled", "TimeoutError"}) or "connection" in text or "timed out" in text
+
+
+def _go_offline() -> None:
+    import os
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    try:
+        import huggingface_hub.constants as hc
+        hc.HF_HUB_OFFLINE = True
+    except Exception:
+        pass
 
 
 def _num(v: Any) -> float | None:

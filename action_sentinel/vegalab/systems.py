@@ -69,7 +69,8 @@ class MajorityBaseline:
         return {"system": self.name, "kind": "deterministic", "majority": self.majority}
 
     def predict(self, example: dict[str, Any]) -> dict[str, Any]:
-        task = example["task"]
+        # option-count variants (dbpedia14_k2, ...) have no fit data of their own: use the parent task's prior
+        task = example.get("slices", {}).get("variant_of") or example["task"]
         labels = [o["label"] for o in example["question"]["options"]]
         if task not in self.prior:
             raise KeyError("no fit data for task %s" % task)

@@ -166,3 +166,23 @@ def test_ordinal_metrics():
     m = A.group_metrics(recs)
     assert m["ordinal_mae"] == pytest.approx(1.0) and m["within_1"] == pytest.approx(2 / 3)
     assert not math.isnan(m["brier"])
+
+
+def test_regression_majority_uses_parent_prior_for_option_variants():
+    fit = [dict(e, task="dbpedia14", split="calibration") for e in _examples("dbpedia14", n=4)]
+    m = MajorityBaseline(fit)
+    q = TASKS["dbpedia14"].question(TASKS["dbpedia14"].options[:2]).model_dump(mode="json")
+    ex = {"example_id": "dbpedia14_k2:test:0", "task": "dbpedia14_k2", "split": "test", "state": "x",
+          "question": q, "gold_label": "Company", "slices": {"variant_of": "dbpedia14"}}
+    p = m.predict(ex)
+    assert set(p["probabilities"]) == {"Company", "EducationalInstitution"}
+    assert abs(sum(p["probabilities"].values()) - 1) < 1e-9
+
+
+def test_regression_network_errors_trigger_offline_fallback():
+    from action_sentinel.vegalab.vega_core import _network_error
+
+    class ConnectTimeout(Exception):
+        pass
+    assert _network_error(ConnectTimeout("[WinError 10060] A connection attempt failed"))
+    assert not _network_error(ValueError("backbone depth differs from training"))
