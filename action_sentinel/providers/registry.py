@@ -42,9 +42,9 @@ class OllamaConfig(StrictModel):
 
 
 class VegaMLConfig(StrictModel):
-    checkpoint: str | None = None
-    device: Literal["cpu", "cuda", "mps"] | None = None
-    alpha: str = "0.1"
+    checkpoint: str = "0.8b"
+    device: Literal["cpu", "cuda", "mps"] | None = "cpu"
+    adapter_mode: Literal["off", "auto", "on"] = "auto"
 
 
 class ProviderConfigError(ValueError):
@@ -73,7 +73,8 @@ def _ollama(spec: ProviderSpec, base: Path) -> DecisionProvider:
 
 def _vegaml(spec: ProviderSpec, base: Path) -> DecisionProvider:
     cfg = VegaMLConfig.model_validate(spec.config)
-    return VegaMLDecisionProvider(spec.name, checkpoint=cfg.checkpoint, device=cfg.device, alpha=cfg.alpha)
+    return VegaMLDecisionProvider(spec.name, checkpoint=cfg.checkpoint, device=cfg.device,
+                                  adapter_mode=cfg.adapter_mode)
 
 
 FACTORIES: dict[str, Factory] = {"rule_based": _rule_based, "mock": _mock, "ollama": _ollama, "vegaml": _vegaml}

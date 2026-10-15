@@ -97,6 +97,6 @@ def test_lab_errors(lab):
     with pytest.raises(LabError, match="unknown providers"):
         lab.run(EvaluationRunConfig(name="x", dataset_path=DS, providers=["nope"]))
     with pytest.raises(LabError, match="unavailable"):
-        lab.run(EvaluationRunConfig(name="x", dataset_path=DS, providers=["vegaml"]))
+        lab.run(EvaluationRunConfig(name="x", dataset_path=DS, providers=["vegaml-off"]))
     with pytest.raises(LabError, match="no examples"):
         lab.run(EvaluationRunConfig(name="x", dataset_path=DS, providers=["rules"], splits=[]))

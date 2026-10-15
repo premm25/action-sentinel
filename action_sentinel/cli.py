@@ -243,6 +243,132 @@ def cmd_serve(args) -> int:
     return 0
 
 
+# ------------------------------------------------------------------ Vega decision lab
+def cmd_vega_check(args) -> int:
+    import importlib.util
+    ok = True
+    for mod in ("vegaml", "torch", "transformers", "pyarrow"):
+        found = importlib.util.find_spec(mod) is not None
+        ver = getattr(__import__(mod), "__version__", "?") if found else "-"
+        print("%-13s %-10s %s" % (mod, "installed" if found else "MISSING", ver))
+        ok &= found or mod == "pyarrow"
+    hub = Path.home() / ".cache" / "huggingface" / "hub"
+    for repo in ("models--nandakishorm--vega-08b-public-intents", "models--Qwen--Qwen3.5-0.8B"):
+        print("%-48s %s" % (repo, "cached" if (hub / repo).exists() else "not cached (downloads on first load)"))
+    if args.load:
+        from action_sentinel.vegalab.vega_core import LiveVegaRunner
+        r = LiveVegaRunner(args.model, device=args.device)
+        r.load()
+        _print(r.info())
+    return 0 if ok else 1
+
+
+def _vega_question(args) -> dict:
+    opts = []
+    for item in args.option:
+        label, _, desc = item.partition("=")
+        opts.append({"label": label.strip(), "description": desc.strip() or None})
+    return {"question_id": "answer", "type": args.type, "instructions": args.instructions, "options": opts}
+
+
+def cmd_vega_decide(args) -> int:
+    from action_sentinel.vegalab.contracts import VegaInferenceError
+    from action_sentinel.vegalab.vega_core import LiveVegaRunner, VegaCore
+    state = json.loads(args.state) if args.state.strip().startswith("{") else args.state
+    runner = LiveVegaRunner(args.model, device=args.device)
+    core = VegaCore(runner, model_id="vegaml-%s" % args.model)
+    try:
+        runner.load()
+        res = core.decide({"state": state, "questions": [_vega_question(args)]}, adapter_mode=args.adapters)
+    except VegaInferenceError as exc:
+        print("%s: %s" % (exc.error.code, exc.error.message), file=sys.stderr)
+        return 1
+    d = res.decisions["answer"]
+    u = d.uncertainty
+    print("decision: %s   confidence %s   abstain=%s unbound=%s   set=%s   adapter=%s   %.0f ms"
+          % (d.selected_label, "%.3f" % u.confidence if u.confidence is not None else "n/a", u.abstain, u.unbound,
+             u.prediction_set, u.adapter, res.wall_ms))
+    if args.json:
+        print(res.model_dump_json(indent=2))
+    return 0
+
+
+def cmd_vega_data(args) -> int:
+    from action_sentinel.vegalab.datasets import build_datasets, check_dataset
+    if args.action == "build":
+        folder = build_datasets(args.version, args.root, tasks=args.tasks.split(",") if args.tasks else None,
+                                n_test=args.n_test, n_cal=args.n_cal, n_dev=args.n_dev, seed=args.seed)
+        print("built %s" % folder)
+    else:
+        folder = Path(args.root) / args.version
+    rep = check_dataset(folder)
+    for task, r in rep.items():
+        print("%-20s n=%-5d %s  overlap=%s" % (task, r["n"], "ok" if r["passed"] else "FAILED",
+                                               r["test_overlap_with_other_splits"]))
+    return 0 if rep and all(r["passed"] for r in rep.values()) else 1
+
+
+def cmd_vega_run(args) -> int:
+    from action_sentinel.vegalab.experiment import run_experiment
+    out = run_experiment(args.dataset, args.out, systems=args.systems.split(",") if args.systems else None,
+                         tasks=args.tasks.split(",") if args.tasks else None, splits=tuple(args.splits.split(",")),
+                         limit=args.limit, model=args.model, device=args.device)
+    print("predictions in %s; next: action-sentinel vega analyze %s" % (out, out))
+    return 0
+
+
+DEFAULT_COMPARE = [("vega-off", "backbone-optscore"), ("vega-auto", "vega-off"), ("vega-off", "majority")]
+
+
+def cmd_vega_analyze(args) -> int:
+    from action_sentinel.vegalab.analysis import analyze
+    from action_sentinel.vegalab.report import write_reports
+    compare = [tuple(c.split(":", 1)) for c in args.compare] if args.compare else DEFAULT_COMPARE
+    res = analyze(args.run_dir, split=args.split, compare=compare)  # type: ignore[arg-type]
+    for path in write_reports(args.run_dir, res, args.title or "Vega lab results"):
+        print("wrote %s" % path)
+    return 0
+
+
+def cmd_vega_export(args) -> int:
+    from action_sentinel.vegalab.analysis import analyze
+    from action_sentinel.vegalab.report import summary_rows, to_csv
+    res = analyze(args.run_dir, split=args.split)
+    text = to_csv(res) if args.format == "csv" else json.dumps(summary_rows(res), indent=2, default=str)
+    if args.out:
+        Path(args.out).write_text(text, encoding="utf-8")
+        print("wrote %s" % args.out)
+    else:
+        print(text)
+    return 0
+
+
+def _failure_kind(kind: str, min_conf: float):
+    if kind == "error":
+        return lambda r: r["status"] == "error"
+    if kind == "abstained":
+        return lambda r: r.get("abstain") is True
+    if kind == "wrong":
+        return lambda r: r["status"] == "ok" and r["predicted_label"] != r["gold_label"]
+    return lambda r: (r["status"] == "ok" and r["predicted_label"] != r["gold_label"]
+                      and (r.get("confidence") or 0) >= min_conf)
+
+
+def cmd_vega_failures(args) -> int:
+    from action_sentinel.vegalab.analysis import load_predictions
+    rows = [r for r in load_predictions(args.run_dir) if r["system"] == args.system and r["split"] == args.split
+            and (not args.task or r["task"] == args.task)]
+    keep = _failure_kind(args.kind, args.min_confidence)
+    sel = [r for r in rows if keep(r)]
+    print("%d of %d %s predictions are %s" % (len(sel), len(rows), args.system, args.kind))
+    for r in sel[: args.limit]:
+        conf = "%.3f" % r["confidence"] if r.get("confidence") is not None else "n/a"
+        print("%-36s gold=%-14s pred=%-14s conf=%s abstain=%s %s" % (
+            r["example_id"], r["gold_label"], r.get("predicted_label"), conf, r.get("abstain"),
+            ((r.get("error") or {}).get("message") or "")[:80]))
+    return 0
+
+
 def cmd_dashboard(args) -> int:
     import subprocess
     app = Path(__file__).parent / "dashboard" / "app.py"
@@ -333,6 +459,64 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--host", default="127.0.0.1")
     a.add_argument("--port", type=int, default=8000)
     a.set_defaults(fn=cmd_serve)
+
+    vega = sub.add_parser("vega", help="Vega decision lab (VegaML)").add_subparsers(dest="vega_cmd", required=True)
+    a = vega.add_parser("check", help="check installation and cached weights; --load also loads the model")
+    a.add_argument("--load", action="store_true")
+    a.add_argument("--model", default="0.8b")
+    a.add_argument("--device", default="cpu")
+    a.set_defaults(fn=cmd_vega_check)
+    a = vega.add_parser("decide", help="one typed decision with the real model")
+    a.add_argument("--state", required=True, help="text, or a JSON object")
+    a.add_argument("--type", choices=["choice", "score", "boolean"], default="choice")
+    a.add_argument("--instructions", required=True)
+    a.add_argument("--option", action="append", required=True, help="label=description (repeat)")
+    a.add_argument("--adapters", choices=["off", "auto", "on"], default="auto")
+    a.add_argument("--model", default="0.8b")
+    a.add_argument("--device", default="cpu")
+    a.add_argument("--json", action="store_true", help="print the full result, native output included")
+    a.set_defaults(fn=cmd_vega_decide)
+    a = vega.add_parser("data", help="build or check a public evaluation dataset")
+    a.add_argument("action", choices=["build", "check"])
+    a.add_argument("--version", default="pub-v1")
+    a.add_argument("--root", default="data/vegalab")
+    a.add_argument("--tasks")
+    a.add_argument("--n-test", type=int, default=100)
+    a.add_argument("--n-cal", type=int, default=60)
+    a.add_argument("--n-dev", type=int, default=20)
+    a.add_argument("--seed", type=int, default=20261015)
+    a.set_defaults(fn=cmd_vega_data)
+    a = vega.add_parser("run", help="run systems over a dataset (inference; resumable)")
+    a.add_argument("--dataset", default="data/vegalab/pub-v1")
+    a.add_argument("--out")
+    a.add_argument("--systems", help="comma list of majority,vega-off,vega-auto,backbone-optscore")
+    a.add_argument("--tasks")
+    a.add_argument("--splits", default="test,calibration")
+    a.add_argument("--limit", type=int)
+    a.add_argument("--model", default="0.8b")
+    a.add_argument("--device", default="cpu")
+    a.set_defaults(fn=cmd_vega_run)
+    a = vega.add_parser("analyze", help="compute metrics; writes metrics.json, summary.csv, REPORT.md")
+    a.add_argument("run_dir")
+    a.add_argument("--split", default="test")
+    a.add_argument("--compare", nargs="*", help="pairs systemA:systemB")
+    a.add_argument("--title")
+    a.set_defaults(fn=cmd_vega_analyze)
+    a = vega.add_parser("export", help="export per-task metrics as CSV or JSON")
+    a.add_argument("run_dir")
+    a.add_argument("--format", choices=["csv", "json"], default="csv")
+    a.add_argument("--split", default="test")
+    a.add_argument("--out")
+    a.set_defaults(fn=cmd_vega_export)
+    a = vega.add_parser("failures", help="inspect failed, abstained or wrong predictions")
+    a.add_argument("run_dir")
+    a.add_argument("--system", default="vega-off")
+    a.add_argument("--kind", choices=["error", "abstained", "wrong", "confident-wrong"], default="confident-wrong")
+    a.add_argument("--task")
+    a.add_argument("--split", default="test")
+    a.add_argument("--min-confidence", type=float, default=0.9)
+    a.add_argument("--limit", type=int, default=30)
+    a.set_defaults(fn=cmd_vega_failures)
 
     a = sub.add_parser("dashboard", help="start the Streamlit dashboard")
     a.add_argument("--port", type=int, default=8501)

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import json
 import math
-import sys
-import types
 
 import httpx
 import pytest
@@ -195,42 +193,44 @@ def test_ollama_live():  # optional: needs a running server with the model pulle
     assert r.status == "ok" and r.label in DISPOSITION_QUESTION.categories
 
 
-# ------------------------------------------------------------------ vegaml (stub of the verified 0.9.0 API)
+# ------------------------------------------------------------------ vegaml (VegaCore + test double; no inference)
 
-@pytest.fixture
-def fake_vegaml(monkeypatch):
-    mod = types.ModuleType("vegaml")
-    mod.__version__ = "0.9.0"
-    calls = {}
-
-    class FakeVega:
-        def decide(self, state, questions, mode=None, alpha="0.1"):
-            calls.update(state=state, questions=questions, mode=mode)
-            (qid,) = questions
-            return {"mode": mode, "latency_ms": 5.0, "answers": {qid: {
-                "choice": "needs_review", "probs": {"safe": 0.2, "needs_review": 0.7, "unsafe": 0.1},
-                "confidence": 0.7, "prediction_set": ["needs_review", "safe"], "abstain": False, "unbound": False}}}
-
-    def load(repo=None, **kw):
-        calls["load"] = (repo, kw)
-        return FakeVega()
-
-    mod.load = load
-    monkeypatch.setitem(sys.modules, "vegaml", mod)
-    monkeypatch.setattr("importlib.util.find_spec", lambda name: object() if name == "vegaml" else None)
-    return calls
+def _vega_provider(respond=None, **kw):
+    from action_sentinel.vegalab.testing import FakeVegaRunner
+    from action_sentinel.vegalab.vega_core import VegaCore
+    runner = FakeVegaRunner(respond) if respond else FakeVegaRunner(**kw)
+    return VegaMLDecisionProvider("vega", core=VegaCore(runner), adapter_mode="off"), runner
 
 
-def test_vegaml_maps_verified_output_fields(fake_vegaml):
-    p = VegaMLDecisionProvider("vega")
+def test_vegaml_provider_maps_native_signals():
+    p, runner = _vega_provider()
     r = p.decide(req())
-    assert r.status == "ok" and r.label == "needs_review" and r.confidence == 0.7
-    assert r.prediction_set == ["needs_review", "safe"] and r.calibration_status == "unknown"
-    assert fake_vegaml["mode"] == "engine" and fake_vegaml["load"][1]["mode"] == "engine"
-    q = fake_vegaml["questions"]["disposition"]
-    assert q["type"] == "choice" and set(q["criteria"]) == {"safe", "needs_review", "unsafe"}
-    assert "Action type: restart_service" in fake_vegaml["state"]
-    assert p.version == "vegaml:0.9.0" and p.health().available
+    assert r.status == "ok" and r.label == "safe" and r.confidence == 0.7  # FakeVegaRunner: first option wins
+    assert r.confidence_source == "model_probability" and r.calibration_status == "unknown"
+    assert r.prediction_set == ["safe"] and abs(sum(r.probabilities.values()) - 1) < 1e-9
+    assert r.metadata["test_double"] is True and r.metadata["live_inference"] is False
+    state, questions, mode = runner.calls[0]
+    assert mode == "off" and state["action_type"] == "restart_service" and state["evidence"]
+    assert set(questions["disposition"]["criteria"]) == {"safe", "needs_review", "unsafe"}
+
+
+@pytest.mark.parametrize("flag,reason", [("abstain", "VEGAML_ABSTAIN"), ("unbound", "VEGAML_UNBOUND")])
+def test_vegaml_abstain_and_unbound_become_abstention(flag, reason):
+    from action_sentinel.vegalab.testing import FakeVegaRunner
+
+    def respond(state, questions, mode):
+        out = FakeVegaRunner.default_response(state, questions, mode)
+        out["answers"]["disposition"][flag] = True
+        return out
+    p, _ = _vega_provider(respond)
+    r = p.decide(req())
+    assert r.status == "abstained" and r.label == "safe" and r.metadata["abstain_reason"] == reason
+
+
+def test_vegaml_failures_are_typed():
+    p, _ = _vega_provider(raise_on_decide=RuntimeError("kernel died"))
+    r = p.decide(req())
+    assert r.status == "error" and r.error.code == "INFERENCE_FAILED" and r.label is None
 
 
 def test_vegaml_unavailable_fails_safe(monkeypatch):
@@ -239,20 +239,6 @@ def test_vegaml_unavailable_fails_safe(monkeypatch):
     r = p.decide(req())
     assert r.status == "unavailable" and r.error.code == "NOT_INSTALLED"
     assert not p.health().available
-
-
-def test_vegaml_unbound_becomes_abstention(fake_vegaml, monkeypatch):
-    p = VegaMLDecisionProvider("vega")
-    model = p._load()
-    orig = model.decide
-
-    def unbound(*a, **k):
-        out = orig(*a, **k)
-        out["answers"]["disposition"]["unbound"] = True
-        return out
-    monkeypatch.setattr(model, "decide", unbound)
-    r = p.decide(req())
-    assert r.status == "abstained" and r.metadata["abstain_reason"] == "VEGAML_UNBOUND"
 
 
 # ------------------------------------------------------------------ registry and runner

@@ -15,10 +15,14 @@ providers:
     type: ollama
     enabled: true          # built always; only used when listed in active_providers or requested
     config: {model: "llama3.1:8b", base_url: "http://localhost:11434", timeout_s: 180, max_retries: 1}
-  - name: vegaml
+  - name: vegaml-off
     type: vegaml
     enabled: true          # reports unavailable unless the vegaml package is installed
-    config: {}
+    config: {checkpoint: "0.8b", device: cpu, adapter_mode: "off"}
+  - name: vegaml-auto
+    type: vegaml
+    enabled: true          # shares the loaded model with vegaml-off (one model per checkpoint/device)
+    config: {checkpoint: "0.8b", device: cpu, adapter_mode: auto}
 
 # Providers consulted for every decision. Deterministic rules only, so the default works offline.
 active_providers: [rules]
