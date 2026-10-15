@@ -41,7 +41,7 @@ download into `reports/vegalab/` locally.
 """),
     code("""
 # ---------------- settings ----------------
-REPO_URL = "https://github.com/<your-username>/action-sentinel.git"  # or attach the repo as a Kaggle dataset
+REPO_URL = "https://github.com/premm25/action-sentinel.git"  # or attach the repo as a Kaggle dataset
 REPO_DATASET_DIR = "/kaggle/input/action-sentinel"                  # used if REPO_URL is not reachable
 MODELS = ["0.8b", "4b"]           # 4b needs ~9 GB GPU memory in fp16
 N_TEST, N_CAL, N_DEV = 500, 200, 40
