@@ -1,0 +1,65 @@
+{
+  "run_id": "vegalab-pub-v1-20261018_020353",
+  "system": "majority",
+  "system_info": {
+    "system": "majority",
+    "kind": "deterministic",
+    "majority": {
+      "anli_r3": "neutral",
+      "boolq": "true",
+      "dbpedia14": "Village",
+      "glue_rte": "true",
+      "massive_intent_en": "calendar_query",
+      "prompt_injections": "false",
+      "sst2": "positive",
+      "superglue_cb": "contradiction",
+      "yelp_review_stars": "4"
+    }
+  },
+  "environment": {
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "cpu_count": 8,
+    "action_sentinel": "0.1.0",
+    "torch": "2.14.1+cpu",
+    "transformers": "5.19.0",
+    "vegaml": "0.9.0",
+    "numpy": "2.5.4",
+    "cuda": false,
+    "gpu": [],
+    "torch_threads": 4
+  },
+  "dataset": {
+    "version": "pub-v1",
+    "seed": 20261015,
+    "task_sha256": {
+      "sst2": "67bf2f906634468678d2e31a8f1b161a20bb43eb82c55114428acb5098b4e8e8",
+      "dbpedia14": "c2259be8588616fddd69e3975ab2831e8cb8197635140c56fdfe56b6a17f7f4f",
+      "dbpedia14_k2": "977b28d6e1d0bf3deeb907a6fa636d5360ab38cc639ec8a134a2cc57a1d408b1",
+      "dbpedia14_k4": "fee72b1a5a250a3c9b5a50f164f1d5d93cb95f1a3a1479e8f101649fab558802",
+      "dbpedia14_k8": "0ccf54850855276e04e51ea8f5e68f67c70513f72d2ae1431a7015ecd0e188e4",
+      "massive_intent_en": "b257b81a5eab0a219f7e670488ab6c26519eabdbf3e17437d250779e5672c49d",
+      "glue_rte": "19bd16a5819983d79009b778bc18aa72986ed880dc133cd33319e92cee137628",
+      "boolq": "27f2ebdcd24c3d83b019f6888353f1d04a95cc9203d953a5166b650f71a406e6",
+      "superglue_cb": "7efca0d737a89c544d1bef1fa590f1957658881a330a0e1a4ffe4b350f31f690",
+      "prompt_injections": "ec77d145210fcfb37641c49ea3ec1783bf87b8df6f02b482b38f180d28a77826",
+      "yelp_review_stars": "2d2470851e1fbe74f058f4162cda633a719911c8dc71bbc4a6068e0696c9af51",
+      "anli_r3": "813a3480509a5a2f996d89ac8bb9f68663814c8ce652ba526e6a72a7c6f86f5e"
+    }
+  },
+  "predictions_file": "majority.jsonl",
+  "predictions_sha256": "1bb92bc46c7a76c47d67abbcf39c9faf3dace21ae479feff3aa83cfbc9cf0390",
+  "sessions": [
+    {
+      "started_at": "2026-10-17T20:33:53.082004+00:00",
+      "finished_at": "2026-10-17T20:33:53.114967+00:00",
+      "examples_attempted": 0,
+      "ok": 0,
+      "errors": 0,
+      "skipped_already_done": 420,
+      "wall_seconds": 0.03,
+      "peak_rss_mb": 48.3
+    }
+  ]
+}

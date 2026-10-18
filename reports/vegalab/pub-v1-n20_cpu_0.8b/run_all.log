@@ -1,0 +1,80 @@
+STARTED Sun 10/18/2026  2:03:47.86 
+STEP 1/3 model benchmark 
+system majority
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights:  11%|█▏        | 36/320 [00:00<00:00, 321.32it/s]Loading weights:  22%|██▏       | 69/320 [00:00<00:01, 191.39it/s]Loading weights:  28%|██▊       | 91/320 [00:00<00:01, 124.45it/s]Loading weights:  33%|███▎      | 107/320 [00:00<00:01, 116.04it/s]Loading weights:  39%|███▉      | 124/320 [00:00<00:01, 124.72it/s]Loading weights:  43%|████▎     | 138/320 [00:01<00:01, 116.45it/s]Loading weights:  47%|████▋     | 151/320 [00:01<00:01, 117.17it/s]Loading weights:  52%|█████▏    | 165/320 [00:01<00:01, 116.23it/s]Loading weights:  56%|█████▌    | 178/320 [00:01<00:01, 87.39it/s] Loading weights:  61%|██████    | 194/320 [00:01<00:01, 94.43it/s]Loading weights:  64%|██████▍   | 205/320 [00:01<00:01, 89.17it/s]Loading weights:  67%|██████▋   | 215/320 [00:01<00:01, 86.71it/s]Loading weights:  72%|███████▎  | 232/320 [00:02<00:00, 100.97it/s]Loading weights:  76%|███████▌  | 243/320 [00:02<00:00, 102.88it/s]Loading weights:  79%|███████▉  | 254/320 [00:02<00:00, 96.11it/s] Loading weights:  83%|████████▎ | 265/320 [00:02<00:00, 89.06it/s]Loading weights:  87%|████████▋ | 279/320 [00:02<00:00, 99.20it/s]Loading weights:  91%|█████████ | 291/320 [00:02<00:00, 95.43it/s]Loading weights:  95%|█████████▌| 304/320 [00:02<00:00, 103.23it/s]Loading weights: 100%|██████████| 320/320 [00:02<00:00, 110.69it/s]
+system vega-off
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+  vega-off 25/345 (91.7s elapsed)
+  vega-off 50/345 (190.7s elapsed)
+  vega-off 75/345 (245.4s elapsed)
+  vega-off 100/345 (328.4s elapsed)
+  vega-off 125/345 (402.8s elapsed)
+  vega-off 150/345 (485.5s elapsed)
+  vega-off 175/345 (690.6s elapsed)
+  vega-off 200/345 (799.1s elapsed)
+  vega-off 225/345 (838.5s elapsed)
+  vega-off 250/345 (870.6s elapsed)
+  vega-off 275/345 (913.6s elapsed)
+  vega-off 300/345 (973.0s elapsed)
+  vega-off 325/345 (1066.7s elapsed)
+system vega-auto
+  vega-auto 25/420 (66.4s elapsed)
+  vega-auto 50/420 (134.4s elapsed)
+  vega-auto 75/420 (212.4s elapsed)
+  vega-auto 100/420 (305.7s elapsed)
+  vega-auto 125/420 (389.5s elapsed)
+  vega-auto 150/420 (445.5s elapsed)
+  vega-auto 175/420 (514.3s elapsed)
+  vega-auto 200/420 (572.9s elapsed)
+  vega-auto 225/420 (655.4s elapsed)
+  vega-auto 250/420 (943.6s elapsed)
+  vega-auto 275/420 (1044.8s elapsed)
+  vega-auto 300/420 (1073.8s elapsed)
+  vega-auto 325/420 (1099.0s elapsed)
+  vega-auto 350/420 (1131.3s elapsed)
+  vega-auto 375/420 (1177.6s elapsed)
+  vega-auto 400/420 (1246.6s elapsed)
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights:   0%|          | 1/320 [00:00<02:03,  2.58it/s]Loading weights:   7%|▋         | 23/320 [00:00<00:10, 28.79it/s]Loading weights:  31%|███       | 99/320 [00:01<00:01, 138.88it/s]Loading weights:  42%|████▏     | 133/320 [00:01<00:01, 127.44it/s]Loading weights:  49%|████▉     | 158/320 [00:01<00:01, 127.17it/s]Loading weights:  56%|█████▌    | 179/320 [00:01<00:01, 119.15it/s]Loading weights:  61%|██████▏   | 196/320 [00:01<00:01, 112.21it/s]Loading weights:  67%|██████▋   | 214/320 [00:02<00:00, 116.36it/s]Loading weights:  72%|███████▏  | 230/320 [00:02<00:00, 119.58it/s]Loading weights:  76%|███████▋  | 244/320 [00:02<00:00, 107.45it/s]Loading weights:  81%|████████  | 259/320 [00:02<00:00, 113.82it/s]Loading weights:  86%|████████▌ | 274/320 [00:02<00:00, 116.82it/s]Loading weights:  90%|█████████ | 288/320 [00:02<00:00, 118.88it/s]Loading weights:  94%|█████████▍| 301/320 [00:02<00:00, 112.60it/s]Loading weights:  98%|█████████▊| 313/320 [00:02<00:00, 110.25it/s]Loading weights: 100%|██████████| 320/320 [00:02<00:00, 108.65it/s]
+system backbone-optscore
+  backbone-optscore 25/420 (113.7s elapsed)
+  backbone-optscore 50/420 (218.7s elapsed)
+  backbone-optscore 75/420 (316.9s elapsed)
+  backbone-optscore 100/420 (575.8s elapsed)
+  backbone-optscore 125/420 (809.9s elapsed)
+  backbone-optscore 150/420 (923.7s elapsed)
+  backbone-optscore 175/420 (1110.8s elapsed)
+  backbone-optscore 200/420 (1248.7s elapsed)
+  backbone-optscore 225/420 (1600.0s elapsed)
+  backbone-optscore 250/420 (2533.2s elapsed)
+  backbone-optscore 275/420 (2865.1s elapsed)
+  backbone-optscore 300/420 (3010.0s elapsed)
+  backbone-optscore 325/420 (3161.0s elapsed)
+  backbone-optscore 350/420 (3334.7s elapsed)
+  backbone-optscore 375/420 (3553.9s elapsed)
+  backbone-optscore 400/420 (3759.4s elapsed)
+predictions in C:\Users\sasi\vegalab_runs\pub-v1-n20_cpu_0.8b; next: action-sentinel vega analyze C:\Users\sasi\vegalab_runs\pub-v1-n20_cpu_0.8b
+STEP 1 exit 0 
+STEP 2/3 analysis 
+wrote C:\Users\sasi\vegalab_runs\pub-v1-n20_cpu_0.8b\metrics.json
+wrote C:\Users\sasi\vegalab_runs\pub-v1-n20_cpu_0.8b\summary.csv
+wrote C:\Users\sasi\vegalab_runs\pub-v1-n20_cpu_0.8b\REPORT.md
+STEP 2 exit 0 
+STEP 3/3 RQ7 governance with VegaML as the decision provider 
+running 1_rules_only ...
+running 2_vegaml-off_only_naive ...
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights:   0%|          | 1/320 [00:00<00:35,  8.90it/s]Loading weights:  11%|█         | 35/320 [00:00<00:01, 160.16it/s]Loading weights:  17%|█▋        | 55/320 [00:00<00:01, 167.94it/s]Loading weights:  22%|██▎       | 72/320 [00:00<00:01, 141.67it/s]Loading weights:  28%|██▊       | 89/320 [00:00<00:01, 149.74it/s]Loading weights:  33%|███▎      | 106/320 [00:00<00:01, 147.91it/s]Loading weights:  39%|███▉      | 124/320 [00:00<00:01, 152.57it/s]Loading weights:  44%|████▍     | 140/320 [00:01<00:01, 131.90it/s]Loading weights:  48%|████▊     | 154/320 [00:01<00:01, 120.13it/s]Loading weights:  53%|█████▎    | 170/320 [00:01<00:01, 129.01it/s]Loading weights:  57%|█████▊    | 184/320 [00:01<00:01, 129.45it/s]Loading weights:  62%|██████▏   | 198/320 [00:01<00:00, 127.12it/s]Loading weights:  66%|██████▌   | 211/320 [00:01<00:00, 123.17it/s]Loading weights:  70%|███████   | 224/320 [00:01<00:00, 118.79it/s]Loading weights:  74%|███████▍  | 236/320 [00:01<00:00, 117.11it/s]Loading weights:  78%|███████▊  | 248/320 [00:02<00:00, 93.06it/s] Loading weights:  81%|████████  | 259/320 [00:02<00:00, 94.77it/s]Loading weights:  85%|████████▌ | 273/320 [00:02<00:00, 85.57it/s]Loading weights:  88%|████████▊ | 283/320 [00:02<00:00, 75.97it/s]Loading weights:  91%|█████████▏| 292/320 [00:02<00:00, 77.36it/s]Loading weights:  95%|█████████▌| 305/320 [00:02<00:00, 81.31it/s]Loading weights:  98%|█████████▊| 314/320 [00:02<00:00, 80.79it/s]Loading weights: 100%|██████████| 320/320 [00:02<00:00, 111.39it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+running 3_rules_only_naive ...
+running 3_vegaml-auto_only_naive ...
+running 4_validation_plus_vegaml-off ...
+running 5_rules_multi_disagreement ...
+running 6_full_sentinel ...
+running ablation_no_validation ...
+running ablation_no_disagreement ...
+running ablation_no_uncertainty ...
+running ablation_no_review ...
+wrote C:\Users\sasi\vegalab_runs\rq7_governance\REPORT.md
+STEP 3 exit 0 
+FINISHED Sun 10/18/2026  3:57:03.97 

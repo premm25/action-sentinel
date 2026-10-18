@@ -115,3 +115,38 @@ pytest                                   # 203 tests
 action-sentinel demo                            # offline end-to-end check
 action-sentinel lab suite --model ollama --second ""   # live LLM evaluation (about 30–40 min on CPU)
 ```
+
+---
+
+# Vega Decision Intelligence Lab (added 2026-10-15 to 2026-10-18)
+
+VegaML is now the primary decision engine of the lab in `action_sentinel/vegalab/`; Sentinel consumes it
+as an optional governance provider. Plan and phase reports: `docs/VEGA_MIGRATION.md`.
+
+| phase | status | evidence |
+|---|---|---|
+| 0 audit | done | baseline 203 tests passing |
+| 1 feasibility | **done: real VegaML inference verified** | `reports/vega_feasibility/`: vegaml 0.9.0, 0.8B on CPU, ~3.4 GB, ~1 s/decision |
+| 2 core adapter + contracts | done | `vega_core.py`, `contracts.py`; live tests (`pytest -m vegaml`) incl. runtime adapter switch = separate load |
+| 3 decision service + API | done | `service.py`, `/vega/*` routes (off by default) |
+| 4 Confidence Lab v2 | done | `pub-v1` public dataset (9 tasks + 3 variants, provenance, leakage checks); runner, analysis, reports |
+| 5 controlled benchmark | **small-sample run done; full run pending** | `reports/vegalab/pub-v1-n20_cpu_0.8b/`: 4 systems × 420 predictions, 0 errors; `docs/vegalab/RESULTS.md` |
+| 6 Sentinel integration | done | `providers/vegaml_provider.py` (vegaml-off / vegaml-auto share one model); RQ7 run in `reports/vegalab/rq7_governance_vegaml_0.8b/` |
+| 7 CLI + dashboard | done | `action-sentinel vega check/decide/data/run/analyze/export/failures`; dashboard "Vega Lab" tab (saved runs only) |
+| 8 hardening + docs | done for this stage | `docs/vegalab/`; Kaggle GPU notebook generated and tested against the CLI |
+
+**Headline (n = 20 test examples per task; indicative only):** VegaML 0.8B macro accuracy 0.70 vs 0.475 for
+the same frozen backbone used as a plain LM and 0.31 for majority; significant gains on topic, sentiment,
+stars and 60-intent tasks; weak on entailment (anli_r3 0.25). Best classifier, worst calibrated (macro
+ECE 0.25), with good confidence ranking; conformal sets did not keep 90% coverage on new tasks. On
+Sentinel's agent-action task VegaML abstained on all 44 actions (near-chance confidence), and the rules still
+blocked every hard violation with zero false approvals.
+
+**Bugs found and fixed in this stage:** hidden labels (-1) wrapped to the last class; Qwen3.5
+linear-attention cache could not be batch-repeated (30x slowdown); baseline prompt didn't match VegaML's
+tokens; `vegaml.load` failed offline despite cached weights; majority baseline had no prior for option
+variants; probabilistic metrics ignored per-example option sets. Each has a regression test.
+
+**Not done / limits:** the full-size benchmark (500/task) and the 4B checkpoint need a GPU (notebook ready,
+not yet run); the base-engine training corpus is undisclosed, so leakage can't be ruled out; local
+background runs were twice stopped for low memory and the final run was started as a detached process.

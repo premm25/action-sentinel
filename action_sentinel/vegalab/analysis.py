@@ -81,7 +81,8 @@ def group_metrics(records: list[dict[str, Any]], temperature: float | None = Non
     out["latency_ms"] = M.percentiles(wall)
     out["throughput_per_s"] = (len(wall) / (sum(wall) / 1000)) if wall and sum(wall) > 0 else None
 
-    probs_ok = [r for r in ok if r.get("probabilities") and set(r["probabilities"]) == set(labels)]
+    # Each example is checked against its OWN options: option-count variants offer different subsets per example.
+    probs_ok = [r for r in ok if r.get("probabilities") and set(r["probabilities"]) == set(r["labels"])]
     if ok and len(probs_ok) == len(ok):
         P = [(_temper(r["probabilities"], temperature) if temperature else r["probabilities"]) for r in probs_ok]
         top = [max(p, key=p.get) for p in P]
@@ -91,10 +92,10 @@ def group_metrics(records: list[dict[str, Any]], temperature: float | None = Non
         out["ece"] = cal["ece"] if cal else None
         out["reliability"] = cal["reliability"] if cal else None
         out["mean_confidence"] = cal["mean_confidence"] if cal else None
-        ps = M.brier_and_log_loss(P, [r["gold_label"] for r in probs_ok], labels)
-        out["brier"] = ps["brier"] if ps else None
-        out["log_loss"] = ps["log_loss"] if ps else None
-        out["log_loss_clipped"] = ps["log_loss_clipped_examples"] if ps else None
+        out["brier"] = sum(sum((p[c] - (1.0 if c == r["gold_label"] else 0.0)) ** 2 for c in p)
+                           for p, r in zip(P, probs_ok, strict=True)) / len(P)
+        out["log_loss"] = -sum(math.log(max(p[r["gold_label"]], 1e-12)) for p, r in zip(P, probs_ok, strict=True)) / len(P)
+        out["log_loss_clipped"] = sum(1 for p, r in zip(P, probs_ok, strict=True) if p[r["gold_label"]] < 1e-12)
         rc = M.risk_coverage(conf, correct)
         out["aurc"] = rc["aurc"] if rc else None
         out["risk_coverage"] = [p for i, p in enumerate(rc["curve"]) if i % max(1, len(rc["curve"]) // 20) == 0] \

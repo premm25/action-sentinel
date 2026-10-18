@@ -186,3 +186,10 @@ def test_regression_network_errors_trigger_offline_fallback():
         pass
     assert _network_error(ConnectTimeout("[WinError 10060] A connection attempt failed"))
     assert not _network_error(ValueError("backbone depth differs from training"))
+
+
+def test_regression_probabilistic_metrics_with_per_example_option_sets():
+    recs = [{**_rec(0, "a", "a", {"a": 0.8, "b": 0.2}), "labels": ["a", "b"]},
+            {**_rec(1, "c", "c", {"c": 0.6, "d": 0.4}), "labels": ["c", "d"]}]
+    m = A.group_metrics(recs)
+    assert m["ece"] is not None and m["brier"] == pytest.approx(((0.2 ** 2) * 2 + (0.4 ** 2) * 2) / 2)

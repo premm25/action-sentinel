@@ -1,6 +1,6 @@
 # Vega Decision Intelligence Lab: audit and migration plan
 
-Status: **Phase 0 and Phase 1 complete (real VegaML inference verified on this machine).** This document separates three kinds of statement:
+Status: **Phases 0–8 implemented. Phase 5 has a small-sample CPU run (20 test examples per task, `docs/vegalab/RESULTS.md`); the full GPU benchmark is pending (notebook ready).** The project is VegaML-centred: the lab's decision engine is real VegaML inference through `VegaCore`. This document separates three kinds of statement:
 *VegaML native* (verified in the vegaml source), *verified here* (observed in a run on this machine) and
 *ours* (implemented or planned in this repository).
 

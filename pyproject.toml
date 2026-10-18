@@ -44,3 +44,7 @@ line-length = 125
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# notebook cells hold single-line shell commands that must not be wrapped
+"scripts/build_kaggle_notebook.py" = ["E501"]

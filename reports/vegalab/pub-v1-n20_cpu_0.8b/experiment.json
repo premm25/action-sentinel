@@ -1,0 +1,33 @@
+{
+  "run_id": "vegalab-pub-v1-20261018_020353",
+  "dataset_dir": "data\\vegalab\\pub-v1",
+  "dataset_version": "pub-v1",
+  "systems": [
+    "majority",
+    "vega-off",
+    "vega-auto",
+    "backbone-optscore"
+  ],
+  "tasks": [
+    "anli_r3",
+    "boolq",
+    "dbpedia14",
+    "dbpedia14_k2",
+    "dbpedia14_k4",
+    "dbpedia14_k8",
+    "glue_rte",
+    "massive_intent_en",
+    "prompt_injections",
+    "sst2",
+    "superglue_cb",
+    "yelp_review_stars"
+  ],
+  "splits": [
+    "test",
+    "calibration"
+  ],
+  "limit": 20,
+  "model": "0.8b",
+  "device": "cpu",
+  "n_examples_per_system": 420
+}
