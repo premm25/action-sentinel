@@ -1,5 +1,7 @@
 # Action Sentinel
 
+[![CI](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
 **A safety checkpoint between AI agents and the real world.** Before an agent restarts a server,
 refunds a payment or deletes a database, Sentinel decides whether it may, and the action can only
 run with an authorization token issued for that exact action.
