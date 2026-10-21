@@ -1,0 +1,144 @@
+STARTED Thu 10/22/2026  1:23:39.95 
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights:   0%|          | 1/320 [00:00<02:16,  2.34it/s]Loading weights:   3%|▎         | 11/320 [00:00<00:11, 26.03it/s]Loading weights:  17%|█▋        | 53/320 [00:00<00:02, 109.16it/s]Loading weights:  23%|██▎       | 75/320 [00:00<00:02, 119.60it/s]Loading weights:  28%|██▊       | 90/320 [00:00<00:01, 118.39it/s]Loading weights:  32%|███▎      | 104/320 [00:01<00:01, 121.64it/s]Loading weights:  37%|███▋      | 118/320 [00:01<00:01, 114.53it/s]Loading weights:  43%|████▎     | 138/320 [00:01<00:01, 117.98it/s]Loading weights:  48%|████▊     | 152/320 [00:01<00:01, 122.83it/s]Loading weights:  52%|█████▎    | 168/320 [00:01<00:01, 126.64it/s]Loading weights:  57%|█████▋    | 182/320 [00:01<00:01, 126.44it/s]Loading weights:  61%|██████    | 195/320 [00:01<00:01, 122.25it/s]Loading weights:  66%|██████▋   | 212/320 [00:01<00:00, 134.26it/s]Loading weights:  71%|███████   | 226/320 [00:02<00:00, 127.31it/s]Loading weights:  75%|███████▍  | 239/320 [00:02<00:00, 125.49it/s]Loading weights:  79%|███████▉  | 252/320 [00:02<00:00, 121.57it/s]Loading weights:  83%|████████▎ | 265/320 [00:02<00:00, 113.93it/s]Loading weights:  90%|████████▉ | 287/320 [00:02<00:00, 132.21it/s]Loading weights:  94%|█████████▍| 301/320 [00:02<00:00, 123.78it/s]Loading weights: 100%|██████████| 320/320 [00:02<00:00, 115.08it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+DEV {
+ "rich": {
+  "n": 14,
+  "accuracy": 0.357,
+  "correct": 5,
+  "false_safe": 6,
+  "predicted_distribution": {
+   "needs_review": 7,
+   "safe": 7
+  },
+  "abstain_rate": 1.0,
+  "accuracy_when_not_abstaining": null,
+  "mean_confidence": 0.49,
+  "confidence_range": [
+   0.385,
+   0.616
+  ],
+  "p50_wall_ms": 3248.5
+ },
+ "compact": {
+  "n": 14,
+  "accuracy": 0.357,
+  "correct": 5,
+  "false_safe": 7,
+  "predicted_distribution": {
+   "safe": 9,
+   "unsafe": 1,
+   "needs_review": 4
+  },
+  "abstain_rate": 0.786,
+  "accuracy_when_not_abstaining": 0.0,
+  "mean_confidence": 0.594,
+  "confidence_range": [
+   0.443,
+   0.906
+  ],
+  "p50_wall_ms": 3024.8
+ },
+ "compact_views2": {
+  "n": 14,
+  "accuracy": 0.357,
+  "correct": 5,
+  "false_safe": 7,
+  "predicted_distribution": {
+   "safe": 9,
+   "unsafe": 1,
+   "needs_review": 4
+  },
+  "abstain_rate": 0.857,
+  "accuracy_when_not_abstaining": 0.0,
+  "mean_confidence": 0.576,
+  "confidence_range": [
+   0.41,
+   0.863
+  ],
+  "p50_wall_ms": 5846.6
+ },
+ "decomposed": {
+  "n": 14,
+  "accuracy": 0.429,
+  "correct": 6,
+  "false_safe": 6,
+  "predicted_distribution": {
+   "safe": 8,
+   "needs_review": 5,
+   "unsafe": 1
+  },
+  "abstain_rate": 0.143,
+  "accuracy_when_not_abstaining": 0.417,
+  "mean_confidence": 0.74,
+  "confidence_range": [
+   0.51,
+   0.986
+  ],
+  "p50_wall_ms": 5485.5
+ }
+}
+CHOSEN decomposed
+TTT {"disposition": {"fitted": true, "examples": 28, "cv_accuracy": 0.8, "chance": 0.333, "at_or_below_chance": false, "used_by_auto": true}}
+TEST {
+ "rich (baseline)": {
+  "n": 44,
+  "accuracy": 0.341,
+  "correct": 15,
+  "false_safe": 12,
+  "predicted_distribution": {
+   "needs_review": 28,
+   "unsafe": 3,
+   "safe": 13
+  },
+  "abstain_rate": 1.0,
+  "accuracy_when_not_abstaining": null,
+  "mean_confidence": 0.483,
+  "confidence_range": [
+   0.374,
+   0.672
+  ],
+  "p50_wall_ms": 3345.9
+ },
+ "chosen: decomposed": {
+  "n": 44,
+  "accuracy": 0.386,
+  "correct": 17,
+  "false_safe": 18,
+  "predicted_distribution": {
+   "safe": 26,
+   "unsafe": 6,
+   "needs_review": 12
+  },
+  "abstain_rate": 0.205,
+  "accuracy_when_not_abstaining": 0.429,
+  "mean_confidence": 0.722,
+  "confidence_range": [
+   0.518,
+   0.939
+  ],
+  "p50_wall_ms": 5374.6
+ },
+ "ttt head (compact, fit on calibration)": {
+  "n": 44,
+  "accuracy": 0.75,
+  "correct": 33,
+  "false_safe": 2,
+  "predicted_distribution": {
+   "safe": 12,
+   "needs_review": 28,
+   "unsafe": 4
+  },
+  "abstain_rate": null,
+  "accuracy_when_not_abstaining": null,
+  "mean_confidence": 0.897,
+  "confidence_range": [
+   0.46,
+   0.987
+  ],
+  "p50_wall_ms": 3300.4
+ }
+}
+saved C:\Users\sasi\vegalab_runs\agent_framing_0.8b
+FINISHED exit 0 Thu 10/22/2026  1:39:27.85 
