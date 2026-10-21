@@ -22,6 +22,8 @@ class FakeVegaRunner:
         self.loaded = False
         self.mode: AdapterMode = "auto"
         self.calls: list[tuple[Any, dict[str, Any], AdapterMode]] = []
+        self.fitted = False
+        self.fit_calls: list[tuple[Any, Any]] = []
 
     def load(self) -> None:
         from .contracts import InferenceError, VegaInferenceError
@@ -36,11 +38,24 @@ class FakeVegaRunner:
     def set_adapter_mode(self, mode: AdapterMode) -> None:
         self.mode = mode
 
-    def decide(self, state, questions, *, alpha, risk, views):
+    def decide(self, state, questions, *, alpha, risk, views, readout="engine"):
         self.calls.append((state, questions, self.mode))
         if self.raise_on_decide is not None:
             raise self.raise_on_decide
-        return self.respond(state, questions, self.mode)
+        out = self.respond(state, questions, self.mode)
+        if readout == "ttt":  # shaped like vegaml's head readout: no abstain/conformal/unbound fields
+            if not self.fitted:
+                raise RuntimeError("no TTT head for %s" % ", ".join(sorted(questions)))
+            for a in out["answers"].values():
+                for k in ("abstain", "prediction_set", "unbound", "settle_steps", "energy"):
+                    a.pop(k, None)
+                a["readout"] = "ttt"
+        return out
+
+    def fit_heads(self, examples, questions):
+        self.fitted = True
+        self.fit_calls.append((examples, questions))
+        return {qid: {"fitted": True, "examples": len(examples), "cv_accuracy": None} for qid in questions}
 
     @staticmethod
     def default_response(state, questions, mode) -> dict[str, Any]:

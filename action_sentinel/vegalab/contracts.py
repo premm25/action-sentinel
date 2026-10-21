@@ -160,6 +160,7 @@ class DecisionResult(StrictModel):
     engine_version: str
     model_id: str
     adapter_mode: AdapterMode
+    readout: Literal["engine", "ttt"] = "engine"  # "ttt": a fitted few-shot head; no abstain or calibration
     live_inference: bool  # False only for test doubles; never set False for a real model call
     decisions: dict[str, QuestionDecision]
     wall_ms: float

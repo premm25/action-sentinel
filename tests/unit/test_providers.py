@@ -291,3 +291,32 @@ def test_runner_strategies_and_enforced_timeout():
         assert runner.run([], req()) == []
     finally:
         runner.close()
+
+
+def test_vegaml_compact_framing_and_head_readout():
+    from action_sentinel.vegalab.testing import FakeVegaRunner
+    from action_sentinel.vegalab.vega_core import VegaCore
+    from tests.conftest import DATASET
+    runner = FakeVegaRunner()
+    p = VegaMLDecisionProvider("vega-head", core=VegaCore(runner), adapter_mode="off", framing="compact",
+                               readout="ttt", ttt_fit_dataset=str(DATASET), ttt_fit_split="calibration")
+    r = p.decide(req())
+    assert r.status == "ok" and r.metadata["readout"] == "ttt"
+    assert r.prediction_set is None and "vegaml_abstain" not in r.metadata  # a head has no abstain flag
+    examples, questions = runner.fit_calls[0]
+    assert len(examples) == 28 and set(questions) == {"disposition"}      # calibration split only
+    assert all(isinstance(e[0], str) and e[0].startswith("Agent ") for e in examples)
+    state = runner.calls[-1][0]
+    assert isinstance(state, str) and "wants to restart service on staging/checkout-api" in state
+    p.decide(req(event_id="e2"))
+    assert len(runner.fit_calls) == 1  # the head is fitted once
+
+
+@pytest.mark.parametrize("kw,needle", [
+    (dict(readout="ttt"), "ttt_fit_dataset"),
+    (dict(readout="ttt", ttt_fit_dataset="x.jsonl", ttt_fit_split="test"), "test split"),
+    (dict(framing="verbose"), "framing"),
+])
+def test_vegaml_provider_rejects_unsafe_configuration(kw, needle):
+    with pytest.raises(ValueError, match=needle):
+        VegaMLDecisionProvider("v", **kw)

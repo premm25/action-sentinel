@@ -45,6 +45,10 @@ class VegaMLConfig(StrictModel):
     checkpoint: str = "0.8b"
     device: Literal["cpu", "cuda", "mps"] | None = "cpu"
     adapter_mode: Literal["off", "auto", "on"] = "auto"
+    framing: Literal["rich", "compact"] = "rich"
+    readout: Literal["engine", "ttt"] = "engine"
+    ttt_fit_dataset: str | None = None
+    ttt_fit_split: Literal["dev", "calibration"] = "calibration"   # never "test"
 
 
 class ProviderConfigError(ValueError):
@@ -73,8 +77,12 @@ def _ollama(spec: ProviderSpec, base: Path) -> DecisionProvider:
 
 def _vegaml(spec: ProviderSpec, base: Path) -> DecisionProvider:
     cfg = VegaMLConfig.model_validate(spec.config)
+    ds = cfg.ttt_fit_dataset
+    if ds and not Path(ds).is_absolute():
+        ds = str(base / ds)
     return VegaMLDecisionProvider(spec.name, checkpoint=cfg.checkpoint, device=cfg.device,
-                                  adapter_mode=cfg.adapter_mode)
+                                  adapter_mode=cfg.adapter_mode, framing=cfg.framing, readout=cfg.readout,
+                                  ttt_fit_dataset=ds, ttt_fit_split=cfg.ttt_fit_split)
 
 
 FACTORIES: dict[str, Factory] = {"rule_based": _rule_based, "mock": _mock, "ollama": _ollama, "vegaml": _vegaml}

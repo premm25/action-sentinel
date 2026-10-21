@@ -17,7 +17,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
 from pydantic import ValidationError
 
@@ -40,7 +40,11 @@ class VegaRunner(Protocol):
     def info(self) -> dict[str, Any]: ...
     def set_adapter_mode(self, mode: AdapterMode) -> None: ...
     def decide(self, state: Any, questions: dict[str, Any], *, alpha: str, risk: str | None,
-               views: int) -> dict[str, Any]: ...
+               views: int, readout: str = "engine") -> dict[str, Any]: ...
+    def fit_heads(self, examples: list[tuple], questions: dict[str, Any]) -> dict[str, Any]: ...
+
+
+Readout = Literal["engine", "ttt"]
 
 
 class LiveVegaRunner:
@@ -128,12 +132,22 @@ class LiveVegaRunner:
             self._mode = mode
 
     def decide(self, state: Any, questions: dict[str, Any], *, alpha: str, risk: str | None,
-               views: int) -> dict[str, Any]:
+               views: int, readout: str = "engine") -> dict[str, Any]:
         if self._vega is None:
             raise VegaInferenceError(InferenceError(code="MODEL_NOT_READY", message="model not loaded"))
+        if readout == "ttt":
+            # VegaML's few-shot head readout (Vega.decide(mode="ttt")): probabilities from a head fitted
+            # with fit_heads; no abstain flag, conformal set or calibration (VegaML documents this).
+            return self._vega.decide(state, questions, mode="ttt")
         out = self._vega.engine.decide(state, questions, alpha=alpha, risk=risk, views=views)
         out["mode"] = "engine"
         return out
+
+    def fit_heads(self, examples: list[tuple], questions: dict[str, Any]) -> dict[str, Any]:
+        """vegaml's Vega.fit: one TTT head per question; heads at or below chance are discarded by vegaml."""
+        if self._vega is None:
+            raise VegaInferenceError(InferenceError(code="MODEL_NOT_READY", message="model not loaded"))
+        return self._vega.fit(examples, questions)
 
 
 class VegaCore:
@@ -151,15 +165,18 @@ class VegaCore:
         return bool(getattr(self.runner, "live", False))
 
     def decide(self, request: DecisionRequest | dict[str, Any],
-               adapter_mode: AdapterMode = "auto") -> DecisionResult:
+               adapter_mode: AdapterMode = "auto", readout: Readout = "engine") -> DecisionResult:
         request = self.validate(request)
         if adapter_mode not in ("off", "auto", "on"):
             raise VegaInferenceError(InferenceError(request_id=request.request_id, code="INVALID_INPUT",
                                                     message="adapter_mode must be off, auto or on"))
+        if readout not in ("engine", "ttt"):
+            raise VegaInferenceError(InferenceError(request_id=request.request_id, code="INVALID_INPUT",
+                                                    message="readout must be engine or ttt"))
         state, questions = request.vega_state(), request.vega_questions()
         t0 = time.perf_counter()
         with self._lock:
-            fut = self._pool.submit(self._call, state, questions, request, adapter_mode)
+            fut = self._pool.submit(self._call, state, questions, request, adapter_mode, readout)
             try:
                 native = fut.result(timeout=self.timeout_s)
             except FutureTimeout:
@@ -177,7 +194,7 @@ class VegaCore:
                 raise VegaInferenceError(InferenceError(request_id=request.request_id, code=code,
                                                         message=msg)) from exc
         wall = round(1000 * (time.perf_counter() - t0), 2)
-        return self.normalize(request, native, adapter_mode, wall)
+        return self.normalize(request, native, adapter_mode, wall, readout)
 
     @staticmethod
     def validate(request: DecisionRequest | dict[str, Any]) -> DecisionRequest:
@@ -190,12 +207,18 @@ class VegaCore:
             detail = "; ".join("%s: %s" % (".".join(str(x) for x in e["loc"]), e["msg"]) for e in exc.errors())
             raise VegaInferenceError(InferenceError(code="INVALID_INPUT", message=detail[:4000])) from exc
 
-    def _call(self, state, questions, request: DecisionRequest, adapter_mode: AdapterMode) -> dict[str, Any]:
+    def _call(self, state, questions, request: DecisionRequest, adapter_mode: AdapterMode,
+              readout: Readout = "engine") -> dict[str, Any]:
         self.runner.set_adapter_mode(adapter_mode)
-        return self.runner.decide(state, questions, alpha=request.alpha, risk=request.risk, views=request.views)
+        return self.runner.decide(state, questions, alpha=request.alpha, risk=request.risk, views=request.views,
+                                  readout=readout)
+
+    def fit_heads(self, examples: list[tuple], questions: dict[str, Any]) -> dict[str, Any]:
+        with self._lock:
+            return self.runner.fit_heads(examples, questions)
 
     def normalize(self, request: DecisionRequest, native: dict[str, Any], adapter_mode: AdapterMode,
-                  wall_ms: float) -> DecisionResult:
+                  wall_ms: float, readout: Readout = "engine") -> DecisionResult:
         answers = native.get("answers") if isinstance(native, dict) else None
         if not isinstance(answers, dict):
             raise self._malformed(request, "native output has no 'answers' mapping")
@@ -209,16 +232,17 @@ class VegaCore:
             a = answers.get(q.question_id)
             if not isinstance(a, dict):
                 raise self._malformed(request, "no answer for question %r" % q.question_id)
-            decisions[q.question_id] = self._question(request, q, a, info)
+            decisions[q.question_id] = self._question(request, q, a, info, readout)
         return DecisionResult(
             request_id=request.request_id, engine_version=str(info.get("vegaml", "unknown")),
-            model_id=self.model_id, adapter_mode=adapter_mode, live_inference=self.live, decisions=decisions,
+            model_id=self.model_id, adapter_mode=adapter_mode, readout=readout, live_inference=self.live,
+            decisions=decisions,
             wall_ms=wall_ms, native_latency_ms=_num(native.get("latency_ms")),
             n_tokens=int(native["n_tokens"]) if isinstance(native.get("n_tokens"), int) else None,
             native=native)
 
     def _question(self, request: DecisionRequest, q: DecisionQuestion, a: dict[str, Any],
-                  info: dict[str, Any]) -> QuestionDecision:
+                  info: dict[str, Any], readout: Readout = "engine") -> QuestionDecision:
         labels = q.labels
         probs_raw = a.get("probs")
         probs = None
@@ -261,7 +285,7 @@ class VegaCore:
             energy=_num(a.get("energy")), view_agreement=_num(a.get("view_agreement")),
             adapter=a.get("adapter") if isinstance(a.get("adapter"), str) else None,
             gate=_num(a.get("gate")),
-            calibration_source="vegaml_checkpoint" if probs is not None else "none")
+            calibration_source="vegaml_checkpoint" if probs is not None and readout == "engine" else "none")
         return QuestionDecision(
             question_id=q.question_id, type=q.type, selected_label=selected,
             score=int(a["score"]) if q.type == "score" and isinstance(a.get("score"), (int, float)) else None,

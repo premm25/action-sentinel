@@ -23,6 +23,11 @@ providers:
     type: vegaml
     enabled: true          # shares the loaded model with vegaml-off (one model per checkpoint/device)
     config: {checkpoint: "0.8b", device: cpu, adapter_mode: auto}
+  - name: vegaml-head
+    type: vegaml
+    enabled: true          # VegaML few-shot head (Vega.fit) on the compact framing, fitted on the calibration split
+    config: {checkpoint: "0.8b", device: cpu, adapter_mode: "off", framing: compact, readout: ttt,
+             ttt_fit_dataset: examples/evaluation_datasets/sentinel_synthetic_v1.jsonl, ttt_fit_split: calibration}
 
 # Providers consulted for every decision. Deterministic rules only, so the default works offline.
 active_providers: [rules]
