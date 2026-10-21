@@ -1,0 +1,16 @@
+STARTED Thu 10/22/2026  1:43:20.07 
+running 1_rules_only ...
+running 2_vegaml-head_only_naive ...
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights:  10%|█         | 33/320 [00:00<00:00, 329.54it/s]Loading weights:  21%|██        | 66/320 [00:00<00:01, 189.03it/s]Loading weights:  28%|██▊       | 89/320 [00:00<00:01, 164.34it/s]Loading weights:  34%|███▍      | 108/320 [00:00<00:01, 156.48it/s]Loading weights:  39%|███▉      | 125/320 [00:00<00:01, 142.38it/s]Loading weights:  44%|████▍     | 140/320 [00:00<00:01, 126.38it/s]Loading weights:  48%|████▊     | 153/320 [00:01<00:01, 113.94it/s]Loading weights:  52%|█████▏    | 165/320 [00:01<00:01, 109.08it/s]Loading weights:  57%|█████▋    | 181/320 [00:01<00:01, 104.93it/s]Loading weights:  61%|██████    | 195/320 [00:01<00:01, 83.67it/s] Loading weights:  64%|██████▍   | 206/320 [00:01<00:01, 86.53it/s]Loading weights:  68%|██████▊   | 218/320 [00:01<00:01, 93.57it/s]Loading weights:  72%|███████▏  | 229/320 [00:02<00:01, 84.22it/s]Loading weights:  78%|███████▊  | 249/320 [00:02<00:00, 107.00it/s]Loading weights:  82%|████████▏ | 261/320 [00:02<00:00, 109.61it/s]Loading weights:  85%|████████▌ | 273/320 [00:02<00:00, 108.14it/s]Loading weights:  90%|████████▉ | 287/320 [00:02<00:00, 111.21it/s]Loading weights:  93%|█████████▎| 299/320 [00:02<00:00, 112.28it/s]Loading weights:  97%|█████████▋| 311/320 [00:02<00:00, 110.82it/s]Loading weights: 100%|██████████| 320/320 [00:02<00:00, 119.15it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+running 3_rules_only_naive ...
+running 4_validation_plus_vegaml-head ...
+running 5_rules_multi_disagreement ...
+running 6_full_sentinel ...
+running ablation_no_validation ...
+running ablation_no_disagreement ...
+running ablation_no_uncertainty ...
+running ablation_no_review ...
+wrote C:\Users\sasi\vegalab_runs\rq7_governance_vegaml-head\REPORT.md
+FINISHED exit 0 Thu 10/22/2026  1:48:04.93 

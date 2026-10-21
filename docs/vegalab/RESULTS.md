@@ -141,6 +141,14 @@ reference policy, see `docs/evaluation/METHODOLOGY.md`):
   source, context) produced near-uniform outputs. The input format matters. It was **not** tuned
   here, because tuning against this test set would leak.
 
+### Follow-up: few-shot head (2026-10-22, `AGENT_FRAMING.md`)
+
+Re-framing the input alone did not help (more confident errors). A VegaML few-shot head (`Vega.fit`)
+fitted on the 28 calibration actions raised test accuracy from 0.34 to 0.75. Behind Sentinel's rules, it
+auto-approved 8/10 safe actions (previously 0/10) with **0/34 false approvals** and 10/10 hard
+violations blocked. Alone, without the rules, it approved 2 unsafe actions. The data is synthetic and
+templated, so these numbers are optimistic.
+
 ## What these results do not show
 
 - Nothing at benchmark precision: 20 test examples per task. The Kaggle notebook

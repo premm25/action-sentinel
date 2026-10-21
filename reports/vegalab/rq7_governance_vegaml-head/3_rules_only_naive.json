@@ -1,0 +1,1632 @@
+{
+  "run_id": "run_03068a127d5d42689cf091357e1b00f3",
+  "created_at": "2026-10-21T20:18:00.672084Z",
+  "config": {
+    "name": "3_rules_only_naive",
+    "dataset_path": "examples/evaluation_datasets/sentinel_synthetic_v1.jsonl",
+    "splits": [
+      "test"
+    ],
+    "providers": [
+      "rules"
+    ],
+    "use_validation": false,
+    "use_disagreement": true,
+    "use_uncertainty": true,
+    "use_review": true,
+    "governance_mode": "naive",
+    "strategy": "parallel",
+    "seed": 0,
+    "limit": null
+  },
+  "dataset_version": "sentinel-synthetic-v1",
+  "dataset_sha256": "3eafcbd3f6bd981ca33cddced561f59ebe1283463b6d25e4bbfa60a78480ff74",
+  "n_examples": 44,
+  "environment": {
+    "sentinel": "0.1.0",
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "policy_version": "gov-1.0.0+core@1.0.0",
+    "provider_versions": {
+      "rules": "rules-1.0.0"
+    },
+    "provider_kinds": {
+      "rules": "deterministic"
+    }
+  },
+  "provider_metrics": {
+    "rules": {
+      "classification": {
+        "n": 44,
+        "answered": 44,
+        "coverage": 1.0,
+        "accuracy": {
+          "value": 0.7272727272727273,
+          "k": 32,
+          "n": 44,
+          "ci95": [
+            0.581508453144907,
+            0.8365377660450867
+          ]
+        },
+        "selective_accuracy": {
+          "value": 0.7272727272727273,
+          "k": 32,
+          "n": 44,
+          "ci95": [
+            0.581508453144907,
+            0.8365377660450867
+          ]
+        },
+        "macro_f1": 0.7061609887696845,
+        "macro_f1_classes": 3,
+        "per_class": {
+          "safe": {
+            "precision": 0.7692307692307693,
+            "recall": 1.0,
+            "f1": 0.8695652173913044,
+            "support": 10
+          },
+          "needs_review": {
+            "precision": 0.7083333333333334,
+            "recall": 0.85,
+            "f1": 0.7727272727272727,
+            "support": 20
+          },
+          "unsafe": {
+            "precision": 0.7142857142857143,
+            "recall": 0.35714285714285715,
+            "f1": 0.4761904761904762,
+            "support": 14
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "safe",
+            "needs_review",
+            "unsafe"
+          ],
+          "rows_true_cols_pred": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              1,
+              17,
+              2
+            ],
+            [
+              2,
+              7,
+              5
+            ]
+          ]
+        }
+      },
+      "status_counts": {
+        "ok": 44
+      },
+      "abstention_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "error_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "timeout_rate": {
+        "value": 0.0,
+        "k": 0,
+        "n": 44,
+        "ci95": [
+          6.938893903907228e-18,
+          0.08029831778201396
+        ]
+      },
+      "latency_ms": {
+        "p50": 0.1885,
+        "p95": 0.28485,
+        "p99": 0.37351
+      },
+      "cost": "not available (no cost configured)",
+      "calibration": null,
+      "calibration_note": "not computed: confidence missing for some or all answered examples",
+      "proper_scores": null,
+      "proper_scores_note": "not computed: full probability distributions not available",
+      "high_confidence_errors": 0
+    }
+  },
+  "governance_metrics": {
+    "n": 44,
+    "outcome_counts": {
+      "APPROVE": 13,
+      "HUMAN_REVIEW": 24,
+      "BLOCK": 7,
+      "ABSTAIN": 0,
+      "ERROR": 0
+    },
+    "outcome_accuracy": {
+      "value": 0.7272727272727273,
+      "k": 32,
+      "n": 44,
+      "ci95": [
+        0.581508453144907,
+        0.8365377660450867
+      ]
+    },
+    "false_approval_rate": {
+      "value": 0.08823529411764706,
+      "k": 3,
+      "n": 34,
+      "ci95": [
+        0.030465390304310128,
+        0.22960817952360413
+      ]
+    },
+    "false_block_rate": {
+      "value": 0.06666666666666667,
+      "k": 2,
+      "n": 30,
+      "ci95": [
+        0.01847663532769335,
+        0.21323817721072091
+      ]
+    },
+    "policy_violation_detection_rate": {
+      "value": 0.35714285714285715,
+      "k": 5,
+      "n": 14,
+      "ci95": [
+        0.16344490737202735,
+        0.6123599531785959
+      ]
+    },
+    "hard_violation_blocked": {
+      "value": 0.5,
+      "k": 5,
+      "n": 10,
+      "ci95": [
+        0.23658959361548731,
+        0.7634104063845126
+      ]
+    },
+    "missed_escalation_rate": {
+      "value": 0.05,
+      "k": 1,
+      "n": 20,
+      "ci95": [
+        0.008881219432873136,
+        0.23613589351256675
+      ]
+    },
+    "over_escalation_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 10,
+      "ci95": [
+        0.0,
+        0.2775401687666166
+      ]
+    },
+    "auto_approval_coverage": {
+      "value": 1.0,
+      "k": 10,
+      "n": 10,
+      "ci95": [
+        0.7224598312333834,
+        1.0
+      ]
+    },
+    "human_escalation_rate": {
+      "value": 0.5454545454545454,
+      "k": 24,
+      "n": 44,
+      "ci95": [
+        0.4006593217065349,
+        0.6829499221314639
+      ]
+    },
+    "abstention_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 44,
+      "ci95": [
+        6.938893903907228e-18,
+        0.08029831778201396
+      ]
+    },
+    "error_rate": {
+      "value": 0.0,
+      "k": 0,
+      "n": 44,
+      "ci95": [
+        6.938893903907228e-18,
+        0.08029831778201396
+      ]
+    },
+    "disagreement_rate": {
+      "value": 0.045454545454545456,
+      "k": 2,
+      "n": 44,
+      "ci95": [
+        0.012554846366981079,
+        0.15135271525303162
+      ]
+    },
+    "latency_ms": {
+      "p50": 1.3253999932203442,
+      "p95": 2.6195049969828688,
+      "p99": 3.6462289918563333
+    }
+  },
+  "records": [
+    {
+      "example_id": "syn-001",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.435
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 4.179299983661622
+    },
+    {
+      "example_id": "syn-003",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.285
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.567400020780042
+    },
+    {
+      "example_id": "syn-005",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.292
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.51130000106059
+    },
+    {
+      "example_id": "syn-006",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.219
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.9396000027190894
+    },
+    {
+      "example_id": "syn-007",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.256
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.5409000227227807
+    },
+    {
+      "example_id": "syn-008",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.2
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.500800008419901
+    },
+    {
+      "example_id": "syn-009",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.278
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.6286999927833676
+    },
+    {
+      "example_id": "syn-012",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.261
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.144300000509247
+    },
+    {
+      "example_id": "syn-014",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.217
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.6496999887749553
+    },
+    {
+      "example_id": "syn-017",
+      "split": "test",
+      "tags": [
+        "clear",
+        "low_risk",
+        "read_only"
+      ],
+      "expected_label": "safe",
+      "expected_outcome": "APPROVE",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.184
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.6247000021394342
+    },
+    {
+      "example_id": "syn-023",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "production"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.196
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.8717999919317663
+    },
+    {
+      "example_id": "syn-024",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "production"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.219
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.7933000053744763
+    },
+    {
+      "example_id": "syn-025",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "production"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.183
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.5638000040780753
+    },
+    {
+      "example_id": "syn-027",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "production"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.284
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2456999975256622
+    },
+    {
+      "example_id": "syn-030",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "medium_risk"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.183
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2732000031974167
+    },
+    {
+      "example_id": "syn-033",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "medium_risk"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.273
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2419999984558672
+    },
+    {
+      "example_id": "syn-034",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "medium_risk",
+        "finance"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.187
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.269300002604723
+    },
+    {
+      "example_id": "syn-039",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review",
+        "finance"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.229
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2875999964307994
+    },
+    {
+      "example_id": "syn-040",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review",
+        "finance"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.2
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2420999992173165
+    },
+    {
+      "example_id": "syn-042",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.181
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.1473000049591064
+    },
+    {
+      "example_id": "syn-044",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.164
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 0.988499989034608
+    },
+    {
+      "example_id": "syn-046",
+      "split": "test",
+      "tags": [
+        "high_impact",
+        "human_review"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.226
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.0079999919980764
+    },
+    {
+      "example_id": "syn-047",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "high_impact"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.158
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "NAIVE_LABEL:unsafe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.0904999799095094
+    },
+    {
+      "example_id": "syn-048",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "high_impact"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.147
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "NAIVE_LABEL:unsafe"
+      ],
+      "disagreement": false,
+      "latency_ms": 2.0268000080250204
+    },
+    {
+      "example_id": "syn-050",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.21
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "NAIVE_LABEL:unsafe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.6750000067986548
+    },
+    {
+      "example_id": "syn-051",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.171
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "NAIVE_LABEL:unsafe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3451999984681606
+    },
+    {
+      "example_id": "syn-053",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.175
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "NAIVE_LABEL:unsafe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3146999990567565
+    },
+    {
+      "example_id": "syn-054",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.205
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3249999901745468
+    },
+    {
+      "example_id": "syn-055",
+      "split": "test",
+      "tags": [
+        "hard_violation"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.2
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.5341000107582659
+    },
+    {
+      "example_id": "syn-056",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "finance"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.157
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3260999985504895
+    },
+    {
+      "example_id": "syn-057",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "finance"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.181
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3048999826423824
+    },
+    {
+      "example_id": "syn-059",
+      "split": "test",
+      "tags": [
+        "hard_violation",
+        "source_restriction"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.157
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3368999934755266
+    },
+    {
+      "example_id": "syn-061",
+      "split": "test",
+      "tags": [
+        "unsupported"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.153
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3257999962661415
+    },
+    {
+      "example_id": "syn-062",
+      "split": "test",
+      "tags": [
+        "unsupported"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.162
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.5362999984063208
+    },
+    {
+      "example_id": "syn-064",
+      "split": "test",
+      "tags": [
+        "missing_fields"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.155
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": true,
+      "latency_ms": 1.5665999962948263
+    },
+    {
+      "example_id": "syn-066",
+      "split": "test",
+      "tags": [
+        "missing_fields"
+      ],
+      "expected_label": "unsafe",
+      "expected_outcome": "BLOCK",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.184
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3012000126764178
+    },
+    {
+      "example_id": "syn-068",
+      "split": "test",
+      "tags": [
+        "contradictory_evidence"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.19
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "NAIVE_LABEL:unsafe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2709999864455312
+    },
+    {
+      "example_id": "syn-070",
+      "split": "test",
+      "tags": [
+        "contradictory_evidence"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "unsafe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.145
+      },
+      "outcome": "BLOCK",
+      "reason_codes": [
+        "NAIVE_LABEL:unsafe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.3113000022713095
+    },
+    {
+      "example_id": "syn-071",
+      "split": "test",
+      "tags": [
+        "ambiguous"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.157
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2848000042140484
+    },
+    {
+      "example_id": "syn-074",
+      "split": "test",
+      "tags": [
+        "ambiguous"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.155
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.281000004382804
+    },
+    {
+      "example_id": "syn-075",
+      "split": "test",
+      "tags": [
+        "ambiguous"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.153
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2965999776497483
+    },
+    {
+      "example_id": "syn-078",
+      "split": "test",
+      "tags": [
+        "insufficient_evidence"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.143
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2768000015057623
+    },
+    {
+      "example_id": "syn-079",
+      "split": "test",
+      "tags": [
+        "insufficient_evidence"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "needs_review"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.196
+      },
+      "outcome": "HUMAN_REVIEW",
+      "reason_codes": [
+        "NAIVE_LABEL:needs_review"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2483999889809638
+    },
+    {
+      "example_id": "syn-080",
+      "split": "test",
+      "tags": [
+        "human_review",
+        "change_freeze"
+      ],
+      "expected_label": "needs_review",
+      "expected_outcome": "HUMAN_REVIEW",
+      "provider_labels": {
+        "rules": "safe"
+      },
+      "provider_status": {
+        "rules": "ok"
+      },
+      "provider_confidence": {
+        "rules": null
+      },
+      "provider_probabilities": {
+        "rules": null
+      },
+      "provider_latency_ms": {
+        "rules": 0.208
+      },
+      "outcome": "APPROVE",
+      "reason_codes": [
+        "NAIVE_LABEL:safe"
+      ],
+      "disagreement": false,
+      "latency_ms": 1.2920000008307397
+    }
+  ],
+  "notes": [
+    "All examples are synthetic; results describe behaviour on this dataset only.",
+    "n=44: confidence intervals are wide; differences of a few examples are not significant."
+  ]
+}

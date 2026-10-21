@@ -72,3 +72,28 @@ also has **no abstain flag or calibration**: VegaML's own documentation warns th
 confidently when it shouldn't, as `syn-080` shows. The fair conclusion: VegaML's frozen features
 *do* carry the information, and a little task-specific supervision unlocks it. Measuring by how much
 needs real labelled actions.
+
+## Governance with the head (Sentinel, 44 test actions)
+
+Run 2026-10-22, `reports/vegalab/rq7_governance_vegaml-head/`. Provider `vegaml-head`: VegaML 0.8B,
+compact framing, few-shot head fitted on the calibration split when the provider loads. Same
+governance policy and thresholds as before (auto-approve needs confidence ≥ 0.85, low risk, no review
+findings); nothing was retuned.
+
+| full Sentinel (rules + VegaML) | plain VegaML (`RESULTS.md` RQ7) | VegaML + head |
+|---|---:|---:|
+| safe actions auto-approved | 0 / 10 | **8 / 10** |
+| false approvals | 0 / 34 | **0 / 34** |
+| hard violations blocked | 10 / 10 | **10 / 10** |
+| human escalation rate | 0.68 | **0.50** |
+| outcome accuracy | 0.77 | **0.95** |
+
+- The head turned VegaML from a judge that only ever said "not sure" into one that lets routine
+  actions through automatically, with **no** dangerous action approved and every hard violation blocked.
+- **Alone, the head is not safe:** in naive mode (model label → outcome, no rules) it approved 2 of 34
+  not-safe actions and blocked only 2 of 10 hard violations. The rules are what make it safe to use.
+- The rules-only configuration scores 1.00 here, but that is circular: the expected outcomes were
+  written from the same rule pack (see `docs/evaluation/METHODOLOGY.md`). The head's value is
+  measured by auto-approval and escalation with false approvals held at zero, not by beating rules-only.
+- All the template-similarity caveats above apply. On real agent traffic, expect fewer auto-approvals,
+  and keep the head behind the rules exactly as tested here.
