@@ -149,10 +149,24 @@ auto-approved 8/10 safe actions (previously 0/10) with **0/34 false approvals** 
 violations blocked. Alone, without the rules, it approved 2 unsafe actions. The data is synthetic and
 templated, so these numbers are optimistic.
 
+## RQ8: real agent-request safety data (AgentHarm, 2026-10-22, `AGENTHARM.md`)
+
+352 test requests (176 harmful, 176 benign twins), with the head fitted on 64 calibration requests
+from disjoint base behaviours; 0 errors, all VegaML systems live.
+
+- **The few-shot head held up on real data:** accuracy 0.841, AUROC 0.920, ECE 0.063, 18 false
+  alarms and 38 missed harmful requests. It is +0.105 [+0.065, +0.148] over VegaML-off.
+- **VegaML vs backbone was mostly a threshold effect:** at 0.5 the backbone called everything benign
+  (0.500 vs VegaML-off 0.736). With thresholds fitted on calibration it reached 0.716 vs 0.705;
+  VegaML ranked somewhat better (AUROC 0.831 vs 0.784).
+- Adapters (`typed_decisions`) fired on 325/352 in auto mode, with no net accuracy change.
+  `unbound` fired on 95% of items in off mode.
+
 ## What these results do not show
 
 - Nothing at benchmark precision: 20 test examples per task. The Kaggle notebook
   (`notebooks/vegalab_kaggle_gpu.ipynb`) runs 500 per task and adds the 4B checkpoint.
 - Nothing about tasks VegaML may have seen: its base-engine training data is undisclosed.
 - Nothing about whether the physics formulation specifically matters (see RQ4).
-- Nothing about real agent traffic (the RQ7 data is synthetic).
+- Nothing about real agent traffic. The RQ7 data is synthetic, and AgentHarm (RQ8) is
+  benchmark-written single requests, not multi-step agent trajectories.

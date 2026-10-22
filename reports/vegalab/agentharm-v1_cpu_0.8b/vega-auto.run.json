@@ -1,0 +1,73 @@
+{
+  "run_id": "vegalab-agentharm-v1-20261022_123045",
+  "system": "vega-auto",
+  "system_info": {
+    "system": "vega-auto",
+    "kind": "vegaml",
+    "adapter_mode": "auto",
+    "live": true,
+    "runner": {
+      "loaded": true,
+      "model": "0.8b",
+      "device": "cpu",
+      "vegaml": "0.9.0",
+      "torch": "2.14.1+cpu",
+      "transformers": "5.19.0",
+      "model_dir": "C:\\Users\\sasi\\.cache\\huggingface\\hub\\models--nandakishorm--vega-08b-public-intents\\snapshots\\42ac8d4fa9efb61f96e53d80962cf28f6dfe667e",
+      "backbone": "Qwen/Qwen3.5-0.8B",
+      "feature_layers": [
+        13,
+        19
+      ],
+      "option_layers": [
+        19
+      ],
+      "n_steps": 12,
+      "max_len": 73728,
+      "default_risk": "0.1",
+      "adapters": [
+        "public_intents",
+        "typed_decisions"
+      ],
+      "adapter_mode": "auto",
+      "engine_sha256": "09c4c5fe203cf166d419dfaa72d75b26da00f47f66bafbfd750b2263ee1ca66b",
+      "load_seconds": 10.45,
+      "offline_fallback": false
+    }
+  },
+  "environment": {
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "cpu_count": 8,
+    "action_sentinel": "0.1.0",
+    "torch": "2.14.1+cpu",
+    "transformers": "5.19.0",
+    "vegaml": "0.9.0",
+    "numpy": "2.5.4",
+    "cuda": false,
+    "gpu": [],
+    "torch_threads": 4
+  },
+  "dataset": {
+    "version": "agentharm-v1",
+    "seed": null,
+    "task_sha256": {
+      "agentharm": "7734aa71ee37dc4881ad89c76e077ea0fc78a1529dcc28dd4f6de32d64061cc3"
+    }
+  },
+  "predictions_file": "vega-auto.jsonl",
+  "predictions_sha256": "ad48a3d50d5d0452ddf4ddd489a9d00b36c98d1104c111dd133251b751f70962",
+  "sessions": [
+    {
+      "started_at": "2026-10-22T08:21:48.916591+00:00",
+      "finished_at": "2026-10-22T08:58:10.941666+00:00",
+      "examples_attempted": 416,
+      "ok": 416,
+      "errors": 0,
+      "skipped_already_done": 0,
+      "wall_seconds": 2182.03,
+      "peak_rss_mb": 3514.7
+    }
+  ]
+}

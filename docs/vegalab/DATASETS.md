@@ -41,6 +41,17 @@ for hidden labels) are rejected, never wrapped.
 - Calibration data is used only to fit the post-hoc temperature in the analysis. Nothing (prompts,
   options, thresholds, baselines) was tuned on test data.
 
+## `agentharm-v1` (real agent-request safety data)
+
+Built by `action_sentinel.vegalab.datasets.build_agentharm` from `ai-safety-institute/AgentHarm`
+(MIT plus a safety-research-only clause). Test = `test_public` (176 harmful + 176 benign twins);
+calibration = `validation` (64), with no base behaviour shared with test. The built JSONL is
+git-ignored because the benchmark carries a canary GUID; only the manifest, metrics and example IDs
+are committed. Results: `AGENTHARM.md`.
+
+Agent-SafetyBench was considered and rejected because its `fulfillable` label is undocumented.
+R-Judge was also rejected: it is only available as unofficial copies.
+
 ## Larger GPU dataset
 
 The Kaggle notebook builds `pub-n500-s20261015` with the same builder and seed (500 / 200 / 40 per

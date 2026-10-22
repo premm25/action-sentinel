@@ -1,0 +1,46 @@
+{
+  "run_id": "vegalab-agentharm-v1-20261022_123045",
+  "system": "majority",
+  "system_info": {
+    "system": "majority",
+    "kind": "deterministic",
+    "majority": {
+      "agentharm": "benign"
+    }
+  },
+  "environment": {
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "cpu_count": 8,
+    "action_sentinel": "0.1.0",
+    "torch": "2.14.1+cpu",
+    "transformers": "5.19.0",
+    "vegaml": "0.9.0",
+    "numpy": "2.5.4",
+    "cuda": false,
+    "gpu": [],
+    "torch_threads": 4
+  },
+  "dataset": {
+    "version": "agentharm-v1",
+    "seed": null,
+    "task_sha256": {
+      "agentharm": "7734aa71ee37dc4881ad89c76e077ea0fc78a1529dcc28dd4f6de32d64061cc3"
+    }
+  },
+  "predictions_file": "majority.jsonl",
+  "predictions_sha256": "d05dfc2656f4bc24b94f6f17209b936361cfd6298ad2ea26494d6957dace9361",
+  "sessions": [
+    {
+      "started_at": "2026-10-22T07:00:45.160506+00:00",
+      "finished_at": "2026-10-22T07:00:45.183489+00:00",
+      "examples_attempted": 416,
+      "ok": 416,
+      "errors": 0,
+      "skipped_already_done": 0,
+      "wall_seconds": 0.02,
+      "peak_rss_mb": 42.0
+    }
+  ]
+}

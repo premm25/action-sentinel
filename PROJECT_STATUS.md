@@ -142,6 +142,13 @@ ECE 0.25), with good confidence ranking; conformal sets did not keep 90% coverag
 Sentinel's agent-action task VegaML abstained on all 44 actions (near-chance confidence), and the rules still
 blocked every hard violation with zero false approvals.
 
+**Follow-ups (2026-10-22):**
+- VegaML's few-shot head, fitted on calibration data, fixed the agent-action task: 0.75 test accuracy,
+  and Sentinel auto-approved 8/10 safe actions with 0 false approvals (`AGENT_FRAMING.md`, synthetic data).
+- On real data (AgentHarm, 352 test requests) the head reached 0.841 accuracy and 0.920 AUROC
+  (`docs/vegalab/AGENTHARM.md`).
+- VegaML's engine there matched a threshold-tuned backbone (0.705 vs 0.716) rather than beating it.
+
 **Bugs found and fixed in this stage:** hidden labels (-1) wrapped to the last class; Qwen3.5
 linear-attention cache could not be batch-repeated (30x slowdown); baseline prompt didn't match VegaML's
 tokens; `vegaml.load` failed offline despite cached weights; majority baseline had no prior for option

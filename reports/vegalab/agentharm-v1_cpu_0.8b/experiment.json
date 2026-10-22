@@ -1,0 +1,23 @@
+{
+  "run_id": "vegalab-agentharm-v1-20261022_123045",
+  "dataset_dir": "data\\vegalab\\agentharm-v1",
+  "dataset_version": "agentharm-v1",
+  "systems": [
+    "majority",
+    "vega-off",
+    "vega-auto",
+    "vega-head",
+    "backbone-optscore"
+  ],
+  "tasks": [
+    "agentharm"
+  ],
+  "splits": [
+    "test",
+    "calibration"
+  ],
+  "limit": null,
+  "model": "0.8b",
+  "device": "cpu",
+  "n_examples_per_system": 416
+}

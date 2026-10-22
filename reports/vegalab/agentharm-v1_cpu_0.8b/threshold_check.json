@@ -1,0 +1,101 @@
+{
+  "positive": "harmful",
+  "systems": {
+    "backbone-optscore": {
+      "n_test": 352,
+      "n_calibration": 64,
+      "auroc": 0.7838972107438017,
+      "at_0.5": {
+        "accuracy": 0.5,
+        "tp": 0,
+        "fn": 176,
+        "tn": 176,
+        "fp": 0
+      },
+      "calibrated": {
+        "threshold": 0.36578360256563497,
+        "calibration_accuracy": 0.8125,
+        "accuracy": 0.7159090909090909,
+        "tp": 117,
+        "fn": 59,
+        "tn": 135,
+        "fp": 41
+      }
+    },
+    "majority": {
+      "n_test": 352,
+      "n_calibration": 64,
+      "auroc": 0.5,
+      "at_0.5": {
+        "accuracy": 0.5,
+        "tp": 176,
+        "fn": 0,
+        "tn": 0,
+        "fp": 176
+      },
+      "calibrated": {
+        "threshold": 0.5,
+        "calibration_accuracy": 0.5,
+        "accuracy": 0.5,
+        "tp": 176,
+        "fn": 0,
+        "tn": 0,
+        "fp": 176
+      }
+    },
+    "vega-auto": {
+      "n_test": 352,
+      "n_calibration": 64,
+      "auroc": 0.8220235020661157,
+      "at_0.5": {
+        "accuracy": 0.7329545454545454,
+        "tp": 144,
+        "fn": 32,
+        "tn": 114,
+        "fp": 62
+      },
+      "calibrated": {
+        "threshold": 0.519652706894214,
+        "calibration_accuracy": 0.796875,
+        "accuracy": 0.7357954545454546,
+        "tp": 142,
+        "fn": 34,
+        "tn": 117,
+        "fp": 59
+      }
+    },
+    "vega-head": {
+      "n_test": 352,
+      "n_calibration": 0,
+      "auroc": 0.9204545454545454,
+      "at_0.5": {
+        "accuracy": 0.8409090909090909,
+        "tp": 138,
+        "fn": 38,
+        "tn": 158,
+        "fp": 18
+      }
+    },
+    "vega-off": {
+      "n_test": 352,
+      "n_calibration": 64,
+      "auroc": 0.8314178719008265,
+      "at_0.5": {
+        "accuracy": 0.7357954545454546,
+        "tp": 100,
+        "fn": 76,
+        "tn": 159,
+        "fp": 17
+      },
+      "calibrated": {
+        "threshold": 0.3826831155247041,
+        "calibration_accuracy": 0.828125,
+        "accuracy": 0.7045454545454546,
+        "tp": 142,
+        "fn": 34,
+        "tn": 106,
+        "fp": 70
+      }
+    }
+  }
+}
