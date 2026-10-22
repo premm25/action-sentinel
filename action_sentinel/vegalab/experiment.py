@@ -15,7 +15,7 @@ from typing import Any
 from .datasets import check_dataset, load_examples
 from .runner import run_system
 
-SYSTEMS = ("majority", "vega-off", "vega-auto", "backbone-optscore")
+SYSTEMS = ("majority", "vega-off", "vega-auto", "vega-head", "backbone-optscore")
 
 
 def run_experiment(dataset_dir: str | Path, out_dir: str | Path | None = None, systems: list[str] | None = None,
@@ -52,9 +52,9 @@ def run_experiment(dataset_dir: str | Path, out_dir: str | Path | None = None, s
         from .systems import MajorityBaseline
         print("system majority", flush=True)
         run_system(MajorityBaseline(fit), examples, out, run_id, manifest, keep_native=False)
-    vega_modes = [s.split("-", 1)[1] for s in systems if s.startswith("vega-")]
-    if vega_modes:
-        from .systems import VegaSystem
+    vega_modes = [s.split("-", 1)[1] for s in systems if s in ("vega-off", "vega-auto")]
+    if vega_modes or "vega-head" in systems:
+        from .systems import VegaHeadSystem, VegaSystem
         from .vega_core import LiveVegaRunner, VegaCore
         runner = LiveVegaRunner(model, device=device)
         runner.load()
@@ -62,6 +62,12 @@ def run_experiment(dataset_dir: str | Path, out_dir: str | Path | None = None, s
         for mode in vega_modes:
             print("system vega-%s" % mode, flush=True)
             run_system(VegaSystem(core, mode), examples, out, run_id, manifest)  # type: ignore[arg-type]
+        if "vega-head" in systems:
+            print("system vega-head", flush=True)
+            # Head examples come from the calibration split; predictions on that same split would be
+            # in-sample, so the head is only run on the other splits.
+            head_examples = [e for e in examples if e["split"] != "calibration"]
+            run_system(VegaHeadSystem(core, fit), head_examples, out, run_id, manifest)
         core.close()
         del core, runner
         gc.collect()

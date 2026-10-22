@@ -193,3 +193,19 @@ def test_regression_probabilistic_metrics_with_per_example_option_sets():
             {**_rec(1, "c", "c", {"c": 0.6, "d": 0.4}), "labels": ["c", "d"]}]
     m = A.group_metrics(recs)
     assert m["ece"] is not None and m["brier"] == pytest.approx(((0.2 ** 2) * 2 + (0.4 ** 2) * 2) / 2)
+
+
+def test_vega_head_system_fits_on_calibration_only():
+    from action_sentinel.vegalab.systems import VegaHeadSystem
+    runner = FakeVegaRunner()
+    cal = [dict(e, split="calibration", example_id=e["example_id"].replace("test", "calibration")) for e in _examples(n=8)]
+    dev = [dict(e, split="dev") for e in _examples(n=3)]
+    head = VegaHeadSystem(VegaCore(runner), cal + dev)
+    p = head.predict(_examples(n=1)[0])
+    assert p["predicted_label"] == "negative" and p["native"]["readout"] == "ttt"
+    examples, _ = runner.fit_calls[0]
+    assert len(examples) == 8  # dev examples are not used for fitting
+    head.predict(_examples(n=2)[1])
+    assert len(runner.fit_calls) == 1  # fitted once per task
+    with pytest.raises(ValueError, match="fewer than 6"):
+        VegaHeadSystem(VegaCore(FakeVegaRunner()), cal[:3]).predict(_examples(n=1)[0])

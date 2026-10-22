@@ -49,6 +49,55 @@ class VegaSystem:
                 "live": res.live_inference}
 
 
+class VegaHeadSystem:
+    """VegaML's few-shot head (Vega.fit, readout "ttt"), fitted per task on that task's calibration examples.
+
+    The head has no abstain flag, conformal set or calibration (as VegaML documents), so those fields are None.
+    The fit uses only calibration-split examples, never the examples being predicted.
+    """
+
+    name = "vega-head"
+
+    def __init__(self, core: VegaCore, fit_examples: list[dict[str, Any]], adapter_mode: AdapterMode = "off"):
+        self.core = core
+        self.adapter_mode = adapter_mode
+        self.fit_by_task: dict[str, list[dict]] = {}
+        for ex in fit_examples:
+            if ex["split"] == "calibration":
+                self.fit_by_task.setdefault(ex.get("slices", {}).get("variant_of") or ex["task"], []).append(ex)
+        self.fitted_task: str | None = None
+        self.fit_reports: dict[str, Any] = {}
+
+    def info(self) -> dict[str, Any]:
+        return {"system": self.name, "kind": "vegaml_ttt_head", "adapter_mode": self.adapter_mode,
+                "live": self.core.live, "fit_reports": self.fit_reports, "runner": self.core.runner.info()}
+
+    def _ensure_fitted(self, task: str) -> None:
+        if self.fitted_task == task:
+            return
+        exs = self.fit_by_task.get(task, [])
+        if len(exs) < 6:
+            raise ValueError("fewer than 6 calibration examples to fit a head for %s" % task)
+        q = DecisionQuestion.model_validate(exs[0]["question"])
+        report = self.core.fit_heads([(e["state"], {q.question_id: e["gold_label"]}) for e in exs],
+                                     {q.question_id: q.to_vega()})
+        self.fit_reports[task] = {"examples": len(exs), **report.get(q.question_id, {})}
+        if not report.get(q.question_id, {}).get("fitted"):
+            raise ValueError("head for %s was not kept: %s" % (task, report.get(q.question_id)))
+        self.fitted_task = task
+
+    def predict(self, example: dict[str, Any]) -> dict[str, Any]:
+        task = example.get("slices", {}).get("variant_of") or example["task"]
+        self._ensure_fitted(task)
+        q = DecisionQuestion.model_validate(example["question"])
+        res = self.core.decide(DecisionRequest(request_id=example["example_id"][:128], state=example["state"],
+                                               questions=[q]), adapter_mode=self.adapter_mode, readout="ttt")
+        d = res.decisions[q.question_id]
+        u = d.uncertainty
+        return {"predicted_label": d.selected_label, "probabilities": u.probabilities, "confidence": u.confidence,
+                "native": res.native["answers"][q.question_id], "live": res.live_inference}
+
+
 class MajorityBaseline:
     name = "majority"
 

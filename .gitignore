@@ -10,3 +10,4 @@ var/
 .env
 build/
 data/vegalab/_cache/
+data/vegalab/agentharm-*/agentharm.jsonl

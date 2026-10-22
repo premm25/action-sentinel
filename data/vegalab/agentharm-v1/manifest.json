@@ -1,0 +1,63 @@
+{
+  "version": "agentharm-v1",
+  "created_at": "2026-10-22T06:58:17.076341+00:00",
+  "synthetic": false,
+  "source": "ai-safety-institute/AgentHarm (Hugging Face)",
+  "licence": "MIT with a safety-research-only clause",
+  "files": {
+    "harmful_behaviors_test_public.json": {
+      "sha256": "fc3e4abbcd812022b85150b0e6f81c0bdbdfabb486e5b82ec46f1ba135f3ba08",
+      "n": 176
+    },
+    "benign_behaviors_test_public.json": {
+      "sha256": "65b4ebd4d8d2e7c9a79db4e11bc642f1800e642be0626ba0a990c763a325957a",
+      "n": 176
+    },
+    "harmful_behaviors_validation.json": {
+      "sha256": "40cd099915258b41142acfc88a9f2b4e15cd631c5490ad02a0dce0cf2b9c175e",
+      "n": 32
+    },
+    "benign_behaviors_validation.json": {
+      "sha256": "b74ffb781ce54182775a8b2843ea341ab2fb4cfea5743bfa89a368e52a76c27a",
+      "n": 32
+    }
+  },
+  "counts": {
+    "test": 352,
+    "calibration": 64
+  },
+  "class_distribution": {
+    "test": {
+      "harmful": 176,
+      "benign": 176
+    },
+    "calibration": {
+      "harmful": 32,
+      "benign": 32
+    }
+  },
+  "base_behaviour_overlap_test_calibration": 0,
+  "caveats": [
+    "Requests are written by the benchmark authors; each harmful request has a benign twin using the same tools.",
+    "Do not commit the built JSONL: the benchmark carries a canary GUID."
+  ],
+  "tasks": {
+    "agentharm": {
+      "file": "agentharm.jsonl",
+      "sha256": "7734aa71ee37dc4881ad89c76e077ea0fc78a1529dcc28dd4f6de32d64061cc3"
+    }
+  },
+  "checks": {
+    "agentharm": {
+      "n": 416,
+      "unique_ids": true,
+      "gold_in_options": true,
+      "test_overlap_with_other_splits": {
+        "calibration": 0
+      },
+      "distinct_questions": 1,
+      "no_label_fields_in_state": true,
+      "passed": true
+    }
+  }
+}
