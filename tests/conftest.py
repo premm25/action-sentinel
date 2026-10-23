@@ -59,7 +59,8 @@ class Clock:
         self.t = self.t + timedelta(seconds=seconds)
 
 
-def make_sentinel(scripts: dict | None = None, active: list[str] | None = None, clock=None, **settings_kw):
+def make_sentinel(scripts: dict | None = None, active: list[str] | None = None, clock=None, adapter=None,
+                  **settings_kw):
     """An in-memory Sentinel with the rule-based provider and two scripted mocks (mock-a, mock-b)."""
     from action_sentinel.config import load_settings
     from action_sentinel.providers import MockDecisionProvider, ProviderRegistry, RuleBasedDecisionProvider
@@ -76,7 +77,7 @@ def make_sentinel(scripts: dict | None = None, active: list[str] | None = None, 
     reg.register(MockDecisionProvider("mock-b", script=scripts.get("mock-b", {}),
                                       default={"label": "safe", "confidence": 0.9}))
     return Sentinel(settings, store=SQLiteStore(":memory:"), registry=reg, clock=clock or Clock(),
-                    key=b"test-signing-key-0123456789abcdef")
+                    key=b"test-signing-key-0123456789abcdef", adapter=adapter)
 
 
 @pytest.fixture

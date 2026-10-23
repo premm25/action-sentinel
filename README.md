@@ -179,6 +179,19 @@ pytest --cov=action_sentinel                   # with coverage
 pytest -m ollama                        # optional: live test against a running Ollama
 ```
 
+## Guarding tool functions
+
+Wrap an agent's tools with a decorator instead of building proposals by hand. Shadow mode records
+what Sentinel would have done while changing nothing; enforce mode runs the tool only through the
+execution gateway. See [`docs/GUARD.md`](docs/GUARD.md).
+
+```python
+guard = Guard(sentinel, agent_id="ops-agent", agent_version="1.4.0", source_system="infra-agent", mode="shadow")
+
+@guard.tool("restart_service", target=lambda a: "staging/%s" % a["service"])
+def restart_service(service: str, reason: str): ...
+```
+
 ## Evaluation (Confidence Lab)
 
 ```bash
@@ -255,7 +268,8 @@ any check fails. See [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
 
 ## Roadmap
 
-1. Python SDK (`@guard` decorator) and an MCP proxy, so existing agents can be protected without rewiring.
+1. An MCP proxy and a remote (HTTP) mode for the `@guard` decorator, so existing agents can be protected
+   without rewiring. The in-process decorator with shadow mode is done ([`docs/GUARD.md`](docs/GUARD.md)).
 2. PyPI package and Docker image.
 3. A better model layer: a dev-split prompt and model study, automatic calibration profiles, live VegaML results.
 4. A public, independently labelled benchmark of risky agent actions, plus a reusable policy library.
@@ -271,6 +285,7 @@ any check fails. See [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
 - [Security](docs/security/SECURITY.md)
 - [Runbook](docs/operations/RUNBOOK.md)
 - [Demo guide](docs/DEMO_GUIDE.md)
+- [Guarding tool functions](docs/GUARD.md)
 - [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [Changelog](CHANGELOG.md)
 
 ## License

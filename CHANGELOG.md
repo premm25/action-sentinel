@@ -5,6 +5,12 @@ and the project uses [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- `action_sentinel.guard`: a `@guard.tool` decorator for agent tool functions, with shadow mode
+  (assess and record, never block) and enforce mode (run only through the execution gateway).
+- AgentHarm studies: classifier baselines for the VegaML head, and AgentHarm through full Sentinel
+  (`examples/rule_packs/agent_tasks.yaml`).
+
 ### Changed
 - Project renamed to **Action Sentinel**: distribution `action-sentinel`, import package `action_sentinel`,
   command `action-sentinel` (`agent-sentinel` and the import name `sentinel` are already taken on PyPI).
