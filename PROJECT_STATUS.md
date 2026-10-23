@@ -148,6 +148,11 @@ blocked every hard violation with zero false approvals.
 - On real data (AgentHarm, 352 test requests) the head reached 0.841 accuracy and 0.920 AUROC
   (`docs/vegalab/AGENTHARM.md`).
 - VegaML's engine there matched a threshold-tuned backbone (0.705 vs 0.716) rather than beating it.
+- Ordinary logistic regression on VegaML's features matched the head (0.841), and a plain backbone probe
+  reached 0.781: the value is in VegaML's prompt-conditioned features (`AGENTHARM_BASELINES.md`).
+- Through full Sentinel: 0/176 harmful requests approved, against 24 for the head alone, with 73% of
+  requests sent to review (`AGENTHARM_SENTINEL.md`).
+- `@guard.tool` decorator with shadow and enforce modes (`docs/GUARD.md`).
 
 **Bugs found and fixed in this stage:** hidden labels (-1) wrapped to the last class; Qwen3.5
 linear-attention cache could not be batch-repeated (30x slowdown); baseline prompt didn't match VegaML's

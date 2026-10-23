@@ -162,6 +162,23 @@ from disjoint base behaviours; 0 errors, all VegaML systems live.
 - Adapters (`typed_decisions`) fired on 325/352 in auto mode, with no net accuracy change.
   `unbound` fired on 95% of items in off mode.
 
+### Follow-ups (2026-10-24): `AGENTHARM_BASELINES.md`, `AGENTHARM_SENTINEL.md`
+
+- **Head vs ordinary classifiers**, all fitted on the same 64 calibration examples:
+
+  | classifier | accuracy |
+  |---|---:|
+  | VegaML's head | 0.841 |
+  | logistic regression on VegaML's features | 0.841 (difference +0.000 [−0.023, +0.023]) |
+  | nearest centroid on VegaML's features | 0.832 |
+  | plain mean-pooled probe of the backbone | 0.781 (head +0.060 [+0.020, +0.099]) |
+  | TF-IDF | 0.611 |
+
+  The gain comes from VegaML's prompt-conditioned features, not from its head or engine.
+- **Through full Sentinel:** 0/176 harmful requests approved (the head alone: 24/176) and 95/176 benign
+  requests auto-approved, with 73% of requests sent to review. Every harmful request the head called
+  safe had confidence below the 0.85 threshold; the highest was 0.842, so the margin was thin.
+
 ## What these results do not show
 
 - Nothing at benchmark precision: 20 test examples per task. The Kaggle notebook

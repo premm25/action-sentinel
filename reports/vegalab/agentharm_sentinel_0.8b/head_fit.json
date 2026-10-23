@@ -1,0 +1,9 @@
+{
+  "split": "calibration",
+  "examples": 64,
+  "fitted": true,
+  "cv_accuracy": 1.0,
+  "chance": 0.5,
+  "at_or_below_chance": false,
+  "used_by_auto": true
+}

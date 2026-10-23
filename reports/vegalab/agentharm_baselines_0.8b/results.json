@@ -1,0 +1,114 @@
+{
+  "created_at": "2026-10-23T20:05:10.534765+00:00",
+  "dataset": "agentharm-v1",
+  "n_calibration": 64,
+  "n_test": 352,
+  "feature_dims": {
+    "vega": 6144,
+    "probe": 2048
+  },
+  "seed": 20261024,
+  "systems": {
+    "vega-head": {
+      "accuracy": 0.8409090909090909,
+      "auroc": 0.9207450929752066,
+      "missed_harmful": 38,
+      "false_alarms": 18,
+      "ece": 0.06332531234170583,
+      "max_abs_diff_vs_main_run": 0.058247659809724295
+    },
+    "vegafeat-lr": {
+      "accuracy": 0.8409090909090909,
+      "auroc": 0.8870415805785123,
+      "missed_harmful": 32,
+      "false_alarms": 24,
+      "ece": 0.07617943033822228,
+      "lambda": 10.0,
+      "cv_accuracy": {
+        "0.001": 0.984375,
+        "0.01": 0.984375,
+        "0.1": 0.984375,
+        "1.0": 0.984375,
+        "10.0": 0.984375
+      }
+    },
+    "vegafeat-centroid": {
+      "accuracy": 0.8323863636363636,
+      "auroc": 0.8703512396694215,
+      "missed_harmful": 31,
+      "false_alarms": 28,
+      "ece": null,
+      "note": "hard decisions only; AUROC from cosine margin; no probabilities"
+    },
+    "probe-lr": {
+      "accuracy": 0.78125,
+      "auroc": 0.8704480888429752,
+      "missed_harmful": 33,
+      "false_alarms": 44,
+      "ece": 0.05782527717684234,
+      "lambda": 1.0,
+      "cv_accuracy": {
+        "0.001": 0.96875,
+        "0.01": 0.96875,
+        "0.1": 0.96875,
+        "1.0": 0.96875,
+        "10.0": 0.9375
+      },
+      "dim": 2048
+    },
+    "tfidf-lr": {
+      "accuracy": 0.6107954545454546,
+      "auroc": 0.6715198863636364,
+      "missed_harmful": 56,
+      "false_alarms": 81,
+      "ece": 0.11074480705507761,
+      "lambda": 10.0,
+      "cv_accuracy": {
+        "0.001": 0.734375,
+        "0.01": 0.5,
+        "0.1": 0.5,
+        "1.0": 0.734375,
+        "10.0": 0.734375
+      },
+      "vocab": 1077
+    }
+  },
+  "paired_vs_head": {
+    "vega-head vs vegafeat-lr": {
+      "difference": 0.0,
+      "ci95": [
+        -0.022727272727272728,
+        0.022727272727272728
+      ],
+      "only_a_correct": 9,
+      "only_b_correct": 9
+    },
+    "vega-head vs vegafeat-centroid": {
+      "difference": 0.008522727272727293,
+      "ci95": [
+        -0.019886363636363636,
+        0.036931818181818184
+      ],
+      "only_a_correct": 16,
+      "only_b_correct": 13
+    },
+    "vega-head vs probe-lr": {
+      "difference": 0.05965909090909094,
+      "ci95": [
+        0.019886363636363636,
+        0.09943181818181818
+      ],
+      "only_a_correct": 35,
+      "only_b_correct": 14
+    },
+    "vega-head vs tfidf-lr": {
+      "difference": 0.23011363636363635,
+      "ci95": [
+        0.17329545454545456,
+        0.2897727272727273
+      ],
+      "only_a_correct": 108,
+      "only_b_correct": 27
+    }
+  }
+}

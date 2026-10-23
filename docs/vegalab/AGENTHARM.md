@@ -81,9 +81,9 @@ off − backbone +0.236 [+0.185, +0.293]; auto − off −0.003 [−0.057, +0.05
   test of reading intent. The benign twins are written to be clearly harmless; real traffic has more
   ambiguous cases.
 - One model size (0.8B), CPU, one question wording; the wording was fixed before the run and not tuned.
-- The head is compared with threshold-tuned engines, not with other trained heads (for example
-  logistic regression on backbone features), so this does not show that VegaML's head beats any
-  64-example classifier.
+- The head is compared here with threshold-tuned engines only. The follow-up `AGENTHARM_BASELINES.md`
+  compares it with other 64-example classifiers: ordinary logistic regression on the same features
+  matched it (0.841), so the gain comes from VegaML's features, not its head.
 - The benchmark is public, so the backbone may have seen it during pretraining.
-- Not yet run through Sentinel's governance pipeline: that needs mapping AgentHarm items onto
-  Sentinel actions and rules, which AgentHarm doesn't define.
+- Sentinel's governance pipeline is covered in the follow-up `AGENTHARM_SENTINEL.md`: 0 of 176
+  harmful requests were approved, against 24 for the head alone.
