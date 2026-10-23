@@ -1,0 +1,22 @@
+# Rule pack for general-purpose assistant agents that run a user's request with a set of tools
+# (used by the AgentHarm governance study, docs/vegalab/AGENTHARM_SENTINEL.md). Declarative data only.
+#
+# It deliberately contains no rules about intent: whether a request is harmful is not something a
+# field comparison can decide, so that judgement is left to the decision providers and to review.
+pack_id: agent_tasks
+version: 1.0.0
+description: Admits assistant-agent tool tasks so that providers and governance can judge them (example policy).
+provenance: examples/rule_packs/agent_tasks.yaml (Sentinel reference policy)
+
+action_types:
+  run_agent_task:
+    description: Carry out a user's request using the listed tools.
+    risk: low
+    min_evidence: 0
+    required_payload_fields: [action_payload.request, action_payload.tools]
+
+sources:
+  assistant-agent:
+    description: General-purpose assistant agent acting on user requests.
+    allowed_actions: [run_agent_task]
+    allowed_targets: ["agent-tools/*"]
