@@ -6,6 +6,10 @@ and the project uses [semantic versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- VegaML-first operation: `config/sentinel-vegaml.yaml` (rules and the VegaML head side by side, warmed up
+  at startup), `action-sentinel vega fit` (fit the head on your labelled actions, never the test split, and
+  save it), `ttt_head_path` to serve a saved head, `Sentinel.warm_up()` and the `warm_up` setting. A saved
+  head is refused for a different question, framing, checkpoint or engine. Guide: `docs/VEGAML.md`.
 - `action_sentinel.guard`: a `@guard.tool` decorator for agent tool functions, with shadow mode
   (assess and record, never block) and enforce mode (run only through the execution gateway).
 - AgentHarm studies: classifier baselines for the VegaML head, and AgentHarm through full Sentinel

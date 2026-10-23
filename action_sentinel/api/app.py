@@ -57,6 +57,9 @@ def create_app(settings: Settings, service: Sentinel | None = None, vega_service
             if settings.environment != "prod":
                 warnings.simplefilter("ignore", UserWarning)
             service = Sentinel(settings)
+        if settings.warm_up:
+            for name, detail in service.warm_up().items():
+                print("warm-up %s: %s" % (name, detail), flush=True)
     svc = service
     lab = ConfidenceLab(settings, registry=None)
     app = FastAPI(title="Sentinel", version=__version__,

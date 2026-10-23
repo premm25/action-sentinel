@@ -153,6 +153,9 @@ blocked every hard violation with zero false approvals.
 - Through full Sentinel: 0/176 harmful requests approved, against 24 for the head alone, with 73% of
   requests sent to review (`AGENTHARM_SENTINEL.md`).
 - `@guard.tool` decorator with shadow and enforce modes (`docs/GUARD.md`).
+- VegaML-first operation: `config/sentinel-vegaml.yaml` (rules + VegaML head, warm-up at startup),
+  `action-sentinel vega fit` to fit and save a head on your own labelled actions, saved heads checked
+  against question, framing, checkpoint and engine (`docs/VEGAML.md`).
 
 **Bugs found and fixed in this stage:** hidden labels (-1) wrapped to the last class; Qwen3.5
 linear-attention cache could not be batch-repeated (30x slowdown); baseline prompt didn't match VegaML's

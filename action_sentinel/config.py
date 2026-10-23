@@ -62,6 +62,8 @@ class Settings(StrictModel):
     principals: list[Principal] = Field(default_factory=list)
     report_dir: str = "reports"
     vegalab: VegaLabSettings = Field(default_factory=VegaLabSettings)
+    # Load model providers (and fit or load VegaML heads) when the API starts, not on the first request.
+    warm_up: bool = False
     base_dir: str = "."
 
     @model_validator(mode="after")

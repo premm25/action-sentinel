@@ -7,12 +7,17 @@ Native VegaML signals map onto Sentinel's provider contract as follows:
   adapter/gate/settle_steps -> metadata. Calibration is reported "unknown": VegaML's calibration was
   fitted by its authors on their data, not on this deployment's actions.
 
-The model loads on first use. Pass `core` to inject a VegaCore (tests use one backed by FakeVegaRunner,
-whose results carry live_inference=False and are marked as test output here).
+The model loads on first use, or at startup through `warm_up()` (Sentinel.warm_up calls it). With
+readout="ttt" the provider serves VegaML's few-shot head: fitted at load from `ttt_fit_dataset`, or loaded
+from a file saved by `action-sentinel vega fit` (`ttt_head_path`), which skips the fit.
+
+Pass `core` to inject a VegaCore (tests use one backed by FakeVegaRunner, whose results carry
+live_inference=False and are marked as test output here).
 """
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from action_sentinel.contracts import DecisionRequest
@@ -30,14 +35,15 @@ class VegaMLDecisionProvider(DecisionProvider):
 
     def __init__(self, name: str, checkpoint: str = "0.8b", device: str | None = "cpu",
                  adapter_mode: str = "auto", core: Any = None, framing: str = "rich", readout: str = "engine",
-                 ttt_fit_dataset: str | None = None, ttt_fit_split: str = "calibration"):
+                 ttt_fit_dataset: str | None = None, ttt_fit_split: str = "calibration",
+                 ttt_head_path: str | None = None):
         super().__init__(name, "vegaml:%s:%s:%s:%s" % (checkpoint, adapter_mode, framing, readout))
         if framing not in ("rich", "compact"):
             raise ValueError("framing must be rich or compact")
         if readout not in ("engine", "ttt"):
             raise ValueError("readout must be engine or ttt")
-        if readout == "ttt" and not ttt_fit_dataset:
-            raise ValueError("readout=ttt needs ttt_fit_dataset")
+        if readout == "ttt" and not (ttt_fit_dataset or ttt_head_path):
+            raise ValueError("readout=ttt needs ttt_fit_dataset or ttt_head_path")
         if ttt_fit_split == "test":
             raise ValueError("a head must never be fitted on the test split")
         self.checkpoint = checkpoint
@@ -47,15 +53,59 @@ class VegaMLDecisionProvider(DecisionProvider):
         self.readout = readout
         self.ttt_fit_dataset = ttt_fit_dataset
         self.ttt_fit_split = ttt_fit_split
+        self.ttt_head_path = ttt_head_path
         self.fit_report: dict[str, Any] | None = None
+        self._head_question: tuple[str, str] | None = None  # (question_id, fingerprint) the head serves
+        self._fit_question: dict[str, Any] | None = None
         self._core = core
         self._load_error: str | None = None
 
     def _get_core(self):
         core = self._load_core()
         if self.readout == "ttt" and self.fit_report is None:
-            self._fit_head(core)
+            if self.ttt_head_path:
+                self._load_saved_head(core)
+            else:
+                self._fit_head(core)
         return core
+
+    def warm_up(self) -> str:
+        """Load the model (and fit or load the head) now, so the first decision is not slowed by it."""
+        self._get_core()
+        return self.health().detail
+
+    def _load_saved_head(self, core) -> None:
+        from action_sentinel.vegalab.heads import HeadFileError, check_head, load_head
+        try:
+            arrays, meta = load_head(self.ttt_head_path)  # type: ignore[arg-type]
+            check_head(meta, framing=self.framing, checkpoint=self.checkpoint,
+                       engine_sha256=(core.runner.info() or {}).get("engine_sha256"))
+        except HeadFileError as exc:
+            raise ProviderFailure("TTT_HEAD_INVALID", str(exc), "unavailable") from exc
+        core.install_head(meta["question_id"], meta["labels"], arrays, meta.get("cv_accuracy"))
+        self._head_question = (meta["question_id"], meta["question_sha256"])
+        self._fit_question = meta.get("question")
+        self.fit_report = {"source": "file", "path": str(self.ttt_head_path),
+                           **{k: meta.get(k) for k in ("split", "examples", "cv_accuracy", "dataset", "created_at")}}
+
+    def save_head(self, path: str) -> str:
+        """Write the fitted head to a file that `ttt_head_path` can load (see action_sentinel.vegalab.heads)."""
+        import hashlib
+
+        from action_sentinel.vegalab.heads import save_head
+        core = self._get_core()
+        if self.readout != "ttt" or self._head_question is None or self.fit_report is None:
+            raise ValueError("only a provider with a fitted head (readout=ttt) can save one")
+        qid, qsha = self._head_question
+        arrays, labels, cv = core.export_head(qid)
+        info = core.runner.info() or {}
+        ds = self.ttt_fit_dataset
+        meta = {"question_id": qid, "question_sha256": qsha, "question": self._fit_question, "labels": labels,
+                "framing": self.framing, "checkpoint": self.checkpoint, "engine_sha256": info.get("engine_sha256"),
+                "vegaml": info.get("vegaml"), "cv_accuracy": cv, "examples": self.fit_report.get("examples"),
+                "split": self.ttt_fit_split, "dataset": Path(ds).name if ds else None,
+                "dataset_sha256": hashlib.sha256(Path(ds).read_bytes()).hexdigest() if ds else None}
+        return str(save_head(path, arrays, meta))
 
     def _fit_head(self, core) -> None:
         """Fit VegaML's few-shot head from the configured dataset split (never the test split)."""
@@ -67,6 +117,9 @@ class VegaMLDecisionProvider(DecisionProvider):
         if len(rows) < 6:
             raise ProviderFailure("TTT_FIT_FAILED", "fewer than 6 %s examples to fit a head" % self.ttt_fit_split)
         q = rows[0].question
+        if any(r.question != q for r in rows):
+            raise ProviderFailure("TTT_FIT_FAILED", "the %s examples ask different questions; a head serves one"
+                                  % self.ttt_fit_split)
         question = {"type": "choice", "instructions": q.instructions, "criteria": dict(q.categories)}
         examples = [(self.state_text(SReq(correlation_id="fit", action=r.situation, question=r.question)),
                      {q.question_id: r.expected_label}) for r in rows]
@@ -74,7 +127,9 @@ class VegaMLDecisionProvider(DecisionProvider):
         rep = report.get(q.question_id, {})
         if not rep.get("fitted"):
             raise ProviderFailure("TTT_FIT_FAILED", "head not kept: %s" % rep.get("reason", rep))
-        self.fit_report = {"split": self.ttt_fit_split, "examples": len(rows), **rep}
+        self.fit_report = {"source": "fitted", "split": self.ttt_fit_split, "examples": len(rows), **rep}
+        self._head_question = (q.question_id, _fingerprint(q))
+        self._fit_question = {"instructions": q.instructions, "categories": dict(q.categories)}
 
     def _load_core(self):
         if self._core is not None:
@@ -139,6 +194,10 @@ class VegaMLDecisionProvider(DecisionProvider):
         from action_sentinel.vegalab.contracts import DecisionRequest as VReq
         core = self._get_core()
         q = request.question
+        if self.readout == "ttt" and self._head_question != (q.question_id, _fingerprint(q)):
+            raise ProviderFailure("TTT_HEAD_QUESTION_MISMATCH",
+                                  "the head was fitted for question %r with other wording or options than %r asks; "
+                                  "its features would not match" % ((self._head_question or ("?",))[0], q.question_id))
         vq = DecisionQuestion(question_id=q.question_id, type="choice", instructions=q.instructions,
                               options=[CandidateOption(label=k, description=v) for k, v in q.categories.items()])
         try:
@@ -163,3 +222,8 @@ class VegaMLDecisionProvider(DecisionProvider):
                          confidence_source="model_probability" if u.confidence is not None else "none",
                          probabilities=u.probabilities, prediction_set=u.prediction_set, abstain=abstain,
                          abstain_reason=reason, metadata={k: v for k, v in meta.items() if v is not None})
+
+
+def _fingerprint(q) -> str:
+    from action_sentinel.vegalab.heads import question_fingerprint
+    return question_fingerprint(q.question_id, q.instructions, dict(q.categories))

@@ -1,0 +1,66 @@
+# Sentinel with VegaML deciding risk (local development configuration).
+#   pip install -e ".[api,vegaml]"
+#   action-sentinel --config config/sentinel-vegaml.yaml serve
+# VegaML's few-shot head judges each action; the rules and governance still decide what may run, and a
+# model can only escalate. On startup the model loads and the head is fitted (about 3.5 GB of RAM and a few
+# minutes on CPU for 0.8b). To serve a head fitted on your own labelled actions instead:
+#   action-sentinel vega fit --dataset my_actions.jsonl --out heads/my_actions.npz
+# then set vegaml-head's config to {..., ttt_head_path: heads/my_actions.npz} (it replaces ttt_fit_dataset).
+# DEV ONLY: the principals below use publicly documented development keys (see README).
+# Do not deploy this file. Production must supply its own principals and SENTINEL_SIGNING_KEY.
+environment: dev
+db_path: var/sentinel.db
+report_dir: reports
+rule_packs:
+  - examples/rule_packs/core.yaml
+
+providers:
+  - name: rules
+    type: rule_based
+    config: {classifier_path: examples/rule_packs/classifier.yaml}
+  - name: ollama
+    type: ollama
+    enabled: true          # built always; only used when listed in active_providers or requested
+    config: {model: "llama3.1:8b", base_url: "http://localhost:11434", timeout_s: 180, max_retries: 1}
+  - name: vegaml-off
+    type: vegaml
+    enabled: true          # reports unavailable unless the vegaml package is installed
+    config: {checkpoint: "0.8b", device: cpu, adapter_mode: "off"}
+  - name: vegaml-auto
+    type: vegaml
+    enabled: true          # shares the loaded model with vegaml-off (one model per checkpoint/device)
+    config: {checkpoint: "0.8b", device: cpu, adapter_mode: auto}
+  - name: vegaml-head
+    type: vegaml
+    enabled: true          # VegaML few-shot head (Vega.fit) on the compact framing, fitted on the calibration split
+    config: {checkpoint: "0.8b", device: cpu, adapter_mode: "off", framing: compact, readout: ttt,
+             ttt_fit_dataset: examples/evaluation_datasets/sentinel_synthetic_v1.jsonl, ttt_fit_split: calibration}
+
+# Providers consulted for every decision: the deterministic rules and VegaML's head, side by side.
+active_providers: [rules, vegaml-head]
+# Load the model and fit (or load) the head when the API starts, so the first request isn't the slow one.
+warm_up: true
+strategy: parallel
+provider_timeout_s: 200
+
+governance:
+  version: 1.0.0
+  max_auto_approve_risk: low
+  thresholds:
+    approve_min_confidence: 0.85
+    abstain_below: 0.5
+    require_measured_calibration: false
+  review_ttl_seconds: 86400
+  authorization_ttl_seconds: 900
+
+reviewers:
+  - {reviewer_id: olivia, display_name: Olivia (operator), level: operator}
+  - {reviewer_id: sam, display_name: Sam (senior), level: senior}
+  - {reviewer_id: ada, display_name: Ada (admin), level: admin}
+
+principals:
+  - {principal_id: ops-agent, roles: [agent], key_sha256: 768d431c7599a91b58ae5747e08e9aa96dcb4eef45e029c87e3e060e521dcead}
+  - {principal_id: olivia, roles: [reviewer, auditor], reviewer_id: olivia, key_sha256: 7eee78659ab50d4dd820f4242709d188809ca0249506edf83d70022973d5e2ca}
+  - {principal_id: sam, roles: [reviewer, auditor, evaluator], reviewer_id: sam, key_sha256: 0c58b25b0b46f53cab77084f40823f07e9b523b04e1d79caa8f13d0fcaadb9fe}
+  - {principal_id: ada, roles: [admin, reviewer, auditor, evaluator], reviewer_id: ada, key_sha256: df76ff796f70d2c9cb055ea6280553caa27eda26b70e01082c160de75a05a4a9}
+  - {principal_id: auditor, roles: [auditor], key_sha256: 46151c35c1c09bca0b049ce55099e4f67fd04efe91716eec70fd1fa8ce898163}

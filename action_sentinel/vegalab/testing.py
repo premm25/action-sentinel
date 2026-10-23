@@ -24,6 +24,8 @@ class FakeVegaRunner:
         self.calls: list[tuple[Any, dict[str, Any], AdapterMode]] = []
         self.fitted = False
         self.fit_calls: list[tuple[Any, Any]] = []
+        self.heads: dict[str, tuple[list[str], float | None]] = {}
+        self.installed: list[str] = []
 
     def load(self) -> None:
         from .contracts import InferenceError, VegaInferenceError
@@ -55,7 +57,21 @@ class FakeVegaRunner:
     def fit_heads(self, examples, questions):
         self.fitted = True
         self.fit_calls.append((examples, questions))
+        for qid, q in questions.items():
+            self.heads[qid] = (list(q.get("criteria") or []), None)
         return {qid: {"fitted": True, "examples": len(examples), "cv_accuracy": None} for qid in questions}
+
+    def export_head(self, question_id):
+        """Placeholder arrays in the saved-head layout; there is no real head behind them."""
+        import numpy as np
+        labels, cv = self.heads[question_id]
+        arrays = {k: np.zeros(2, dtype=np.float32) for k in ("mu", "sd", "c", "P", "s", "W", "b")}
+        return arrays, labels, cv
+
+    def install_head(self, question_id, labels, arrays, cv):
+        self.heads[question_id] = (list(labels), cv)
+        self.installed.append(question_id)
+        self.fitted = True
 
     @staticmethod
     def default_response(state, questions, mode) -> dict[str, Any]:

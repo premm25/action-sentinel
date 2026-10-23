@@ -42,6 +42,9 @@ class VegaRunner(Protocol):
     def decide(self, state: Any, questions: dict[str, Any], *, alpha: str, risk: str | None,
                views: int, readout: str = "engine") -> dict[str, Any]: ...
     def fit_heads(self, examples: list[tuple], questions: dict[str, Any]) -> dict[str, Any]: ...
+    def export_head(self, question_id: str) -> tuple[dict[str, Any], list[str], float | None]: ...
+    def install_head(self, question_id: str, labels: list[str], arrays: dict[str, Any],
+                     cv: float | None) -> None: ...
 
 
 Readout = Literal["engine", "ttt"]
@@ -149,6 +152,22 @@ class LiveVegaRunner:
             raise VegaInferenceError(InferenceError(code="MODEL_NOT_READY", message="model not loaded"))
         return self._vega.fit(examples, questions)
 
+    def export_head(self, question_id: str) -> tuple[dict[str, Any], list[str], float | None]:
+        """The fitted head for one question as (arrays, labels, cv_accuracy), for saving to a file."""
+        from .heads import head_arrays
+        if self._vega is None or question_id not in self._vega.heads:
+            raise VegaInferenceError(InferenceError(code="MODEL_NOT_READY", message="no fitted head for %s"
+                                                    % question_id))
+        head, cv = self._vega.heads[question_id]
+        return head_arrays(head), list(head.labels), cv
+
+    def install_head(self, question_id: str, labels: list[str], arrays: dict[str, Any], cv: float | None) -> None:
+        """Serve a previously saved head for one question (Vega.decide(mode="ttt") reads Vega.heads)."""
+        from .heads import build_head
+        if self._vega is None:
+            raise VegaInferenceError(InferenceError(code="MODEL_NOT_READY", message="model not loaded"))
+        self._vega.heads[question_id] = (build_head(labels, arrays), cv)
+
 
 class VegaCore:
     """Validates requests, calls the runner under a lock, normalizes the native output without losing it."""
@@ -216,6 +235,14 @@ class VegaCore:
     def fit_heads(self, examples: list[tuple], questions: dict[str, Any]) -> dict[str, Any]:
         with self._lock:
             return self.runner.fit_heads(examples, questions)
+
+    def export_head(self, question_id: str):
+        with self._lock:
+            return self.runner.export_head(question_id)
+
+    def install_head(self, question_id: str, labels: list[str], arrays: dict[str, Any], cv: float | None) -> None:
+        with self._lock:
+            self.runner.install_head(question_id, labels, arrays, cv)
 
     def normalize(self, request: DecisionRequest, native: dict[str, Any], adapter_mode: AdapterMode,
                   wall_ms: float, readout: Readout = "engine") -> DecisionResult:

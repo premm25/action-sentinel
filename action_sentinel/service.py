@@ -355,6 +355,30 @@ class Sentinel:
                         actor=actor, data={"grant_id": grant_id, "reason": reason})
         return g
 
+    # ------------------------------------------------------------------ startup
+    def warm_up(self, providers: list[str] | None = None) -> dict[str, str]:
+        """Load the active providers that can be loaded ahead of time (VegaML: model plus head).
+
+        A provider that fails to warm up is reported and left as it is: it reports itself unavailable, and
+        decisions that need it fail closed. Nothing here can approve anything.
+        """
+        names = providers if providers is not None else self.settings.active_providers
+        out: dict[str, str] = {}
+        for name in names:
+            p = self.registry.get(name)
+            if not hasattr(p, "warm_up"):
+                continue
+            try:
+                out[name] = "ready: %s" % p.warm_up()
+                ok = True
+            except Exception as exc:
+                code = getattr(exc, "code", None)
+                out[name] = "failed: %s%s" % ("%s: " % code if code else "", str(exc)[:500])
+                ok = False
+            self.audit.emit("provider.warm_up", new_id("corr"), "providers", reason_codes=["OK" if ok else "FAILED"],
+                            data={"provider": name, "detail": out[name]})
+        return out
+
     # ------------------------------------------------------------------ queries
     def provider_health(self):
         return self.registry.health()

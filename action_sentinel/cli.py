@@ -293,6 +293,47 @@ def cmd_vega_decide(args) -> int:
     return 0
 
 
+def cmd_vega_fit(args) -> int:
+    """Fit VegaML's few-shot head on labelled actions and save it for `ttt_head_path`."""
+    from action_sentinel.contracts import DatasetExample
+    from action_sentinel.providers import ProviderFailure
+    from action_sentinel.providers.vegaml_provider import VegaMLDecisionProvider
+    if args.split == "test":
+        print("refusing to fit on the test split: it is for measuring, never for fitting", file=sys.stderr)
+        return 2
+    try:
+        provider = VegaMLDecisionProvider("vegaml-head", checkpoint=args.model, device=args.device,
+                                          adapter_mode="off", framing=args.framing, readout="ttt",
+                                          ttt_fit_dataset=args.dataset, ttt_fit_split=args.split)
+        provider.warm_up()
+        out = provider.save_head(args.out)
+    except ProviderFailure as exc:
+        print("%s: %s" % (exc.code, exc), file=sys.stderr)
+        return 1
+    rep = provider.fit_report or {}
+    cv = rep.get("cv_accuracy")
+    print("fitted on %s %s examples; cross-validated accuracy %s (chance %s)" % (
+        rep.get("examples"), args.split, "%.3f" % cv if cv is not None else "unknown (too few examples)",
+        rep.get("chance")))
+    print("saved %s" % out)
+    if args.evaluate:
+        from action_sentinel.contracts import DecisionRequest
+        rows = [DatasetExample.model_validate_json(line) for line in
+                Path(args.dataset).read_text(encoding="utf-8").splitlines() if line.strip()]
+        rows = [r for r in rows if r.split == args.evaluate]
+        correct = answered = 0
+        for r in rows:
+            res = provider.decide(DecisionRequest(correlation_id="fit-eval", action=r.situation, question=r.question))
+            if res.label is not None:
+                answered += 1
+                correct += res.label == r.expected_label
+        print("%s split: %d/%d correct (%s)" % (args.evaluate, correct, len(rows),
+                                                "%.3f" % (correct / len(rows)) if rows else "no examples"))
+    print("serve it with: providers -> vegaml-head -> config: {readout: ttt, framing: %s, ttt_head_path: %s}"
+          % (args.framing, out))
+    return 0
+
+
 def cmd_vega_data(args) -> int:
     from action_sentinel.vegalab.datasets import build_datasets, check_dataset
     if args.action == "build":
@@ -476,6 +517,15 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--device", default="cpu")
     a.add_argument("--json", action="store_true", help="print the full result, native output included")
     a.set_defaults(fn=cmd_vega_decide)
+    a = vega.add_parser("fit", help="fit VegaML's few-shot head on your labelled actions and save it")
+    a.add_argument("--dataset", required=True, help="JSONL of labelled actions (Confidence Lab dataset format)")
+    a.add_argument("--split", default="calibration", help="split to fit on (dev or calibration; never test)")
+    a.add_argument("--out", required=True, help="where to write the head file (.npz)")
+    a.add_argument("--framing", choices=["compact", "rich"], default="compact")
+    a.add_argument("--evaluate", choices=["dev", "test"], help="also report accuracy on this split (measure only)")
+    a.add_argument("--model", default="0.8b")
+    a.add_argument("--device", default="cpu")
+    a.set_defaults(fn=cmd_vega_fit)
     a = vega.add_parser("data", help="build or check a public evaluation dataset")
     a.add_argument("action", choices=["build", "check"])
     a.add_argument("--version", default="pub-v1")

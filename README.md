@@ -2,9 +2,10 @@
 
 [![CI](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-**A safety checkpoint between AI agents and the real world.** Before an agent restarts a server,
-refunds a payment or deletes a database, Sentinel decides whether it may, and the action can only
-run with an authorization token issued for that exact action.
+**A VegaML-powered safety checkpoint between AI agents and the real world.** Before an agent restarts
+a server, refunds a payment or deletes a database, [VegaML](https://github.com/NandhaKishorM/vegaml) judges
+the risk, Sentinel's rules and governance decide whether it may run, and it can only run with an
+authorization token issued for that exact action.
 
 ```
 agent proposes action ──► Sentinel ──► APPROVE  → signed token → executor runs it (exactly once)
@@ -30,6 +31,28 @@ calibrated. Sentinel is built on a few non-negotiable rules:
 - **Authorization is bound to the exact payload.** Change one field and the token is useless.
   Replays execute once.
 - **Everything is auditable**, and the pipeline is measurable with a built-in evaluation lab.
+
+## VegaML: the risk model
+
+VegaML reads each proposed action with a frozen Qwen3.5 backbone, and a few-shot head fitted on labelled
+actions rates it safe, needs review or unsafe. Sentinel treats that rating as evidence, not permission.
+
+| on AgentHarm (352 real requests, CPU, 0.8B) | result |
+|---|---|
+| VegaML head accuracy (fitted on 64 examples) | **0.841**, AUROC 0.920 |
+| harmful requests approved, head alone | 24 of 176 |
+| harmful requests approved, **head behind Sentinel** | **0 of 176** |
+| benign requests auto-approved behind Sentinel | 95 of 176 (the rest went to human review) |
+
+```bash
+pip install -e ".[api,vegaml]"
+action-sentinel vega fit --dataset my_actions.jsonl --out heads/my_actions.npz   # fit on your actions
+action-sentinel --config config/sentinel-vegaml.yaml serve                       # rules + VegaML, warmed up
+```
+
+Setup, fitting and operating notes: [`docs/VEGAML.md`](docs/VEGAML.md). The method and every number:
+[`docs/vegalab/`](docs/vegalab/RESULTS.md). Without VegaML installed, the default profile runs on the
+rules alone, offline.
 
 ## 30-second example
 
@@ -64,7 +87,7 @@ together with the identical action: `sentinel.execute(token, action)`.
 | | Sentinel | LLM output guardrails | general policy engines |
 |---|---|---|---|
 | Guards | **actions** (tool calls) before execution | model text / structured output | any request, given policy input |
-| Model-based judgement | optional, pluggable, can only escalate | often central | none |
+| Model-based judgement | VegaML few-shot head (or any provider); can only escalate | often central | none |
 | Uncertainty, abstention, disagreement | explicit outcomes | varies | n/a |
 | Human review workflow with re-validation | built in | generally not | not built in |
 | Execution token bound to the exact payload, idempotent | built in | no | no |
@@ -73,7 +96,8 @@ together with the identical action: `sentinel.execute(token, action)`.
 Sentinel complements these tools rather than replacing them: a policy engine can feed it rules,
 and an output guardrail can still check what the agent says.
 
-> **Status:** working prototype, 0.1.0. 203 automated tests, 94% coverage, offline demo. It is
+> **Status:** working prototype, 0.1.0. 279 automated tests, CI on Linux and Windows (Python
+> 3.10–3.14), offline demo. It is
 > **not production-ready** yet; see [Known limitations](#known-limitations) and the
 > [roadmap](#roadmap). Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -81,7 +105,7 @@ and an output guardrail can still check what the agent says.
 
 ```
 ActionProposal ─► ValidationEngine (rule packs) ──────────────┐  hard violation ⇒ BLOCK, always
-               └► ProviderRunner ─► rules | ollama | vegaml | mock
+               └► ProviderRunner ─► rules | vegaml-head | vegaml | ollama | mock
                          │ (single / sequential / parallel, enforced timeout)
                          ▼
           UncertaintyEvaluator + DisagreementDetector
@@ -220,7 +244,11 @@ It generates no text.
 - **Confidence Lab v2:** public-task datasets with provenance and leakage checks; VegaML (adapters off and
   auto) vs the same frozen backbone used as a plain LM vs a majority baseline; accuracy, calibration,
   abstention, conformal coverage, paired confidence intervals.
-- **Sentinel integration:** VegaML as a governance provider (`vegaml-off`, `vegaml-auto`). Hard rules still win.
+- **Sentinel integration:** VegaML as a governance provider: `vegaml-head` (the few-shot head, used by
+  `config/sentinel-vegaml.yaml`), and `vegaml-off` / `vegaml-auto` (the engine). Hard rules still win.
+- **Heads you fit yourself:** `action-sentinel vega fit` fits the head on your labelled actions (never on the
+  test split) and saves it. The provider serves it only for the question, framing and checkpoint it was
+  fitted for.
 
 VegaML needs torch (about 3.5 GB RAM for 0.8B on CPU), so it is best installed in its own environment:
 
@@ -271,7 +299,8 @@ any check fails. See [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
 1. An MCP proxy and a remote (HTTP) mode for the `@guard` decorator, so existing agents can be protected
    without rewiring. The in-process decorator with shadow mode is done ([`docs/GUARD.md`](docs/GUARD.md)).
 2. PyPI package and Docker image.
-3. A better model layer: a dev-split prompt and model study, automatic calibration profiles, live VegaML results.
+3. A stronger VegaML layer: heads fitted on real labelled agent traffic, GPU and 4B results, automatic
+   calibration profiles.
 4. A public, independently labelled benchmark of risky agent actions, plus a reusable policy library.
 5. Production hardening: Postgres storage, managed signing keys, OIDC, tamper-evident audit, review notifications.
 
@@ -286,6 +315,7 @@ any check fails. See [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
 - [Runbook](docs/operations/RUNBOOK.md)
 - [Demo guide](docs/DEMO_GUIDE.md)
 - [Guarding tool functions](docs/GUARD.md)
+- [Running with VegaML](docs/VEGAML.md)
 - [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [Changelog](CHANGELOG.md)
 
 ## License
