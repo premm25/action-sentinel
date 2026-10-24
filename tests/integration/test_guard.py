@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
+import inspect
 import json
+import time
 
 import pytest
 
@@ -102,12 +105,27 @@ def test_enforce_fails_closed_when_sentinel_fails(monkeypatch):
     assert exc.value.reason_codes == ["SENTINEL_FAILED"] and calls == []
 
 
-def test_enforce_needs_the_guard_adapter():
-    with pytest.raises(ValueError, match="GuardAdapter"):
-        Guard(make_sentinel(), agent_id="a", agent_version="1", source_system="infra-agent", mode="enforce")
-    g = Guard(make_sentinel(), agent_id="a", agent_version="1", source_system="infra-agent")  # shadow is fine
-    with pytest.raises(ValueError):
-        g.mode = "enforce"
+def test_enforce_works_without_the_guard_adapter():
+    sentinel = make_sentinel()  # the default mock adapter: the guard runs the tool itself after `begin`
+    guard = Guard(sentinel, agent_id="a", agent_version="1", source_system="infra-agent", mode="enforce")
+
+    @guard.tool("read_logs", target="staging/x")
+    def read(service: str) -> str:
+        return "ok"
+
+    assert read("x") == "ok"
+    [e] = sentinel.store.list_executions()
+    assert e.status == "EXECUTED" and e.adapter == "guard" and e.started_by == "a"
+    assert sentinel.adapter.executed == []  # the configured adapter was not used
+
+
+def test_a_finish_failure_after_the_tool_ran_keeps_the_result(monkeypatch):
+    sentinel, guard, calls, read_logs, *_ = build()
+    monkeypatch.setattr(sentinel, "finish_execution", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("db gone")))
+    with pytest.warns(UserWarning, match="could not record"):
+        assert read_logs("checkout-api") == "100 lines of checkout-api"
+    [e] = sentinel.store.list_executions()
+    assert e.status == "STARTED" and guard.unfinished == [e.execution_id]  # key stays claimed; never re-run
 
 
 def test_shadow_runs_everything_and_records_what_would_have_happened(tmp_path):
@@ -142,9 +160,96 @@ def test_shadow_survives_sentinel_failure_and_keeps_tool_errors(monkeypatch):
     assert guard.records[-1].tool_error == "ValueError: bad"
 
 
-def test_async_tools_are_rejected():
-    guard = Guard(make_sentinel(), agent_id="a", agent_version="1", source_system="infra-agent")
-    with pytest.raises(TypeError, match="synchronous"):
-        @guard.tool("read_logs", target="x")
-        async def tool(service: str):
-            return service
+def async_build(mode="enforce"):
+    sentinel = make_sentinel()
+    guard = Guard(sentinel, agent_id="ops-agent", agent_version="1", source_system="infra-agent", mode=mode)
+    calls = []
+
+    @guard.tool(target=lambda a: "staging/%s" % a["service"])
+    async def read_logs(service: str, lines: int = 100) -> str:
+        await asyncio.sleep(0)
+        calls.append(("read_logs", service))
+        return "%d lines of %s" % (lines, service)
+
+    @guard.tool(target=lambda a: "prod/%s" % a["database"],
+                evidence=lambda a: [{"ref_id": "t-1", "kind": "ticket", "stance": "supports"},
+                                    {"ref_id": "t-2", "kind": "ticket", "stance": "supports"}])
+    async def delete_database(database: str) -> str:
+        calls.append(("delete_database", database))
+        return "dropped"
+
+    @guard.tool(target=lambda a: "staging/%s" % a["deployment"],
+                evidence=lambda a: [{"ref_id": "alert-1", "kind": "alert", "stance": "supports"}])
+    async def scale_deployment(deployment: str, replicas: int) -> str:
+        calls.append(("scale_deployment", deployment, replicas))
+        return "scaled to %d" % replicas
+
+    return sentinel, guard, calls, read_logs, delete_database, scale_deployment
+
+
+def test_async_tools_are_enforced_like_sync_ones():
+    sentinel, guard, calls, read_logs, delete_database, scale_deployment = async_build()
+    assert inspect.iscoroutinefunction(read_logs)
+
+    async def agent():
+        assert await read_logs("search", lines=3) == "3 lines of search"
+        with pytest.raises(ActionBlocked):
+            await delete_database("orders")
+        with pytest.raises(ActionHeld) as held:
+            await scale_deployment("web", 4)
+        token = sentinel.approve_review(held.value.review_id, "ada", "ok").authorization.token
+        with pytest.raises(TypeError, match="aresume"):
+            guard.resume(held.value.review_id, token)
+        assert await guard.aresume(held.value.review_id, token) == "scaled to 4"
+
+    asyncio.run(agent())
+    assert calls == [("read_logs", "search"), ("scale_deployment", "web", 4)]
+    assert sorted(e.status for e in sentinel.store.list_executions()) == ["EXECUTED", "EXECUTED"]
+
+
+def test_async_tool_errors_are_recorded_as_failed():
+    sentinel = make_sentinel()
+    guard = Guard(sentinel, agent_id="a", agent_version="1", source_system="infra-agent", mode="enforce")
+
+    @guard.tool("read_logs", target="staging/x")
+    async def broken(service: str):
+        raise ConnectionError("log store down")
+
+    with pytest.raises(ConnectionError):
+        asyncio.run(broken("x"))
+    [e] = sentinel.store.list_executions()
+    assert e.status == "FAILED" and "log store down" in e.output["error"]
+
+
+def test_async_shadow_runs_the_tool_and_records():
+    sentinel, guard, calls, read_logs, delete_database, _ = async_build(mode="shadow")
+
+    async def agent():
+        return await delete_database("orders"), await read_logs("search")
+
+    assert asyncio.run(agent()) == ("dropped", "100 lines of search")
+    assert [r.outcome for r in guard.records] == ["BLOCK", "APPROVE"]
+    assert sentinel.store.list_executions() == []
+
+
+def test_async_tools_do_not_block_the_event_loop(monkeypatch):
+    sentinel, guard, calls, read_logs, *_ = async_build()
+    slow = sentinel.evaluate
+
+    def slow_evaluate(*a, **k):
+        time.sleep(0.3)
+        return slow(*a, **k)
+
+    monkeypatch.setattr(sentinel, "evaluate", slow_evaluate)
+    ticks = []
+
+    async def ticker():
+        for _ in range(5):
+            ticks.append(time.perf_counter())
+            await asyncio.sleep(0.02)
+
+    async def agent():
+        await asyncio.gather(read_logs("search"), ticker())
+
+    asyncio.run(agent())
+    assert ticks[-1] - ticks[0] < 0.25  # the loop kept running while Sentinel decided

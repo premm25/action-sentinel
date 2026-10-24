@@ -129,6 +129,19 @@ Details: [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md
 
 ## Installation
 
+Into your own project (no clone needed; the settings profiles, rule packs and dataset ship with the package):
+
+```bash
+pip install "action-sentinel[api] @ git+https://github.com/premm25/action-sentinel.git"   # add ,vegaml for VegaML
+action-sentinel demo                  # works from any directory
+action-sentinel init                  # copies config/ and examples/rule_packs/ here, to edit for your agent
+```
+
+Relative paths in settings resolve against your project first and fall back to the shipped files, so
+`examples/rule_packs/core.yaml` works before and after `init`.
+
+For development on Sentinel itself:
+
 ```bash
 python -m venv .venv
 .venv/Scripts/activate            # Windows; on Linux/macOS: source .venv/bin/activate
@@ -179,9 +192,11 @@ curl -s -X POST http://127.0.0.1:8000/decisions/evaluate -H "X-API-Key: dev-agen
 
 Endpoints:
 - `GET /health`, `GET /providers`
-- `POST /decisions/evaluate`, `GET /decisions`, `GET /decisions/{id}`, `GET /decisions/{id}/events`
+- `POST /decisions/evaluate`, `POST /decisions/assess` (shadow: nothing stored), `GET /decisions`,
+  `GET /decisions/{id}`, `GET /decisions/{id}/events`, `POST /shadow-records`
 - `GET /reviews/pending`, `GET /reviews/{id}`, `POST /reviews/{id}/approve|reject|override`
-- `POST /executions`, `POST /authorizations/{id}/revoke`
+- `POST /executions` (Sentinel's adapter runs the action), or `POST /executions/begin` and
+  `POST /executions/{id}/finish` (the agent runs it, as the remote guard does); `POST /authorizations/{id}/revoke`
 - `POST /evaluations/run`, `GET /evaluations`, `GET /evaluations/{run_id}`, `GET /evaluations/{run_id}/report`
 
 ## Dashboard
@@ -206,8 +221,9 @@ pytest -m ollama                        # optional: live test against a running 
 ## Guarding tool functions
 
 Wrap an agent's tools with a decorator instead of building proposals by hand. Shadow mode records
-what Sentinel would have done while changing nothing; enforce mode runs the tool only through the
-execution gateway. See [`docs/GUARD.md`](docs/GUARD.md).
+what Sentinel would have done while changing nothing; enforce mode runs the tool only after the
+execution gateway clears it. Sync and `async def` tools both work, and Sentinel can run in the agent's
+process or as a separate service (`RemoteSentinel`). See [`docs/GUARD.md`](docs/GUARD.md).
 
 ```python
 guard = Guard(sentinel, agent_id="ops-agent", agent_version="1.4.0", source_system="infra-agent", mode="shadow")
@@ -289,15 +305,14 @@ any check fails. See [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
   is circular.
 - The local LLM (`llama3.1:8b`, CPU) was measured at 0.41 accuracy on the test split, and it never
   chose `unsafe`. On its own it is not a useful classifier for this task as prompted.
-- The VegaML adapter is implemented against the inspected v0.9.0 API and tested with a stub. It
-  was **not run live** because the package isn't installed in this environment.
+- VegaML results are single CPU runs with the 0.8B checkpoint; there are no GPU or 4B results yet.
 - The mock executor changes nothing real. A real adapter would also need compensation, dry-run and
   scoping controls.
 
 ## Roadmap
 
-1. An MCP proxy and a remote (HTTP) mode for the `@guard` decorator, so existing agents can be protected
-   without rewiring. The in-process decorator with shadow mode is done ([`docs/GUARD.md`](docs/GUARD.md)).
+1. An MCP proxy, so existing agents can be protected without rewiring. The `@guard` decorator is done,
+   in-process and remote, for sync and async tools ([`docs/GUARD.md`](docs/GUARD.md)).
 2. PyPI package and Docker image.
 3. A stronger VegaML layer: heads fitted on real labelled agent traffic, GPU and 4B results, automatic
    calibration profiles.

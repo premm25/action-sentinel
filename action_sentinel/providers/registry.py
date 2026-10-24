@@ -10,6 +10,7 @@ from pydantic import Field, ValidationError
 
 from action_sentinel.contracts import ProviderHealth
 from action_sentinel.contracts.common import StrictModel
+from action_sentinel.resources import resolve
 
 from .base import DecisionProvider
 from .mock import MockDecisionProvider
@@ -61,8 +62,7 @@ Factory = Callable[[ProviderSpec, Path], DecisionProvider]
 
 def _rule_based(spec: ProviderSpec, base: Path) -> DecisionProvider:
     cfg = RuleBasedConfig.model_validate(spec.config)
-    path = Path(cfg.classifier_path)
-    return RuleBasedDecisionProvider.from_file(spec.name, path if path.is_absolute() else base / path)
+    return RuleBasedDecisionProvider.from_file(spec.name, resolve(base, cfg.classifier_path))
 
 
 def _mock(spec: ProviderSpec, base: Path) -> DecisionProvider:
@@ -78,12 +78,12 @@ def _ollama(spec: ProviderSpec, base: Path) -> DecisionProvider:
 
 def _vegaml(spec: ProviderSpec, base: Path) -> DecisionProvider:
     cfg = VegaMLConfig.model_validate(spec.config)
-    def resolve(p: str | None) -> str | None:
-        return str(base / p) if p and not Path(p).is_absolute() else p
+    def path(p: str | None) -> str | None:
+        return str(resolve(base, p)) if p else p
     return VegaMLDecisionProvider(spec.name, checkpoint=cfg.checkpoint, device=cfg.device,
                                   adapter_mode=cfg.adapter_mode, framing=cfg.framing, readout=cfg.readout,
-                                  ttt_fit_dataset=resolve(cfg.ttt_fit_dataset), ttt_fit_split=cfg.ttt_fit_split,
-                                  ttt_head_path=resolve(cfg.ttt_head_path))
+                                  ttt_fit_dataset=path(cfg.ttt_fit_dataset), ttt_fit_split=cfg.ttt_fit_split,
+                                  ttt_head_path=path(cfg.ttt_head_path))
 
 
 FACTORIES: dict[str, Factory] = {"rule_based": _rule_based, "mock": _mock, "ollama": _ollama, "vegaml": _vegaml}

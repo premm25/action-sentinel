@@ -15,16 +15,16 @@ from pydantic import Field, model_validator
 from action_sentinel.contracts import ApprovalLevel, Reviewer
 from action_sentinel.contracts.common import StrictModel
 from action_sentinel.governance.policy import GovernancePolicy
-
-_SOURCE_CONFIG = Path(__file__).resolve().parents[1] / "config" / "sentinel.yaml"
+from action_sentinel.resources import bundled_root, is_bundled, resolve
 
 
 def default_config_path() -> Path:
-    """$SENTINEL_CONFIG, else ./config/sentinel.yaml (run from the project root), else the source checkout's."""
+    """$SENTINEL_CONFIG, else ./config/sentinel.yaml (run from the project root), else the shipped one."""
     if os.environ.get("SENTINEL_CONFIG"):
         return Path(os.environ["SENTINEL_CONFIG"])
     cwd = Path.cwd() / "config" / "sentinel.yaml"
-    return cwd if cwd.is_file() else _SOURCE_CONFIG
+    root = bundled_root()
+    return cwd if cwd.is_file() or root is None else root / "config" / "sentinel.yaml"
 
 
 class Principal(StrictModel):
@@ -74,17 +74,20 @@ class Settings(StrictModel):
         return self
 
     def path(self, p: str) -> Path:
-        q = Path(p)
-        return q if q.is_absolute() or p == ":memory:" else Path(self.base_dir) / q
+        """`p` under base_dir, falling back to the files Sentinel ships (rule packs, datasets)."""
+        return Path(p) if p == ":memory:" else resolve(self.base_dir, p)
 
     def reviewer(self, reviewer_id: str) -> Reviewer | None:
         return next((r for r in self.reviewers if r.reviewer_id == reviewer_id), None)
 
 
 def load_settings(path: str | Path | None = None, **overrides: Any) -> Settings:
-    p = Path(path) if path else default_config_path()
+    # A named profile that isn't in the current directory (config/sentinel-vegaml.yaml) is the shipped one.
+    p = resolve(Path.cwd(), path) if path else default_config_path()
     raw: dict[str, Any] = yaml.safe_load(p.read_text(encoding="utf-8")) or {} if p.is_file() else {}
-    raw.setdefault("base_dir", str(p.parent.parent if p.parent.name == "config" else p.parent))
+    # Shipped settings keep their data (database, reports) in the current directory, not in site-packages.
+    raw.setdefault("base_dir", str(Path.cwd() if is_bundled(p) else
+                                   p.parent.parent if p.parent.name == "config" else p.parent))
     if os.environ.get("SENTINEL_DB_PATH"):
         raw["db_path"] = os.environ["SENTINEL_DB_PATH"]
     if os.environ.get("SENTINEL_ENV"):

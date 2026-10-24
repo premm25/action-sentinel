@@ -301,6 +301,8 @@ def cmd_vega_fit(args) -> int:
     if args.split == "test":
         print("refusing to fit on the test split: it is for measuring, never for fitting", file=sys.stderr)
         return 2
+    from action_sentinel.resources import resolve
+    args.dataset = str(resolve(Path.cwd(), args.dataset))
     try:
         provider = VegaMLDecisionProvider("vegaml-head", checkpoint=args.model, device=args.device,
                                           adapter_mode="off", framing=args.framing, readout="ttt",
@@ -410,6 +412,23 @@ def cmd_vega_failures(args) -> int:
     return 0
 
 
+def cmd_init(args) -> int:
+    """Copy the shipped settings, rule packs, dataset and sample actions into a project, to edit."""
+    from action_sentinel.resources import copy_bundled
+    written, skipped = copy_bundled(args.dir, force=args.force)
+    for f in written:
+        print("wrote   %s" % f)
+    for f in skipped:
+        print("exists  %s (kept; --force overwrites)" % f)
+    print()
+    print("Next: edit examples/rule_packs/core.yaml for your agent's actions and targets, then")
+    print("  action-sentinel validate-rules")
+    print("  action-sentinel demo")
+    print("config/sentinel.yaml uses publicly known development API keys: replace the principals before "
+          "exposing the API.")
+    return 0
+
+
 def cmd_dashboard(args) -> int:
     import subprocess
     app = Path(__file__).parent / "dashboard" / "app.py"
@@ -490,6 +509,11 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--correlation")
     a.add_argument("--limit", type=int, default=100_000)
     a.set_defaults(fn=cmd_audit_export)
+
+    a = sub.add_parser("init", help="copy the shipped settings and rule packs into a directory, to edit")
+    a.add_argument("dir", nargs="?", default=".")
+    a.add_argument("--force", action="store_true", help="overwrite files that already exist")
+    a.set_defaults(fn=cmd_init)
 
     a = sub.add_parser("demo", help="run the offline end-to-end demonstration")
     a.add_argument("--db", dest="db", default=None, help="database for the demo (default: a temporary file)")

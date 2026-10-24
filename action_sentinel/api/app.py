@@ -7,6 +7,7 @@ never from the request body; agents may only submit actions under their own agen
 
 
 import hmac
+import json
 import warnings
 from typing import Annotated, Any, Literal
 
@@ -16,8 +17,9 @@ from pydantic import BaseModel, Field
 
 from action_sentinel import __version__
 from action_sentinel.config import Principal, Settings, hash_key
-from action_sentinel.contracts import ActionProposal, EvaluationRunConfig, GovernanceDecision
+from action_sentinel.contracts import ActionProposal, DecisionQuestion, EvaluationRunConfig, GovernanceDecision, new_id
 from action_sentinel.evaluation import ConfidenceLab, DatasetError, LabError, render_comparison
+from action_sentinel.execution import ExecutionStateError
 from action_sentinel.governance import ReviewError
 from action_sentinel.providers import ProviderConfigError
 from action_sentinel.service import DuplicateEventConflict, Sentinel
@@ -27,6 +29,7 @@ class EvaluateRequest(BaseModel):
     action: ActionProposal
     providers: list[str] | None = None
     strategy: Literal["single", "sequential", "parallel"] | None = None
+    question: DecisionQuestion | None = None
 
 
 class ReasonBody(BaseModel):
@@ -41,6 +44,22 @@ class OverrideBody(BaseModel):
 class ExecuteBody(BaseModel):
     token: str = Field(max_length=200)
     action: ActionProposal
+
+
+class BeginBody(ExecuteBody):
+    adapter: str = Field(default="remote", max_length=64)
+
+
+class FinishBody(BaseModel):
+    ok: bool
+    output: dict[str, Any] = Field(default_factory=dict)
+
+
+class ShadowBody(BaseModel):
+    """What a shadow-mode guard recorded about one call (it ran the tool regardless)."""
+
+    record: dict[str, Any]
+    action_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
 class RevokeBody(BaseModel):
@@ -106,6 +125,15 @@ def create_app(settings: Settings, service: Sentinel | None = None, vega_service
         async def _bad_request(request: Request, exc: Exception):
             return JSONResponse(status_code=400, content={"error": type(exc).__name__, "detail": str(exc)})
 
+    @app.exception_handler(ExecutionStateError)
+    async def _execution_state(request: Request, exc: ExecutionStateError):
+        return JSONResponse(status_code=404 if exc.code == "NOT_FOUND" else 409,
+                            content={"error": exc.code, "detail": str(exc)})
+
+    def own(action: ActionProposal, p: Principal, what: str) -> None:
+        if "admin" not in p.roles and action.agent_id != p.principal_id:
+            raise HTTPException(403, "agents may only %s their own actions" % what)
+
     def reviewer_id(p: Principal) -> str:
         if not p.reviewer_id:
             raise HTTPException(403, "principal is not linked to a reviewer identity")
@@ -124,12 +152,32 @@ def create_app(settings: Settings, service: Sentinel | None = None, vega_service
 
     @app.post("/decisions/evaluate")
     def evaluate(body: EvaluateRequest, p: Agent) -> dict[str, Any]:
-        if "admin" not in p.roles and body.action.agent_id != p.principal_id:
-            raise HTTPException(403, "agents may only submit their own actions")
-        out = svc.evaluate(body.action, providers=body.providers, strategy=body.strategy, actor=p.principal_id)
+        own(body.action, p, "submit")
+        out = svc.evaluate(body.action, question=body.question, providers=body.providers, strategy=body.strategy,
+                           actor=p.principal_id)
         return {"decision": decision_view(out.decision), "duplicate": out.duplicate,
                 "review_id": out.review.review_id if out.review else None,
                 "authorization_token": out.authorization.token if out.authorization else None}
+
+    @app.post("/decisions/assess")
+    def assess(body: EvaluateRequest, p: Agent) -> dict[str, Any]:
+        """What Sentinel would decide, for shadow mode: audited, but no decision, review or grant is stored."""
+        own(body.action, p, "assess")
+        corr = new_id("shadow")
+        d = svc.assess(body.action, correlation_id=corr, question=body.question, providers=body.providers,
+                       strategy=body.strategy)
+        return {"decision": decision_view(d), "correlation_id": corr}
+
+    @app.post("/shadow-records")
+    def shadow_record(body: ShadowBody, p: Agent) -> dict[str, Any]:
+        if len(json.dumps(body.record, default=str)) > 20_000:
+            raise HTTPException(413, "shadow record larger than 20 kB")
+        corr = str(body.record.get("correlation_id") or new_id("shadow"))[:100]
+        codes = body.record.get("reason_codes")
+        ev = svc.audit.emit("shadow.decision", corr, "guard", actor=p.principal_id,
+                            reason_codes=[str(c) for c in codes] if isinstance(codes, list) else [],
+                            data={**body.record, "action_hash": body.action_hash})
+        return {"event_id": ev.event_id}
 
     @app.get("/decisions")
     def list_decisions(p: Auditor, limit: Limit = 50, offset: Offset = 0,
@@ -183,10 +231,25 @@ def create_app(settings: Settings, service: Sentinel | None = None, vega_service
 
     @app.post("/executions")
     def execute(body: ExecuteBody, p: Agent) -> dict[str, Any]:
-        if "admin" not in p.roles and body.action.agent_id != p.principal_id:
-            raise HTTPException(403, "agents may only execute their own actions")
+        own(body.action, p, "execute")
         r = svc.execute(body.token, body.action, actor=p.principal_id)
         return r.model_dump(mode="json")
+
+    @app.post("/executions/begin")
+    def begin_execution(body: BeginBody, p: Agent) -> dict[str, Any]:
+        """For an agent that runs the action itself: every gateway check; STARTED means it may run it now."""
+        own(body.action, p, "execute")
+        return svc.begin_execution(body.token, body.action, actor=p.principal_id,
+                                   adapter=body.adapter).model_dump(mode="json")
+
+    @app.post("/executions/{execution_id}/finish")
+    def finish_execution(execution_id: str, body: FinishBody, p: Agent) -> dict[str, Any]:
+        e = svc.store.get_execution(execution_id)
+        if e is None:
+            raise HTTPException(404, "no such execution")
+        if "admin" not in p.roles and e.started_by != p.principal_id:
+            raise HTTPException(403, "only the agent that started an execution may finish it")
+        return svc.finish_execution(execution_id, body.ok, body.output, actor=p.principal_id).model_dump(mode="json")
 
     @app.post("/authorizations/{grant_id}/revoke")
     def revoke(grant_id: str, body: RevokeBody, p: Admin) -> dict[str, Any]:

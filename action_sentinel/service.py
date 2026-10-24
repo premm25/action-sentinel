@@ -349,6 +349,15 @@ class Sentinel:
     def execute(self, token: str, action: ActionProposal, actor: str = "agent") -> ExecutionResult:
         return self.gateway.execute(token, action, actor)
 
+    def begin_execution(self, token: str, action: ActionProposal, actor: str = "agent",
+                        adapter: str | None = None) -> ExecutionResult:
+        """For a caller that runs the action itself: all gateway checks; STARTED means it may run now."""
+        return self.gateway.begin(token, action, actor, adapter)
+
+    def finish_execution(self, execution_id: str, ok: bool, output: dict | None = None,
+                         actor: str = "agent") -> ExecutionResult:
+        return self.gateway.finish(execution_id, ok, output, actor)
+
     def revoke_authorization(self, grant_id: str, reason: str, actor: str = "admin"):
         g = self.authorizer.revoke(grant_id, reason)
         self.audit.emit("authorization.revoked", g.correlation_id, "authorization", decision_id=g.decision_id,

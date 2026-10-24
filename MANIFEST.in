@@ -1,0 +1,5 @@
+# The source distribution carries the files setup.py bundles into the wheel.
+include config/*.yaml
+include examples/rule_packs/*.yaml
+include examples/evaluation_datasets/*.jsonl
+include examples/sample_actions/*.json*

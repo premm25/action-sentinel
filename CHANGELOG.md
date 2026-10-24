@@ -6,6 +6,17 @@ and the project uses [semantic versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- The package ships its settings profiles, rule packs, synthetic dataset and sample actions, so a plain
+  `pip install` works without a clone. Relative paths in settings fall back to the shipped files;
+  `action-sentinel init` copies them into a project to edit. CI installs the built wheel in a clean
+  environment and runs it outside the repository.
+- `@guard.tool` supports `async def` tools (`await guard.aresume(...)` for held ones); Sentinel's work runs
+  in a worker thread so the event loop isn't blocked.
+- Remote mode: `action_sentinel.remote.RemoteSentinel` lets a guard use Sentinel running as a separate
+  service. New endpoints: `POST /decisions/assess`, `POST /shadow-records`, `POST /executions/begin` and
+  `POST /executions/{id}/finish`; `POST /decisions/evaluate` accepts a `question`.
+- The execution gateway has `begin` and `finish` for callers that run the action themselves. Executions
+  record `started_by`, and a new status `STARTED` covers a cleared action that hasn't reported back.
 - VegaML-first operation: `config/sentinel-vegaml.yaml` (rules and the VegaML head side by side, warmed up
   at startup), `action-sentinel vega fit` (fit the head on your labelled actions, never the test split, and
   save it), `ttt_head_path` to serve a saved head, `Sentinel.warm_up()` and the `warm_up` setting. A saved
@@ -16,6 +27,9 @@ and the project uses [semantic versioning](https://semver.org/).
   (`examples/rule_packs/agent_tasks.yaml`).
 
 ### Changed
+- `Guard` no longer needs `Sentinel(adapter=GuardAdapter())`. It runs the tool itself once the gateway's
+  `begin` clears it; `GuardAdapter` remains for existing code but refuses direct `Sentinel.execute`.
+- `ExecutionGateway.execute` now records the execution as `STARTED` before the adapter runs.
 - Project renamed to **Action Sentinel**: distribution `action-sentinel`, import package `action_sentinel`,
   command `action-sentinel` (`agent-sentinel` and the import name `sentinel` are already taken on PyPI).
 

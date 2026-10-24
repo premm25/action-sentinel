@@ -40,10 +40,12 @@ class ExecutionResult(StrictModel):
     decision_id: str | None
     correlation_id: str | None
     idempotency_key: str | None
-    status: Literal["EXECUTED", "REJECTED", "DUPLICATE", "FAILED"]
+    # STARTED: cleared by the gateway and running in the caller's process (begin/finish); not finished yet
+    status: Literal["EXECUTED", "REJECTED", "DUPLICATE", "FAILED", "STARTED"]
     reason_codes: list[str] = Field(default_factory=list)
     adapter: str | None = None
     started_at: datetime = Field(default_factory=utcnow)
     finished_at: datetime | None = None
     output: dict[str, JsonValue] = Field(default_factory=dict)
     original_execution_id: str | None = None  # set on DUPLICATE
+    started_by: str | None = None             # the actor the gateway cleared; only it may finish the run

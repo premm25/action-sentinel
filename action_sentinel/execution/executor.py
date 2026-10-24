@@ -1,5 +1,9 @@
 """The execution boundary. The only path to an adapter runs through ExecutionGateway.execute.
 
+`execute` runs the configured adapter. `begin` and `finish` split that in two for a caller that runs the
+action itself (the guard, in the agent's process, locally or over the API): `begin` runs every check below
+and claims the idempotency key, then the caller runs the action and reports the outcome with `finish`.
+
 Checks, in order (the first failure rejects; nothing is executed):
  1. token signature, grant existence, revocation, expiry           (Authorizer.verify)
  2. the action presented matches the authorized action hash        ACTION_MISMATCH
@@ -25,6 +29,14 @@ from action_sentinel.contracts import (
 )
 
 from .authorization import AuthorizationError, Authorizer
+
+
+class ExecutionStateError(Exception):
+    """`finish` was called for an execution that does not exist or is not STARTED."""
+
+    def __init__(self, code: str, message: str):
+        super().__init__(message)
+        self.code = code
 
 
 class ExecutionAdapter(Protocol):
@@ -64,6 +76,19 @@ class ExecutionGateway:
         self.audit = audit
 
     def execute(self, token: str, action: ActionProposal, actor: str = "unknown") -> ExecutionResult:
+        started = self.begin(token, action, actor, self.adapter.name)
+        if started.status != "STARTED":
+            return started
+        try:
+            output = self.adapter.execute(action)
+        except Exception as exc:
+            # The key stays claimed: a partially applied action must not be retried blindly.
+            return self.finish(started.execution_id, False, {"error": "%s: %s" % (type(exc).__name__, exc)}, actor)
+        return self.finish(started.execution_id, True, output, actor)
+
+    def begin(self, token: str, action: ActionProposal, actor: str = "unknown",
+              adapter: str | None = None) -> ExecutionResult:
+        """Run every check and claim the idempotency key. STARTED means the caller may now run the action."""
         corr = None
         try:
             grant = self.authorizer.verify(token)
@@ -84,23 +109,29 @@ class ExecutionGateway:
                             reason_codes=result.reason_codes, data={"original_execution_id": holder})
             return result
 
-        self.audit.emit("execution.started", corr, self.component, decision_id=grant.decision_id, actor=actor,
-                        data={"execution_id": execution_id, "adapter": self.adapter.name})
         result = ExecutionResult(execution_id=execution_id, grant_id=grant.grant_id, decision_id=grant.decision_id,
-                                 correlation_id=corr, idempotency_key=action.idempotency_key, status="EXECUTED",
-                                 adapter=self.adapter.name)
-        try:
-            output = self.adapter.execute(action)
-            result = result.model_copy(update={"output": output, "finished_at": utcnow(),
-                                               "reason_codes": ["EXECUTED"]})
-        except Exception as exc:
-            # The key stays claimed: a partially applied action must not be retried blindly.
-            result = result.model_copy(update={"status": "FAILED", "finished_at": utcnow(),
-                                               "reason_codes": ["ADAPTER_FAILURE"],
-                                               "output": {"error": "%s: %s" % (type(exc).__name__, exc)}})
+                                 correlation_id=corr, idempotency_key=action.idempotency_key, status="STARTED",
+                                 adapter=adapter, started_by=actor)
         self.store.save_execution(result)
-        self.audit.emit("execution.%s" % result.status.lower(), corr, self.component, decision_id=grant.decision_id,
-                        actor=actor, reason_codes=result.reason_codes,
+        self.audit.emit("execution.started", corr, self.component, decision_id=grant.decision_id, actor=actor,
+                        data={"execution_id": execution_id, "adapter": adapter})
+        return result
+
+    def finish(self, execution_id: str, ok: bool, output: dict[str, Any] | None = None,
+               actor: str = "unknown") -> ExecutionResult:
+        """Record how a STARTED execution ended. Each execution finishes once; the key stays claimed either way."""
+        started = self.store.get_execution(execution_id)
+        if started is None:
+            raise ExecutionStateError("NOT_FOUND", "no execution %s" % execution_id)
+        if started.status != "STARTED":
+            raise ExecutionStateError("NOT_STARTED", "execution %s is %s, not STARTED" % (execution_id, started.status))
+        result = started.model_copy(update={"status": "EXECUTED" if ok else "FAILED", "finished_at": utcnow(),
+                                            "reason_codes": ["EXECUTED" if ok else "ADAPTER_FAILURE"],
+                                            "output": output or {}})
+        result = ExecutionResult.model_validate(result.model_dump())  # validates the caller's output
+        self.store.save_execution(result)
+        self.audit.emit("execution.%s" % result.status.lower(), result.correlation_id or "uncorrelated",
+                        self.component, decision_id=result.decision_id, actor=actor, reason_codes=result.reason_codes,
                         data={"execution_id": result.execution_id, "output": result.output})
         return result
 
