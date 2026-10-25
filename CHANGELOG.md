@@ -5,6 +5,10 @@ and the project uses [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-25
+
+First release on PyPI.
+
 ### Added
 - The package ships its settings profiles, rule packs, synthetic dataset and sample actions, so a plain
   `pip install` works without a clone. Relative paths in settings fall back to the shipped files;

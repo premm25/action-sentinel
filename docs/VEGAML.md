@@ -26,7 +26,7 @@ These are single CPU runs with the 0.8B checkpoint. The limits are in each docum
 VegaML needs torch, about 1.8 GB of weights and about 3.5 GB of RAM for the 0.8B checkpoint on CPU.
 
 ```bash
-pip install "action-sentinel[api,vegaml] @ git+https://github.com/premm25/action-sentinel.git"
+pip install "action-sentinel[api,vegaml]"
 # or, from a clone:  pip install -e ".[api,vegaml]"
 action-sentinel vega check --load        # downloads the weights on first use and loads the model once
 ```

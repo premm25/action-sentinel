@@ -1,6 +1,6 @@
 # Action Sentinel
 
-[![CI](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![CI](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/premm25/action-sentinel/blob/main/LICENSE)
 
 **A VegaML-powered safety checkpoint between AI agents and the real world.** Before an agent restarts
 a server, refunds a payment or deletes a database, [VegaML](https://github.com/NandhaKishorM/vegaml) judges
@@ -50,8 +50,8 @@ action-sentinel vega fit --dataset my_actions.jsonl --out heads/my_actions.npz  
 action-sentinel --config config/sentinel-vegaml.yaml serve                       # rules + VegaML, warmed up
 ```
 
-Setup, fitting and operating notes: [`docs/VEGAML.md`](docs/VEGAML.md). The method and every number:
-[`docs/vegalab/`](docs/vegalab/RESULTS.md). Without VegaML installed, the default profile runs on the
+Setup, fitting and operating notes: [`docs/VEGAML.md`](https://github.com/premm25/action-sentinel/blob/main/docs/VEGAML.md). The method and every number:
+[`docs/vegalab/`](https://github.com/premm25/action-sentinel/blob/main/docs/vegalab/RESULTS.md). Without VegaML installed, the default profile runs on the
 rules alone, offline.
 
 ## 30-second example
@@ -99,7 +99,7 @@ and an output guardrail can still check what the agent says.
 > **Status:** working prototype, 0.1.0. 279 automated tests, CI on Linux and Windows (Python
 > 3.10–3.14), offline demo. It is
 > **not production-ready** yet; see [Known limitations](#known-limitations) and the
-> [roadmap](#roadmap). Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
+> [roadmap](#roadmap). Contributions are welcome: see [CONTRIBUTING.md](https://github.com/premm25/action-sentinel/blob/main/CONTRIBUTING.md).
 
 ## Architecture
 
@@ -119,7 +119,7 @@ ActionProposal ─► ValidationEngine (rule packs) ─────────�
    every step ─► AuditLogger ─► SQLiteStore ─► sanitized JSONL export
 ```
 
-Details: [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md).
+Details: [`docs/architecture/ARCHITECTURE.md`](https://github.com/premm25/action-sentinel/blob/main/docs/architecture/ARCHITECTURE.md).
 
 ## Prerequisites
 
@@ -129,10 +129,10 @@ Details: [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md
 
 ## Installation
 
-Into your own project (no clone needed; the settings profiles, rule packs and dataset ship with the package):
+From PyPI, into your own project (no clone needed; the settings profiles, rule packs and dataset ship with the package):
 
 ```bash
-pip install "action-sentinel[api] @ git+https://github.com/premm25/action-sentinel.git"   # add ,vegaml for VegaML
+pip install "action-sentinel[api]"    # add ,vegaml for VegaML; latest main: "action-sentinel[api] @ git+https://github.com/premm25/action-sentinel.git"
 action-sentinel demo                  # works from any directory
 action-sentinel init                  # copies config/ and examples/rule_packs/ here, to edit for your agent
 ```
@@ -152,7 +152,7 @@ pip install -e ".[dev,dashboard]"
 
 `config/sentinel.yaml` holds the rule packs, providers, active providers, evaluation strategy,
 governance thresholds, reviewers and API principals. Environment overrides are listed in
-[`.env.example`](.env.example): `SENTINEL_CONFIG`, `SENTINEL_DB_PATH`, `SENTINEL_ENV` and
+[`.env.example`](https://github.com/premm25/action-sentinel/blob/main/.env.example): `SENTINEL_CONFIG`, `SENTINEL_DB_PATH`, `SENTINEL_ENV` and
 `SENTINEL_SIGNING_KEY`.
 
 By default only the deterministic `rules` provider is active, so evaluation works without any model.
@@ -223,7 +223,7 @@ pytest -m ollama                        # optional: live test against a running 
 Wrap an agent's tools with a decorator instead of building proposals by hand. Shadow mode records
 what Sentinel would have done while changing nothing; enforce mode runs the tool only after the
 execution gateway clears it. Sync and `async def` tools both work, and Sentinel can run in the agent's
-process or as a separate service (`RemoteSentinel`). See [`docs/GUARD.md`](docs/GUARD.md).
+process or as a separate service (`RemoteSentinel`). See [`docs/GUARD.md`](https://github.com/premm25/action-sentinel/blob/main/docs/GUARD.md).
 
 ```python
 guard = Guard(sentinel, agent_id="ops-agent", agent_version="1.4.0", source_system="infra-agent", mode="shadow")
@@ -243,8 +243,8 @@ action-sentinel lab calibrate --provider ollama          # ECE on the calibratio
 action-sentinel lab show [run_id]   /   action-sentinel lab export <run_id...> --out report.md
 ```
 
-Measured results and their limits are in [`docs/evaluation/RESULTS.md`](docs/evaluation/RESULTS.md).
-The method is in [`docs/evaluation/METHODOLOGY.md`](docs/evaluation/METHODOLOGY.md).
+Measured results and their limits are in [`docs/evaluation/RESULTS.md`](https://github.com/premm25/action-sentinel/blob/main/docs/evaluation/RESULTS.md).
+The method is in [`docs/evaluation/METHODOLOGY.md`](https://github.com/premm25/action-sentinel/blob/main/docs/evaluation/METHODOLOGY.md).
 
 ## Vega Decision Intelligence Lab (VegaML)
 
@@ -255,7 +255,7 @@ probabilities, a conformal prediction set, an abstain flag and an "unbound" (out
 It generates no text.
 
 - **Real inference, verified** with `vegaml` 0.9.0, the 0.8B checkpoint on CPU. The lab wraps VegaML's own
-  API and never reimplements its engine. See [`docs/VEGA_MIGRATION.md`](docs/VEGA_MIGRATION.md).
+  API and never reimplements its engine. See [`docs/VEGA_MIGRATION.md`](https://github.com/premm25/action-sentinel/blob/main/docs/VEGA_MIGRATION.md).
 - **Typed decision service:** a Python `VegaCore` and `/vega/*` API routes, enabled with `vegalab.enabled`.
 - **Confidence Lab v2:** public-task datasets with provenance and leakage checks; VegaML (adapters off and
   auto) vs the same frozen backbone used as a plain LM vs a majority baseline; accuracy, calibration,
@@ -280,9 +280,9 @@ action-sentinel vega analyze reports/vegalab/<run>    # metrics.json, summary.cs
 action-sentinel vega failures reports/vegalab/<run> --kind confident-wrong
 ```
 
-GPU runs (0.8B and 4B, 500 test examples per task): [`notebooks/vegalab_kaggle_gpu.ipynb`](notebooks/vegalab_kaggle_gpu.ipynb).
-Documents: [architecture](docs/vegalab/ARCHITECTURE.md) · [datasets](docs/vegalab/DATASETS.md) ·
-[methodology](docs/vegalab/METHODOLOGY.md) · [results](docs/vegalab/RESULTS.md).
+GPU runs (0.8B and 4B, 500 test examples per task): [`notebooks/vegalab_kaggle_gpu.ipynb`](https://github.com/premm25/action-sentinel/blob/main/notebooks/vegalab_kaggle_gpu.ipynb).
+Documents: [architecture](https://github.com/premm25/action-sentinel/blob/main/docs/vegalab/ARCHITECTURE.md) · [datasets](https://github.com/premm25/action-sentinel/blob/main/docs/vegalab/DATASETS.md) ·
+[methodology](https://github.com/premm25/action-sentinel/blob/main/docs/vegalab/METHODOLOGY.md) · [results](https://github.com/premm25/action-sentinel/blob/main/docs/vegalab/RESULTS.md).
 
 ## Demo
 
@@ -291,7 +291,7 @@ action-sentinel demo
 ```
 
 The demo runs 12 steps offline and checks the expected result of each one. It exits non-zero if
-any check fails. See [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
+any check fails. See [`docs/DEMO_GUIDE.md`](https://github.com/premm25/action-sentinel/blob/main/docs/DEMO_GUIDE.md).
 
 ## Known limitations
 
@@ -312,7 +312,7 @@ any check fails. See [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
 ## Roadmap
 
 1. An MCP proxy, so existing agents can be protected without rewiring. The `@guard` decorator is done,
-   in-process and remote, for sync and async tools ([`docs/GUARD.md`](docs/GUARD.md)).
+   in-process and remote, for sync and async tools ([`docs/GUARD.md`](https://github.com/premm25/action-sentinel/blob/main/docs/GUARD.md)).
 2. PyPI package and Docker image.
 3. A stronger VegaML layer: heads fitted on real labelled agent traffic, GPU and 4B results, automatic
    calibration profiles.
@@ -321,18 +321,18 @@ any check fails. See [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
 
 ## Documents
 
-- [Architecture](docs/architecture/ARCHITECTURE.md)
-- [Threat model](docs/architecture/THREAT_MODEL.md)
-- [Architecture decisions](docs/decisions/ARCHITECTURE_DECISIONS.md)
-- [Evaluation methodology](docs/evaluation/METHODOLOGY.md)
-- [Evaluation results](docs/evaluation/RESULTS.md)
-- [Security](docs/security/SECURITY.md)
-- [Runbook](docs/operations/RUNBOOK.md)
-- [Demo guide](docs/DEMO_GUIDE.md)
-- [Guarding tool functions](docs/GUARD.md)
-- [Running with VegaML](docs/VEGAML.md)
-- [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [Changelog](CHANGELOG.md)
+- [Architecture](https://github.com/premm25/action-sentinel/blob/main/docs/architecture/ARCHITECTURE.md)
+- [Threat model](https://github.com/premm25/action-sentinel/blob/main/docs/architecture/THREAT_MODEL.md)
+- [Architecture decisions](https://github.com/premm25/action-sentinel/blob/main/docs/decisions/ARCHITECTURE_DECISIONS.md)
+- [Evaluation methodology](https://github.com/premm25/action-sentinel/blob/main/docs/evaluation/METHODOLOGY.md)
+- [Evaluation results](https://github.com/premm25/action-sentinel/blob/main/docs/evaluation/RESULTS.md)
+- [Security](https://github.com/premm25/action-sentinel/blob/main/docs/security/SECURITY.md)
+- [Runbook](https://github.com/premm25/action-sentinel/blob/main/docs/operations/RUNBOOK.md)
+- [Demo guide](https://github.com/premm25/action-sentinel/blob/main/docs/DEMO_GUIDE.md)
+- [Guarding tool functions](https://github.com/premm25/action-sentinel/blob/main/docs/GUARD.md)
+- [Running with VegaML](https://github.com/premm25/action-sentinel/blob/main/docs/VEGAML.md)
+- [Contributing](https://github.com/premm25/action-sentinel/blob/main/CONTRIBUTING.md) · [Security policy](https://github.com/premm25/action-sentinel/blob/main/SECURITY.md) · [Changelog](https://github.com/premm25/action-sentinel/blob/main/CHANGELOG.md)
 
 ## License
 
-Apache License 2.0. See [LICENSE](LICENSE).
+Apache License 2.0. See [LICENSE](https://github.com/premm25/action-sentinel/blob/main/LICENSE).
