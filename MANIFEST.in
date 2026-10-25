@@ -3,3 +3,4 @@ include config/*.yaml
 include examples/rule_packs/*.yaml
 include examples/evaluation_datasets/*.jsonl
 include examples/sample_actions/*.json*
+include examples/guard_demo.py

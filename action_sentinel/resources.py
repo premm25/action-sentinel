@@ -1,4 +1,5 @@
-"""The files Sentinel ships with: settings profiles, rule packs, the synthetic dataset and sample actions.
+"""The files Sentinel ships with: settings profiles, rule packs, the synthetic dataset, sample actions and the
+guard demo.
 
 In the repository they live in `config/` and `examples/`. A built wheel copies them into
 `action_sentinel/_bundled/` under the same relative paths (see setup.py), so `pip install action-sentinel`
@@ -15,7 +16,7 @@ from pathlib import Path
 _PACKAGE = Path(__file__).resolve().parent
 # What setup.py bundles, and what `init` copies: (directory, glob) relative to the repository root.
 BUNDLED = [("config", "*.yaml"), ("examples/rule_packs", "*.yaml"), ("examples/evaluation_datasets", "*.jsonl"),
-           ("examples/sample_actions", "*.json*")]
+           ("examples/sample_actions", "*.json*"), ("examples", "guard_demo.py")]
 
 
 def bundled_root() -> Path | None:

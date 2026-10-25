@@ -1,11 +1,18 @@
 # Action Sentinel
 
-[![CI](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/premm25/action-sentinel/blob/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/action-sentinel.svg)](https://pypi.org/project/action-sentinel/) [![CI](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/premm25/action-sentinel/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/premm25/action-sentinel/blob/main/LICENSE)
 
 **A VegaML-powered safety checkpoint between AI agents and the real world.** Before an agent restarts
 a server, refunds a payment or deletes a database, [VegaML](https://github.com/NandhaKishorM/vegaml) judges
 the risk, Sentinel's rules and governance decide whether it may run, and it can only run with an
 authorization token issued for that exact action.
+
+![An agent's tools behind @guard.tool: a safe call runs, a database delete is blocked, a scale-up waits for a human](https://raw.githubusercontent.com/premm25/action-sentinel/main/docs/assets/demo.gif)
+
+The recording is a real run of [`examples/guard_demo.py`](https://github.com/premm25/action-sentinel/blob/main/examples/guard_demo.py)
+(offline, rules only). Run it yourself: `pip install action-sentinel`, `action-sentinel init` (copies it, with the settings and rules),
+then `python examples/guard_demo.py`;
+`scripts/make_demo_gif.py` regenerates the recording.
 
 ```
 agent proposes action ──► Sentinel ──► APPROVE  → signed token → executor runs it (exactly once)

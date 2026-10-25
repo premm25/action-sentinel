@@ -5,6 +5,11 @@ and the project uses [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- A demo recording in the README (`docs/assets/demo.gif`): a real run of `examples/guard_demo.py`, in which a
+  safe call runs, a database delete is blocked and a scale-up waits for a human. `scripts/make_demo_gif.py`
+  regenerates it; `action-sentinel init` copies the demo, and a test keeps it working.
+
 ## [0.2.0] - 2026-10-25
 
 First release on PyPI.
