@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from action_sentinel.contracts import ActionProposal, DatasetExample
@@ -43,7 +43,7 @@ def example_from_call(row: dict[str, Any], version: str) -> DatasetExample:
         agent_version="sluice", action_type="mcp_tool_call",
         action_payload={"server": server, "tool": tool, "arguments": row.get("arguments") or {}},
         target_resource=("mcp/%s/%s" % (server, tool))[:512], source_system="mcp-proxy", evidence_refs=[],
-        proposed_at=datetime.fromtimestamp(float(row.get("ts") or 0), UTC), context={}, idempotency_key=event)
+        proposed_at=datetime.fromtimestamp(float(row.get("ts") or 0), timezone.utc), context={}, idempotency_key=event)
     return DatasetExample(
         example_id=event, dataset_version=version, synthetic=False, split=split_for(event), situation=situation,
         question=DISPOSITION_QUESTION, expected_label=label, expected_outcome=OUTCOME[label],
