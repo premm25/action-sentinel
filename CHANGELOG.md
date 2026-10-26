@@ -5,6 +5,8 @@ and the project uses [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-26
+
 ### Added
 - A demo recording in the README (`docs/assets/demo.gif`): a real run of `examples/guard_demo.py`, in which a
   safe call runs, a database delete is blocked and a scale-up waits for a human. `scripts/make_demo_gif.py`
