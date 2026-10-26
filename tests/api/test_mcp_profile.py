@@ -59,3 +59,44 @@ def test_the_proxy_principal_may_only_submit_as_itself(client):
     body = call("notes", "list_notes", {})
     body["action"]["agent_id"] = "someone-else"
     assert client.post("/decisions/assess", json=body, headers=PROXY).status_code == 403
+
+
+# ------------------------------------------------------------------ enforce mode: hold, approve, retry
+
+OPERATOR = {"X-API-Key": "dev-operator-key"}
+
+
+def test_a_held_call_runs_once_after_approval_when_the_proxy_resubmits_it(client):
+    body = call("files", "delete_file", {"path": "/tmp/x"}, n=7)
+    first = client.post("/decisions/evaluate", json=body, headers=PROXY).json()
+    assert first["decision"]["status"] == "HUMAN_REVIEW" and first["review_state"] == "PENDING"
+    assert first["authorization_token"] is None
+    rid = first["review_id"]
+
+    waiting = client.post("/decisions/evaluate", json=body, headers=PROXY).json()  # agent retried too early
+    assert waiting["duplicate"] and waiting["review_state"] == "PENDING" and waiting["authorization_token"] is None
+
+    assert client.post("/reviews/%s/approve" % rid, json={"reason": "ok"}, headers=OPERATOR).status_code == 200
+    again = client.post("/decisions/evaluate", json=body, headers=PROXY).json()
+    assert again["review_state"] == "APPROVED" and again["authorization_token"]
+
+    begin = client.post("/executions/begin", json={"token": again["authorization_token"], "action": body["action"],
+                                                   "adapter": "sluice"}, headers=PROXY).json()
+    assert begin["status"] == "STARTED"
+    done = client.post("/executions/%s/finish" % begin["execution_id"], json={"ok": True}, headers=PROXY).json()
+    assert done["status"] == "EXECUTED"
+
+    # Resubmitting once more returns the token again, but the gateway never runs the action twice.
+    third = client.post("/decisions/evaluate", json=body, headers=PROXY).json()
+    rerun = client.post("/executions/begin", json={"token": third["authorization_token"], "action": body["action"],
+                                                   "adapter": "sluice"}, headers=PROXY).json()
+    assert rerun["status"] == "DUPLICATE"
+
+
+def test_a_rejected_call_gets_no_token(client):
+    body = call("slack", "post_message", {"channel": "#ops", "text": "hi"}, n=8)
+    rid = client.post("/decisions/evaluate", json=body, headers=PROXY).json()["review_id"]
+    reason = {"reason": "not to the ops channel"}
+    assert client.post("/reviews/%s/reject" % rid, json=reason, headers=OPERATOR).status_code == 200
+    out = client.post("/decisions/evaluate", json=body, headers=PROXY).json()
+    assert out["review_state"] == "REJECTED" and out["authorization_token"] is None

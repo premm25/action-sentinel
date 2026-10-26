@@ -18,7 +18,7 @@ from action_sentinel.contracts import ActionProposal, EvaluationRunConfig
 def _settings(args) -> Settings:
     over: dict[str, Any] = {}
     if getattr(args, "db", None):
-        over["db_path"] = args.db
+        over["db_path"] = args.db if args.db == ":memory:" else str(Path(args.db).resolve())  # from where you run it
     return load_settings(args.config, **over)
 
 
@@ -204,6 +204,10 @@ def cmd_reviews(args) -> int:
         for r in s.store.list_reviews(state=args.state):
             print("%s %-10s level=%-8s decision=%s %s" % (r.review_id, r.state.value, r.required_level.value,
                                                          r.decision_id, ",".join(r.reason_codes)))
+            a = r.original_action
+            payload = json.dumps(a.action_payload, ensure_ascii=False, default=str)
+            print("    %s on %s by %s: %s" % (a.action_type, a.target_resource, a.agent_id,
+                                            payload if len(payload) <= 300 else payload[:297] + "..."))
         return 0
     from action_sentinel.governance import ReviewError
     try:
@@ -333,6 +337,25 @@ def cmd_vega_fit(args) -> int:
                                                 "%.3f" % (correct / len(rows)) if rows else "no examples"))
     print("serve it with: providers -> vegaml-head -> config: {readout: ttt, framing: %s, ttt_head_path: %s}"
           % (args.framing, out))
+    return 0
+
+
+def cmd_vega_dataset(args) -> int:
+    """Labelled MCP calls from `sluice sentinel export` -> a Confidence Lab dataset for `vega fit`."""
+    from action_sentinel.evaluation.from_calls import dataset_from_calls
+    rows = [json.loads(line) for line in Path(args.source).read_text(encoding="utf-8").splitlines() if line.strip()]
+    try:
+        examples, skipped = dataset_from_calls(rows, args.version)
+    except (ValueError, KeyError) as exc:
+        print("cannot use %s: %s" % (args.source, exc), file=sys.stderr)
+        return 2
+    Path(args.out).write_text("".join(e.model_dump_json() + "\n" for e in examples), encoding="utf-8")
+    counts = {sp: sum(e.split == sp for e in examples) for sp in ("calibration", "dev", "test")}
+    labels = {lb: sum(e.expected_label == lb for e in examples) for lb in ("safe", "needs_review", "unsafe")}
+    print("wrote %d examples to %s (%s); %s; %d unlabelled row(s) skipped" % (
+        len(examples), args.out, ", ".join("%s %d" % kv for kv in counts.items()),
+        ", ".join("%s %d" % kv for kv in labels.items()), skipped))
+    print("next: action-sentinel vega fit --dataset %s --split calibration --out head.npz --evaluate test" % args.out)
     return 0
 
 
@@ -550,6 +573,11 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--model", default="0.8b")
     a.add_argument("--device", default="cpu")
     a.set_defaults(fn=cmd_vega_fit)
+    a = vega.add_parser("dataset", help="turn labelled MCP calls (sluice sentinel export) into a dataset")
+    a.add_argument("--from", dest="source", required=True, help="JSONL from `sluice sentinel export`, labelled")
+    a.add_argument("--out", required=True, help="dataset JSONL to write")
+    a.add_argument("--version", default="mcp-calls-v1")
+    a.set_defaults(fn=cmd_vega_dataset)
     a = vega.add_parser("data", help="build or check a public evaluation dataset")
     a.add_argument("action", choices=["build", "check"])
     a.add_argument("--version", default="pub-v1")

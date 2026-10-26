@@ -157,6 +157,7 @@ def create_app(settings: Settings, service: Sentinel | None = None, vega_service
                            actor=p.principal_id)
         return {"decision": decision_view(out.decision), "duplicate": out.duplicate,
                 "review_id": out.review.review_id if out.review else None,
+                "review_state": out.review.state.value if out.review else None,
                 "authorization_token": out.authorization.token if out.authorization else None}
 
     @app.post("/decisions/assess")

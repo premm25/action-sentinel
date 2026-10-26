@@ -243,8 +243,10 @@ def restart_service(service: str, reason: str): ...
 ## MCP tool calls (with sluice)
 
 [sluice](https://github.com/premm25/sluice), an MCP proxy, can ask Sentinel about every tool call an MCP
-client makes, so existing agents are covered without code changes. So far this runs in shadow mode:
-sluice records Sentinel's verdict next to its own decision and `sluice sentinel report` compares them.
+client makes, so existing agents are covered without code changes. In shadow mode sluice only records
+Sentinel's verdict next to its own decision (`sluice sentinel report` compares them). In enforce mode Sentinel
+decides too: blocked calls never reach the MCP server, and risky ones wait until a person approves them, then
+run once when the agent retries. `sluice sentinel export` writes the calls out for labelling, to fit VegaML on.
 Profile: `config/sentinel-mcp.yaml`. Guide: [`docs/MCP.md`](https://github.com/premm25/action-sentinel/blob/main/docs/MCP.md).
 
 ## Evaluation (Confidence Lab)
@@ -326,10 +328,11 @@ any check fails. See [`docs/DEMO_GUIDE.md`](https://github.com/premm25/action-se
 
 ## Roadmap
 
-1. Enforcement for MCP calls through sluice (blocking, and holding calls for human review); shadow mode is
-   done ([`docs/MCP.md`](https://github.com/premm25/action-sentinel/blob/main/docs/MCP.md)). The `@guard`
-   decorator is done, in-process and remote, for sync and async tools ([`docs/GUARD.md`](https://github.com/premm25/action-sentinel/blob/main/docs/GUARD.md)).
-2. PyPI package and Docker image.
+1. MCP calls through sluice: shadow and enforce modes are done
+   ([`docs/MCP.md`](https://github.com/premm25/action-sentinel/blob/main/docs/MCP.md)); next is a VegaML head
+   fitted on real labelled MCP calls. The `@guard` decorator is done, in-process and remote, for sync and async
+   tools ([`docs/GUARD.md`](https://github.com/premm25/action-sentinel/blob/main/docs/GUARD.md)).
+2. A Docker image (the package is on PyPI).
 3. A stronger VegaML layer: heads fitted on real labelled agent traffic, GPU and 4B results, automatic
    calibration profiles.
 4. A public, independently labelled benchmark of risky agent actions, plus a reusable policy library.

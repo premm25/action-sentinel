@@ -160,7 +160,9 @@ class Sentinel:
             self.audit.emit("proposal.duplicate", existing.correlation_id, "intake", actor=actor,
                             decision_id=existing.decision_id, reason_codes=["DUPLICATE_REQUEST"])
             review = self.store.get_review(existing.review_id) if existing.review_id else None
-            return EvaluationResult(existing, review, None, duplicate=True)
+            if review is not None and review.state == ReviewState.PENDING and self.clock() >= review.expires_at:
+                review = self._expire(review)
+            return EvaluationResult(existing, review, self._approved_grant(review), duplicate=True)
 
         corr = new_id("corr")
         self.audit.emit("proposal.received", corr, "intake", actor=actor,
@@ -193,6 +195,20 @@ class Sentinel:
                         data={"status": decision.status.value, "risk": decision.risk_level.value
                               if decision.risk_level else None})
         return EvaluationResult(decision, review, auth)
+
+    def _approved_grant(self, review: ReviewRecord | None) -> IssuedAuthorization | None:
+        """The grant a reviewer issued for this exact action, so the agent can collect it by resubmitting.
+
+        A proxy (sluice) holds a call for review and tells the agent to retry; the retry resubmits the same
+        proposal and gets the token here. Only for APPROVED reviews (an override approved a different action),
+        while the grant is unrevoked and unexpired; the gateway still runs it at most once.
+        """
+        if review is None or review.state != ReviewState.APPROVED or not review.authorization_id:
+            return None
+        g = self.store.get_grant(review.authorization_id)
+        if g is None or g.revoked or self.clock() >= g.expires_at:
+            return None
+        return IssuedAuthorization(grant=g, token=self.authorizer.token_for(g))
 
     # ------------------------------------------------------------------ human review
     def _review(self, review_id: str) -> ReviewRecord:

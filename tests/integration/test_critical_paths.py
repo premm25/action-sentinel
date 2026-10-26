@@ -81,7 +81,8 @@ def test_cli_in_process(tmp_path, capsys, monkeypatch):
     assert main(["--db", db, "validate-rules"]) == 0
     assert main(["--db", db, "providers"]) == 0
     assert main(["--db", db, "reviews", "list"]) == 0
-    rid = capsys.readouterr().out.strip().splitlines()[-1].split()[0]
+    listed = [ln for ln in capsys.readouterr().out.splitlines() if ln.startswith("rev_")]
+    rid = listed[-1].split()[0]
     assert main(["--db", db, "reviews", "override", rid, "--reviewer", "olivia", "--reason", "staging instead",
                  "--changes", json.dumps({"target_resource": "staging/checkout-api"})]) == 0
     assert "OVERRIDDEN" in capsys.readouterr().out

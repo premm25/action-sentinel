@@ -9,6 +9,16 @@ and the project uses [semantic versioning](https://semver.org/).
 - MCP support through the sluice proxy, shadow mode: `config/sentinel-mcp.yaml` with
   `examples/rule_packs/mcp.yaml` (action type `mcp_tool_call`) and `examples/rule_packs/mcp_classifier.yaml`,
   and a `dev-mcp-key` principal for the proxy. Guide: `docs/MCP.md`.
+- MCP enforce mode: resubmitting a held proposal (same event id and action) after a reviewer approved it
+  returns that approval's authorization token, so a proxy can run the call when the agent retries.
+  `POST /decisions/evaluate` (and `RemoteEvaluation`) now report `review_state`; a pending review past its
+  deadline is expired when resubmitted.
+- `action-sentinel vega dataset --from calls.jsonl --out ds.jsonl`: labelled MCP calls from
+  `sluice sentinel export` as a Confidence Lab dataset (stable hash splits, verdicts kept out), for `vega fit`.
+
+### Changed
+- `reviews list` also shows what each held action is (type, target, payload).
+- `--db` paths are resolved from the directory you run the command in, not the config file's directory.
 
 ## [0.2.1] - 2026-10-26
 

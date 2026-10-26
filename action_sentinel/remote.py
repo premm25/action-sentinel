@@ -38,6 +38,7 @@ class RemoteEvaluation:
     review_id: str | None
     authorization_token: str | None
     duplicate: bool = False
+    review_state: str | None = None  # PENDING | APPROVED | REJECTED | OVERRIDDEN | EXPIRED | CANCELLED
 
 
 class RemoteSentinel:
@@ -56,7 +57,7 @@ class RemoteSentinel:
                  providers: list[str] | None = None) -> RemoteEvaluation:
         out = self._call("POST", "/decisions/evaluate", _request(action, question, providers))
         return RemoteEvaluation(_decision(out["decision"]), out.get("review_id"), out.get("authorization_token"),
-                                bool(out.get("duplicate")))
+                                bool(out.get("duplicate")), out.get("review_state"))
 
     def assess(self, action: ActionProposal, *, question: DecisionQuestion | None = None,
                providers: list[str] | None = None) -> GovernanceDecision:
