@@ -175,6 +175,7 @@ To also consult the local LLM, set `active_providers: [rules, ollama]`, or pass
 | `dev-senior-key` | sam | reviewer (senior), auditor, evaluator |
 | `dev-admin-key` | ada | admin |
 | `dev-auditor-key` | auditor | auditor |
+| `dev-mcp-key` | mcp-proxy | agent (only in `config/sentinel-mcp.yaml`) |
 
 ## Quick start
 
@@ -238,6 +239,13 @@ guard = Guard(sentinel, agent_id="ops-agent", agent_version="1.4.0", source_syst
 @guard.tool("restart_service", target=lambda a: "staging/%s" % a["service"])
 def restart_service(service: str, reason: str): ...
 ```
+
+## MCP tool calls (with sluice)
+
+[sluice](https://github.com/premm25/sluice), an MCP proxy, can ask Sentinel about every tool call an MCP
+client makes, so existing agents are covered without code changes. So far this runs in shadow mode:
+sluice records Sentinel's verdict next to its own decision and `sluice sentinel report` compares them.
+Profile: `config/sentinel-mcp.yaml`. Guide: [`docs/MCP.md`](https://github.com/premm25/action-sentinel/blob/main/docs/MCP.md).
 
 ## Evaluation (Confidence Lab)
 
@@ -318,8 +326,9 @@ any check fails. See [`docs/DEMO_GUIDE.md`](https://github.com/premm25/action-se
 
 ## Roadmap
 
-1. An MCP proxy, so existing agents can be protected without rewiring. The `@guard` decorator is done,
-   in-process and remote, for sync and async tools ([`docs/GUARD.md`](https://github.com/premm25/action-sentinel/blob/main/docs/GUARD.md)).
+1. Enforcement for MCP calls through sluice (blocking, and holding calls for human review); shadow mode is
+   done ([`docs/MCP.md`](https://github.com/premm25/action-sentinel/blob/main/docs/MCP.md)). The `@guard`
+   decorator is done, in-process and remote, for sync and async tools ([`docs/GUARD.md`](https://github.com/premm25/action-sentinel/blob/main/docs/GUARD.md)).
 2. PyPI package and Docker image.
 3. A stronger VegaML layer: heads fitted on real labelled agent traffic, GPU and 4B results, automatic
    calibration profiles.
@@ -338,6 +347,7 @@ any check fails. See [`docs/DEMO_GUIDE.md`](https://github.com/premm25/action-se
 - [Demo guide](https://github.com/premm25/action-sentinel/blob/main/docs/DEMO_GUIDE.md)
 - [Guarding tool functions](https://github.com/premm25/action-sentinel/blob/main/docs/GUARD.md)
 - [Running with VegaML](https://github.com/premm25/action-sentinel/blob/main/docs/VEGAML.md)
+- [MCP tool calls with sluice](https://github.com/premm25/action-sentinel/blob/main/docs/MCP.md)
 - [Contributing](https://github.com/premm25/action-sentinel/blob/main/CONTRIBUTING.md) · [Security policy](https://github.com/premm25/action-sentinel/blob/main/SECURITY.md) · [Changelog](https://github.com/premm25/action-sentinel/blob/main/CHANGELOG.md)
 
 ## License

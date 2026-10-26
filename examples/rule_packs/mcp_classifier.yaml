@@ -1,0 +1,20 @@
+# Classification rules for MCP tool calls (RuleBasedDecisionProvider, config/sentinel-mcp.yaml).
+# First match wins. Tool names are only a hint of what a tool does, so this is deliberately cautious:
+# read-only-sounding tools are judged safe, anything that changes, sends or deletes needs a person,
+# and an unrecognised tool needs a person too. Add rules for your own servers' tools above the default.
+version: 1.0.0
+questions:
+  disposition:
+    rules:
+      - label: unsafe
+        id: M_CONTRADICTED
+        when: {field: derived.contradicting_evidence, op: gt, value: 0}
+      - label: needs_review
+        id: M_CHANGES_OR_SENDS
+        when: {field: action_payload.tool, op: matches,
+               value: "(?i)(delete|remove|drop|destroy|purge|write|update|create|insert|edit|move|rename|send|post|publish|push|merge|deploy|exec|run|shell|transfer|pay|refund|grant|invite|share)"}
+      - label: safe
+        id: M_READS
+        when: {field: action_payload.tool, op: matches,
+               value: "(?i)^(get|list|read|search|find|fetch|query|describe|show|view|lookup|count|check|status)"}
+    default: needs_review

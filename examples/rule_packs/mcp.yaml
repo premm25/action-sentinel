@@ -1,0 +1,63 @@
+# Rule pack for MCP tool calls seen by an MCP proxy (sluice: docs/MCP.md). Declarative data only.
+#
+# Every MCP call arrives as one action type, mcp_tool_call, because MCP tool names are chosen by each
+# server. The payload is {server, tool, arguments} and the target is mcp/<server>/<tool>, so rules match on
+# the tool name (action_payload.tool), the target, or an argument (action_payload.arguments.<name>).
+# The rules below are examples of the kind of thing to write for your own servers.
+pack_id: mcp
+version: 1.0.0
+description: Admits MCP tool calls from a proxy and blocks a few clearly dangerous ones (example policy).
+provenance: examples/rule_packs/mcp.yaml (Sentinel reference policy)
+
+action_types:
+  mcp_tool_call:
+    description: One tools/call request from an MCP client to an MCP server.
+    risk: low
+    min_evidence: 0
+    required_payload_fields: [action_payload.server, action_payload.tool]
+
+sources:
+  mcp-proxy:
+    description: An MCP proxy forwarding an agent's tool calls.
+    allowed_actions: [mcp_tool_call]
+    allowed_targets: ["mcp/*"]
+
+rules:
+  - id: MCP_DESTRUCTIVE_SQL
+    description: SQL that drops or truncates tables is not run by an agent.
+    severity: critical
+    effect: block
+    applies_to: [mcp_tool_call]
+    when:
+      any:
+        - {field: action_payload.arguments.sql, op: matches, value: "(?i)\\b(drop|truncate)\\s+(table|database|schema)\\b"}
+        - {field: action_payload.arguments.query, op: matches, value: "(?i)\\b(drop|truncate)\\s+(table|database|schema)\\b"}
+    remediation: Schema changes go through a migration reviewed by a person.
+    version: "1"
+    provenance: Data retention policy DR-1 (example)
+  - id: MCP_RECURSIVE_DELETE
+    description: Shell commands that recursively force-delete files are not run by an agent.
+    severity: critical
+    effect: block
+    applies_to: [mcp_tool_call]
+    when:
+      any:
+        - {field: action_payload.arguments.command, op: matches, value: "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f|\\brm\\s+-[a-zA-Z]*f[a-zA-Z]*r"}
+        - {field: action_payload.arguments.cmd, op: matches, value: "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f|\\brm\\s+-[a-zA-Z]*f[a-zA-Z]*r"}
+    remediation: Delete specific files, or ask a person to run the command.
+    version: "1"
+    provenance: Change management policy CM-3 (example)
+  - id: MCP_SECRET_IN_ARGUMENTS
+    description: Tool arguments must not carry credentials in clear text.
+    severity: critical
+    effect: block
+    applies_to: [mcp_tool_call]
+    when:
+      any:
+        - {field: action_payload.arguments.password, op: exists}
+        - {field: action_payload.arguments.secret, op: exists}
+        - {field: action_payload.arguments.api_key, op: exists}
+        - {field: action_payload.arguments.token, op: exists}
+    remediation: Reference secrets by identifier from a secret store instead.
+    version: "1"
+    provenance: Security policy SEC-7 (example)

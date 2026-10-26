@@ -1,0 +1,45 @@
+# Sentinel deciding on MCP tool calls forwarded by an MCP proxy (sluice). Guide: docs/MCP.md.
+#   action-sentinel --config config/sentinel-mcp.yaml serve
+# Every call arrives as action type mcp_tool_call with payload {server, tool, arguments}, target
+# mcp/<server>/<tool>, source mcp-proxy. examples/rule_packs/mcp.yaml admits them and blocks a few clearly
+# dangerous ones; examples/rule_packs/mcp_classifier.yaml judges the rest by tool name, cautiously.
+# To add VegaML's judgement, define the vegaml-head provider as in config/sentinel-vegaml.yaml and list it in
+# active_providers, fitted on your own labelled MCP calls (action-sentinel vega fit).
+# DEV ONLY: the principals below use publicly documented development keys (see README; the proxy's is
+# dev-mcp-key). Do not deploy this file. Production must supply its own principals and SENTINEL_SIGNING_KEY.
+environment: dev
+db_path: var/sentinel.db
+report_dir: reports
+rule_packs:
+  - examples/rule_packs/mcp.yaml
+
+providers:
+  - name: rules
+    type: rule_based
+    config: {classifier_path: examples/rule_packs/mcp_classifier.yaml}
+
+active_providers: [rules]
+strategy: parallel
+provider_timeout_s: 200
+
+governance:
+  version: 1.0.0
+  max_auto_approve_risk: low
+  thresholds:
+    approve_min_confidence: 0.85
+    abstain_below: 0.5
+    require_measured_calibration: false
+  review_ttl_seconds: 86400
+  authorization_ttl_seconds: 900
+
+reviewers:
+  - {reviewer_id: olivia, display_name: Olivia (operator), level: operator}
+  - {reviewer_id: sam, display_name: Sam (senior), level: senior}
+  - {reviewer_id: ada, display_name: Ada (admin), level: admin}
+
+principals:
+  - {principal_id: mcp-proxy, roles: [agent], key_sha256: b2759dc80a6487f5ce6db8247b5b3ba85ea6b70f60254ea4ff952bf799318620}
+  - {principal_id: olivia, roles: [reviewer, auditor], reviewer_id: olivia, key_sha256: 7eee78659ab50d4dd820f4242709d188809ca0249506edf83d70022973d5e2ca}
+  - {principal_id: sam, roles: [reviewer, auditor, evaluator], reviewer_id: sam, key_sha256: 0c58b25b0b46f53cab77084f40823f07e9b523b04e1d79caa8f13d0fcaadb9fe}
+  - {principal_id: ada, roles: [admin, reviewer, auditor, evaluator], reviewer_id: ada, key_sha256: df76ff796f70d2c9cb055ea6280553caa27eda26b70e01082c160de75a05a4a9}
+  - {principal_id: auditor, roles: [auditor], key_sha256: 46151c35c1c09bca0b049ce55099e4f67fd04efe91716eec70fd1fa8ce898163}

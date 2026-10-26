@@ -5,6 +5,11 @@ and the project uses [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- MCP support through the sluice proxy, shadow mode: `config/sentinel-mcp.yaml` with
+  `examples/rule_packs/mcp.yaml` (action type `mcp_tool_call`) and `examples/rule_packs/mcp_classifier.yaml`,
+  and a `dev-mcp-key` principal for the proxy. Guide: `docs/MCP.md`.
+
 ## [0.2.1] - 2026-10-26
 
 ### Added
